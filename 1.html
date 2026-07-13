@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>场景化数智教学服务平台 · 教科研服务平台</title>
+  <!-- 统一外部资源 与前序平台保持一致 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{
+            brand:'#1958d9',
+            bgPage:'#f4f8ff',
+            success:'#10b981',
+            warning:'#f59e0b',
+            danger:'#ef4444'
+          },
+          fontFamily:{
+            sans:['Inter','system-ui','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .card-hover{transition: all .28s ease;}
+      .card-hover:hover{transform: translateY(-4px);box-shadow:0 12px 28px rgba(25,88,217,0.12)}
+      .modal-mask{background: rgba(0,0,0,0.45);backdrop-filter: blur(2px);}
+      .scroll-hide::-webkit-scrollbar{display:none;}
+      .scroll-hide{-ms-overflow-style:none;scrollbar-width:none;}
+    }
+  </style>
+</head>
+<body class="bg-bgPage font-sans text-[#182233]">
+<!-- 1. 顶部固定导航栏 -->
+<header class="bg-white shadow sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
+    <!-- 左侧Logo与标题 -->
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-brand rounded-lg flex items-center justify-center text-white">
+        <i class="fa-solid fa-graduation-cap text-lg"></i>
+      </div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-lg font-bold text-brand">场景化数智教学服务平台</h1>
+        <div class="w-px h-5 bg-gray-200"></div>
+        <span class="text-gray-600 font-medium">教科研服务平台</span>
+      </div>
+    </div>
+    <!-- 中间AI搜索框 -->
+    <div class="hidden md:flex relative w-96">
+      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      <input placeholder="AI智能检索 支持搜索场景、课题、教研组..." class="w-full border border-gray-200 rounded-lg pl-10 pr-12 py-2 focus:outline-none focus:border-brand">
+      <span class="absolute right-3 top-1/2 -translate-y-1/2 bg-brand/10 text-brand text-xs px-1.5 py-0.5 rounded">AI</span>
+    </div>
+    <!-- 右侧操作区 -->
+    <div class="flex items-center gap-4">
+      <div class="relative cursor-pointer">
+        <i class="fa-solid fa-bell text-lg text-gray-600 hover:text-brand"></i>
+        <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+      </div>
+      <div class="w-9 h-9 rounded-full bg-gray-200 overflow-hidden cursor-pointer">
+        <img src="https://picsum.photos/id/1005/100/100" alt="用户头像" class="w-full h-full object-cover">
+      </div>
+      <button class="px-3 py-1.5 bg-brand text-white rounded-lg text-sm">我的工作台</button>
+    </div>
+  </div>
+</header>
+
+<!-- 2. Banner横幅区域 -->
+<section class="max-w-7xl mx-auto px-4 md:px-6 mt-6">
+  <div class="bg-brand rounded-2xl p-7 text-white relative overflow-hidden">
+    <div class="relative z-10 max-w-2xl">
+      <h2 class="text-[clamp(1.5rem,3vw,2.2rem)] font-bold">教科研服务平台</h2>
+      <p class="mt-3 opacity-90 leading-relaxed">以岗位能力达成为目标，构建场景化教学研究与教师发展的一站式服务平台。共享教学成果，协同教研创新，助力教师专业成长。</p>
+    </div>
+    <!-- 背景装饰 -->
+    <div class="absolute right-0 top-0 w-1/2 h-full opacity-10">
+      <i class="fa-solid fa-chalkboard-user text-[200px] absolute right-10 top-1/2 -translate-y-1/2"></i>
+    </div>
+  </div>
+  <!-- 4个快捷功能入口卡片 悬浮叠加 -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 relative z-20 px-2">
+    <div class="bg-white rounded-xl p-5 card-hover shadow-md cursor-pointer">
+      <div class="w-10 h-10 bg-blue-100 text-brand rounded-lg flex items-center justify-center mb-3">
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <h3 class="font-bold">发起教研</h3>
+      <p class="text-xs text-gray-500 mt-1">创建教研活动 协同备课</p>
+    </div>
+    <div class="bg-white rounded-xl p-5 card-hover shadow-md cursor-pointer">
+      <div class="w-10 h-10 bg-green-100 text-success rounded-lg flex items-center justify-center mb-3">
+        <i class="fa-solid fa-file-signature"></i>
+      </div>
+      <h3 class="font-bold">申报课题</h3>
+      <p class="text-xs text-gray-500 mt-1">各级课题线上申报</p>
+    </div>
+    <div class="bg-white rounded-xl p-5 card-hover shadow-md cursor-pointer">
+      <div class="w-10 h-10 bg-orange-100 text-warning rounded-lg flex items-center justify-center mb-3">
+        <i class="fa-solid fa-file-lines"></i>
+      </div>
+      <h3 class="font-bold">标准模板</h3>
+      <p class="text-xs text-gray-500 mt-1">教研文档模板库</p>
+    </div>
+    <div class="bg-white rounded-xl p-5 card-hover shadow-md cursor-pointer">
+      <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-3">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+      <h3 class="font-bold">教学能力大赛</h3>
+      <p class="text-xs text-gray-500 mt-1">赛事报名与备赛指导</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 数据统计看板 -->
+<section class="max-w-7xl mx-auto px-4 md:px-6 mt-8">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">教科研数据概览</h2>
+    <span class="text-xs text-gray-500">数据更新时间：2024-05-20 09:00</span>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- 数据卡片1 -->
+    <div class="bg-white rounded-xl p-5 shadow-sm">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-gray-500 text-sm">教学案例数</p>
+          <p class="text-3xl font-bold mt-2">1286<span class="text-sm font-normal text-gray-500 ml-1">个</span></p>
+        </div>
+        <span class="text-xs text-success bg-green-50 px-2 py-1 rounded">
+          <i class="fa-solid fa-arrow-up"></i> 12.5%
+        </span>
+      </div>
+      <div class="flex gap-4 mt-4 text-sm text-gray-600">
+        <span>精品案例 <b class="text-gray-800">328</b></span>
+        <span>待审核 <b class="text-gray-800">45</b></span>
+      </div>
+    </div>
+    <!-- 数据卡片2 -->
+    <div class="bg-white rounded-xl p-5 shadow-sm">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-gray-500 text-sm">在研课题数</p>
+          <p class="text-3xl font-bold mt-2">87<span class="text-sm font-normal text-gray-500 ml-1">项</span></p>
+        </div>
+        <span class="text-xs text-success bg-green-50 px-2 py-1 rounded">
+          <i class="fa-solid fa-arrow-up"></i> 8.3%
+        </span>
+      </div>
+      <div class="flex gap-3 mt-4 text-sm text-gray-600">
+        <span>国家级 <b class="text-gray-800">8</b></span>
+        <span>省级 <b class="text-gray-800">23</b></span>
+        <span>校级 <b class="text-gray-800">56</b></span>
+      </div>
+    </div>
+    <!-- 数据卡片3 -->
+    <div class="bg-white rounded-xl p-5 shadow-sm">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-gray-500 text-sm">教研团队数</p>
+          <p class="text-3xl font-bold mt-2">56<span class="text-sm font-normal text-gray-500 ml-1">个</span></p>
+        </div>
+        <span class="text-xs text-success bg-green-50 px-2 py-1 rounded">
+          <i class="fa-solid fa-arrow-up"></i> 5.7%
+        </span>
+      </div>
+      <div class="flex gap-4 mt-4 text-sm text-gray-600">
+        <span>校企共建 <b class="text-gray-800">12</b></span>
+        <span>跨校联盟 <b class="text-gray-800">8</b></span>
+      </div>
+    </div>
+    <!-- 数据卡片4 -->
+    <div class="bg-white rounded-xl p-5 shadow-sm">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-gray-500 text-sm">成果产出数</p>
+          <p class="text-3xl font-bold mt-2">423<span class="text-sm font-normal text-gray-500 ml-1">项</span></p>
+        </div>
+        <span class="text-xs text-success bg-green-50 px-2 py-1 rounded">
+          <i class="fa-solid fa-arrow-up"></i> 18.2%
+        </span>
+      </div>
+      <div class="flex gap-3 mt-4 text-sm text-gray-600">
+        <span>论文 <b class="text-gray-800">186</b></span>
+        <span>专利 <b class="text-gray-800">67</b></span>
+        <span>教材 <b class="text-gray-800">42</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 场景化教学示范案例板块 -->
+<section class="max-w-7xl mx-auto px-4 md:px-6 mt-8">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">场景化教学示范案例</h2>
+    <a href="#" class="text-sm text-brand hover:underline">查看全部 <i class="fa-solid fa-angle-right ml-1"></i></a>
+  </div>
+  <!-- 筛选栏 -->
+  <div class="bg-white p-4 rounded-xl shadow-sm mb-5">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      <span class="text-sm text-gray-500 w-16">行业分类：</span>
+      <div class="flex flex-wrap gap-2">
+        <span class="px-3 py-1 rounded-md bg-brand text-white text-sm cursor-pointer">信息技术</span>
+        <span class="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-sm cursor-pointer">智能制造</span>
+        <span class="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-sm cursor-pointer">财经商贸</span>
+        <span class="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-sm cursor-pointer">医药卫生</span>
+        <span class="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-sm cursor-pointer">交通运输</span>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-sm text-gray-500 w-16">岗位方向：</span>
+      <div class="flex flex-wrap gap-2">
+        <span class="px-3 py-1 rounded-md bg-blue-50 text-brand text-sm cursor-pointer">Java工程师</span>
+        <span class="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-sm cursor-pointer">前端开发</span>
+        <span class="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-sm cursor-pointer">数据分析</span>
+        <span class="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-sm cursor-pointer">运维工程师</span>
+      </div>
+    </div>
+  </div>
+  <!-- 案例卡片网格 -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <!-- 案例1 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm cursor-pointer" onclick="openCaseModal()">
+      <img src="https://picsum.photos/id/20/400/220" class="w-full h-36 object-cover" alt="案例封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-orange-50 text-warning text-xs px-2 py-0.5 rounded">中级难度</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">Java工程师</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">电商系统秒杀模块开发</h3>
+        <div class="flex gap-1 mt-2 flex-wrap">
+          <span class="text-xs bg-blue-50 text-brand px-1.5 py-0.5 rounded">高并发</span>
+          <span class="text-xs bg-blue-50 text-brand px-1.5 py-0.5 rounded">Redis</span>
+        </div>
+        <div class="flex items-center justify-between mt-3 pt-3 border-t">
+          <span class="text-xs text-gray-500"><i class="fa-solid fa-user-tie mr-1"></i> 张明教授</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
+          <span><i class="fa-solid fa-eye mr-1"></i> 1.2k</span>
+          <span><i class="fa-solid fa-star mr-1"></i> 328</span>
+        </div>
+      </div>
+    </div>
+    <!-- 案例2 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm cursor-pointer" onclick="openCaseModal()">
+      <img src="https://picsum.photos/id/48/400/220" class="w-full h-36 object-cover" alt="案例封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-red-50 text-danger text-xs px-2 py-0.5 rounded">高级难度</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">架构师</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">微服务架构下的用户认证中心设计</h3>
+        <div class="flex gap-1 mt-2 flex-wrap">
+          <span class="text-xs bg-blue-50 text-brand px-1.5 py-0.5 rounded">微服务</span>
+          <span class="text-xs bg-blue-50 text-brand px-1.5 py-0.5 rounded">OAuth2</span>
+        </div>
+        <div class="flex items-center justify-between mt-3 pt-3 border-t">
+          <span class="text-xs text-gray-500"><i class="fa-solid fa-user-tie mr-1"></i> 王丽副教授</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
+          <span><i class="fa-solid fa-eye mr-1"></i> 986</span>
+          <span><i class="fa-solid fa-star mr-1"></i> 256</span>
+        </div>
+      </div>
+    </div>
+    <!-- 案例3 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm cursor-pointer" onclick="openCaseModal()">
+      <img src="https://picsum.photos/id/60/400/220" class="w-full h-36 object-cover" alt="案例封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-green-50 text-success text-xs px-2 py-0.5 rounded">初级难度</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">前端开发</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">响应式企业官网前端开发实战</h3>
+        <div class="flex gap-1 mt-2 flex-wrap">
+          <span class="text-xs bg-blue-50 text-brand px-1.5 py-0.5 rounded">Vue3</span>
+          <span class="text-xs bg-blue-50 text-brand px-1.5 py-0.5 rounded">响应式</span>
+        </div>
+        <div class="flex items-center justify-between mt-3 pt-3 border-t">
+          <span class="text-xs text-gray-500"><i class="fa-solid fa-user-tie mr-1"></i> 李强讲师</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
+          <span><i class="fa-solid fa-eye mr-1"></i> 2.1k</span>
+          <span><i class="fa-solid fa-star mr-1"></i> 512</span>
+        </div>
+      </div>
+    </div>
+    <!-- 案例4 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm cursor-pointer" onclick="openCaseModal()">
+      <img src="https://picsum.photos/id/96/400/220" class="w-full h-36 object-cover" alt="案例封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-orange-50 text-warning text-xs px-2 py-0.5 rounded">中级难度</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">数据分析</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">企业级数据仓库ETL流程设计</h3>
+        <div class="flex gap-1 mt-2 flex-wrap">
+          <span class="text-xs bg-blue-50 text-brand px-1.5 py-0.5 rounded">Hive</span>
+          <span class="text-xs bg-blue-50 text-brand px-1.5 py-0.5 rounded">数据治理</span>
+        </div>
+        <div class="flex items-center justify-between mt-3 pt-3 border-t">
+          <span class="text-xs text-gray-500"><i class="fa-solid fa-user-tie mr-1"></i> 陈华教授</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
+          <span><i class="fa-solid fa-eye mr-1"></i> 756</span>
+          <span><i class="fa-solid fa-star mr-1"></i> 189</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 双栏板块：教研之星 & 金牌教研室 -->
+<section class="max-w-7xl mx-auto px-4 md:px-6 mt-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <!-- 左栏：教研之星 -->
+    <div class="bg-white rounded-xl p-5 shadow-sm">
+      <h3 class="text-lg font-bold mb-4 flex items-center">
+        <i class="fa-solid fa-star text-warning mr-2"></i> 教研之星 · 本月贡献榜单
+      </h3>
+      <div class="space-y-3">
+        <!-- 第1名 -->
+        <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-yellow-50 to-transparent rounded-lg">
+          <span class="w-7 h-7 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold text-sm">1</span>
+          <div class="w-10 h-10 rounded-full overflow-hidden">
+            <img src="https://picsum.photos/id/1005/100/100" class="w-full h-full object-cover" alt="头像">
+          </div>
+          <div class="flex-1">
+            <p class="font-medium">张明</p>
+            <p class="text-xs text-gray-500">信息工程学院 · 软件教研室</p>
+          </div>
+          <span class="font-bold text-brand">1280 <span class="text-xs font-normal text-gray-500">贡献值</span></span>
+        </div>
+        <!-- 第2名 -->
+        <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-gray-50 to-transparent rounded-lg">
+          <span class="w-7 h-7 bg-gray-400 text-white rounded-full flex items-center justify-center font-bold text-sm">2</span>
+          <div class="w-10 h-10 rounded-full overflow-hidden">
+            <img src="https://picsum.photos/id/1011/100/100" class="w-full h-full object-cover" alt="头像">
+          </div>
+          <div class="flex-1">
+            <p class="font-medium">王丽</p>
+            <p class="text-xs text-gray-500">信息工程学院 · 大数据教研室</p>
+          </div>
+          <span class="font-bold text-brand">1156 <span class="text-xs font-normal text-gray-500">贡献值</span></span>
+        </div>
+        <!-- 第3名 -->
+        <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-orange-50 to-transparent rounded-lg">
+          <span class="w-7 h-7 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold text-sm">3</span>
+          <div class="w-10 h-10 rounded-full overflow-hidden">
+            <img src="https://picsum.photos/id/1012/100/100" class="w-full h-full object-cover" alt="头像">
+          </div>
+          <div class="flex-1">
+            <p class="font-medium">李强</p>
+            <p class="text-xs text-gray-500">信息工程学院 · 前端开发教研室</p>
+          </div>
+          <span class="font-bold text-brand">986 <span class="text-xs font-normal text-gray-500">贡献值</span></span>
+        </div>
+        <!-- 第4名 -->
+        <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50">
+          <span class="w-7 h-7 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center font-bold text-sm">4</span>
+          <div class="w-10 h-10 rounded-full overflow-hidden">
+            <img src="https://picsum.photos/id/1013/100/100" class="w-full h-full object-cover" alt="头像">
+          </div>
+          <div class="flex-1">
+            <p class="font-medium">赵雪</p>
+            <p class="text-xs text-gray-500">智能制造学院 · 工业机器人教研室</p>
+          </div>
+          <span class="font-bold text-brand">845 <span class="text-xs font-normal text-gray-500">贡献值</span></span>
+        </div>
+        <!-- 第5名 -->
+        <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50">
+          <span class="w-7 h-7 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center font-bold text-sm">5</span>
+          <div class="w-10 h-10 rounded-full overflow-hidden">
+            <img src="https://picsum.photos/id/1014/100/100" class="w-full h-full object-cover" alt="头像">
+          </div>
+          <div class="flex-1">
+            <p class="font-medium">陈华</p>
+            <p class="text-xs text-gray-500">财经学院 · 会计教研室</p>
+          </div>
+          <span class="font-bold text-brand">798 <span class="text-xs font-normal text-gray-500">贡献值</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右栏：金牌教研室 -->
+    <div class="bg-white rounded-xl p-5 shadow-sm">
+      <h3 class="text-lg font-bold mb-4 flex items-center">
+        <i class="fa-solid fa-people-group text-brand mr-2"></i> 金牌教研室
+      </h3>
+      <div class="space-y-4">
+        <!-- 教研室1 -->
+        <div class="border border-gray-100 rounded-xl p-4 card-hover cursor-pointer">
+          <div class="flex justify-between items-start mb-3">
+            <h4 class="font-bold">软件技术校企共建教研室</h4>
+            <span class="bg-blue-50 text-brand text-xs px-2 py-0.5 rounded">校企共建</span>
+          </div>
+          <p class="text-sm text-gray-500 mb-3">团队成员 12 名</p>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <span class="bg-gray-100 px-2 py-1 rounded">56个教学场景</span>
+            <span class="bg-gray-100 px-2 py-1 rounded">3项省级课题</span>
+            <span class="bg-gray-100 px-2 py-1 rounded">2项教学成果奖</span>
+          </div>
+          <button class="w-full mt-4 border border-brand text-brand rounded-lg py-1.5 text-sm hover:bg-brand hover:text-white transition">查看详情</button>
+        </div>
+        <!-- 教研室2 -->
+        <div class="border border-gray-100 rounded-xl p-4 card-hover cursor-pointer">
+          <div class="flex justify-between items-start mb-3">
+            <h4 class="font-bold">粤港澳大数据技术跨校教研室</h4>
+            <span class="bg-green-50 text-success text-xs px-2 py-0.5 rounded">跨校联盟</span>
+          </div>
+          <p class="text-sm text-gray-500 mb-3">团队成员 15 名 · 合作院校 5 所</p>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <span class="bg-gray-100 px-2 py-1 rounded">42个教学场景</span>
+            <span class="bg-gray-100 px-2 py-1 rounded">1项国家级课题</span>
+          </div>
+          <button class="w-full mt-4 border border-brand text-brand rounded-lg py-1.5 text-sm hover:bg-brand hover:text-white transition">查看详情</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. 教师发展板块 -->
+<section class="max-w-7xl mx-auto px-4 md:px-6 mt-8">
+  <h2 class="text-xl font-bold mb-4">教师发展中心</h2>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <!-- 左栏：赋能课程 横向滚动 -->
+    <div class="bg-white rounded-xl p-5 shadow-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold flex items-center">
+          <i class="fa-solid fa-book-open text-brand mr-2"></i> 赋能成长课程
+        </h3>
+        <a href="#" class="text-xs text-brand hover:underline">全部课程 <i class="fa-solid fa-angle-right ml-1"></i></a>
+      </div>
+      <div class="flex gap-4 overflow-x-auto scroll-hide pb-2">
+        <!-- 课程1 -->
+        <div class="min-w-[200px] border border-gray-100 rounded-lg overflow-hidden card-hover">
+          <img src="https://picsum.photos/id/20/200/100" class="w-full h-24 object-cover" alt="课程封面">
+          <div class="p-3">
+            <h4 class="font-medium text-sm line-clamp-1">AI辅助教案设计实战</h4>
+            <div class="mt-2">
+              <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span>学习进度</span>
+                <span>65%</span>
+              </div>
+              <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-brand rounded-full" style="width:65%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 课程2 -->
+        <div class="min-w-[200px] border border-gray-100 rounded-lg overflow-hidden card-hover">
+          <img src="https://picsum.photos/id/30/200/100" class="w-full h-24 object-cover" alt="课程封面">
+          <div class="p-3">
+            <h4 class="font-medium text-sm line-clamp-1">场景化教学设计方法论</h4>
+            <div class="mt-2">
+              <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span>学习进度</span>
+                <span>30%</span>
+              </div>
+              <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-brand rounded-full" style="width:30%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 课程3 -->
+        <div class="min-w-[200px] border border-gray-100 rounded-lg overflow-hidden card-hover">
+          <img src="https://picsum.photos/id/40/200/100" class="w-full h-24 object-cover" alt="课程封面">
+          <div class="p-3">
+            <h4 class="font-medium text-sm line-clamp-1">教学能力大赛备赛指南</h4>
+            <div class="mt-2">
+              <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span>未开始</span>
+                <span>0%</span>
+              </div>
+              <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-gray-300 rounded-full" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 课程4 -->
+        <div class="min-w-[200px] border border-gray-100 rounded-lg overflow-hidden card-hover">
+          <img src="https://picsum.photos/id/50/200/100" class="w-full h-24 object-cover" alt="课程封面">
+          <div class="p-3">
+            <h4 class="font-medium text-sm line-clamp-1">知识图谱构建与应用</h4>
+            <div class="mt-2">
+              <div class="flex justify-between text-xs text-success mb-1">
+                <span>已完成</span>
+                <span>100%</span>
+              </div>
+              <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-success rounded-full" style="width:100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右栏：教学竞赛列表 -->
+    <div class="bg-white rounded-xl p-5 shadow-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold flex items-center">
+          <i class="fa-solid fa-trophy text-warning mr-2"></i> 教学竞赛
+        </h3>
+        <a href="#" class="text-xs text-brand hover:underline">全部赛事 <i class="fa-solid fa-angle-right ml-1"></i></a>
+      </div>
+      <div class="space-y-3">
+        <!-- 竞赛1 -->
+        <div class="border border-gray-100 rounded-lg p-4 hover:border-brand transition">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-medium">2024全国职业院校教学能力比赛</h4>
+              <p class="text-xs text-gray-500 mt-1">报名截止：2024年6月30日</p>
+            </div>
+            <span class="bg-green-50 text-success text-xs px-2 py-0.5 rounded">报名中</span>
+          </div>
+          <button class="mt-3 bg-brand text-white text-sm px-4 py-1.5 rounded">立即报名</button>
+        </div>
+        <!-- 竞赛2 -->
+        <div class="border border-gray-100 rounded-lg p-4 hover:border-brand transition">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-medium">省级课程思政教学设计大赛</h4>
+              <p class="text-xs text-gray-500 mt-1">开赛时间：2024年5月15日</p>
+            </div>
+            <span class="bg-blue-50 text-brand text-xs px-2 py-0.5 rounded">进行中</span>
+          </div>
+          <button class="mt-3 border border-brand text-brand text-sm px-4 py-1.5 rounded">查看详情</button>
+        </div>
+        <!-- 竞赛3 -->
+        <div class="border border-gray-100 rounded-lg p-4 hover:border-gray-200 transition opacity-80">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-medium">校级青年教师教学基本功比赛</h4>
+              <p class="text-xs text-gray-500 mt-1">结果公示：2024年4月28日</p>
+            </div>
+            <span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded">已结束</span>
+          </div>
+          <button class="mt-3 border border-gray-300 text-gray-500 text-sm px-4 py-1.5 rounded cursor-not-allowed">查看结果</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. 课题与成果板块 -->
+<section class="max-w-7xl mx-auto px-4 md:px-6 mt-8 pb-14">
+  <h2 class="text-xl font-bold mb-4">课题与成果管理</h2>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <!-- 左栏：通知公告 -->
+    <div class="bg-white rounded-xl p-5 shadow-sm">
+      <!-- 标签切换 -->
+      <div class="flex border-b mb-4">
+        <button class="tab-btn active px-4 py-2 text-sm font-medium border-b-2 border-brand text-brand" onclick="switchTab(0)">课题通知</button>
+        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 hover:text-brand" onclick="switchTab(1)">成果公示</button>
+        <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 hover:text-brand" onclick="switchTab(2)">政策文件</button>
+      </div>
+      <!-- 通知列表 -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between py-1 cursor-pointer hover:text-brand">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+            <span class="text-sm">省级教育科学规划课题申报通知</span>
+          </div>
+          <span class="text-xs text-gray-400">05-18</span>
+        </div>
+        <div class="flex items-center justify-between py-1 cursor-pointer hover:text-brand">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+            <span class="text-sm">校级教改项目立项评审公示</span>
+          </div>
+          <span class="text-xs text-gray-400">05-15</span>
+        </div>
+        <div class="flex items-center justify-between py-1 cursor-pointer hover:text-brand">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+            <span class="text-sm text-gray-600">教育部产学合作项目申报通知</span>
+          </div>
+          <span class="text-xs text-gray-400">05-10</span>
+        </div>
+        <div class="flex items-center justify-between py-1 cursor-pointer hover:text-brand">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+            <span class="text-sm text-gray-600">省级教学成果奖获奖名单</span>
+          </div>
+          <span class="text-xs text-gray-400">05-05</span>
+        </div>
+        <div class="flex items-center justify-between py-1 cursor-pointer hover:text-brand">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+            <span class="text-sm text-gray-600">校级精品在线课程认定通知</span>
+          </div>
+          <span class="text-xs text-gray-400">04-28</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右栏：两大功能入口 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- 项目库 -->
+      <div class="bg-white rounded-xl p-5 shadow-sm card-hover cursor-pointer">
+        <div class="w-10 h-10 bg-blue-100 text-brand rounded-lg flex items-center justify-center mb-3">
+          <i class="fa-solid fa-folder-tree"></i>
+        </div>
+        <h3 class="font-bold">项目库</h3>
+        <p class="text-xs text-gray-500 mt-1">重大项目建设进度追踪</p>
+        <div class="mt-4">
+          <div class="flex justify-between text-xs text-gray-500 mb-1">
+            <span>双高任务完成</span>
+            <span class="text-brand font-medium">78%</span>
+          </div>
+          <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div class="h-full bg-brand rounded-full" style="width:78%"></div>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-4 text-xs text-gray-600">
+          <span>进行中 <b>12</b></span>
+          <span>已完成 <b>45</b></span>
+          <span>待验收 <b>5</b></span>
+        </div>
+        <button class="w-full mt-4 text-sm text-brand border border-brand rounded-lg py-1.5 hover:bg-brand hover:text-white transition">进入项目库</button>
+      </div>
+      <!-- 课题库 -->
+      <div class="bg-white rounded-xl p-5 shadow-sm card-hover cursor-pointer">
+        <div class="w-10 h-10 bg-green-100 text-success rounded-lg flex items-center justify-center mb-3">
+          <i class="fa-solid fa-flask"></i>
+        </div>
+        <h3 class="font-bold">课题库</h3>
+        <p class="text-xs text-gray-500 mt-1">各级各类课题统一管理</p>
+        <div class="mt-4">
+          <div class="flex justify-between text-xs text-gray-500 mb-1">
+            <span>本年度结题率</span>
+            <span class="text-success font-medium">62%</span>
+          </div>
+          <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div class="h-full bg-success rounded-full" style="width:62%"></div>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-4 text-xs text-gray-600">
+          <span>国家级 <b>8</b></span>
+          <span>省级 <b>23</b></span>
+          <span>校级 <b>56</b></span>
+        </div>
+        <button class="w-full mt-4 text-sm text-success border border-success rounded-lg py-1.5 hover:bg-success hover:text-white transition">进入课题库</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. 底部版权页脚 -->
+<footer class="bg-white py-6 border-t">
+  <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
+    <p>场景化数智教学服务平台 · 教科研服务系统</p>
+    <p class="mt-1">© 2024 职业教育数字化创新平台 版权所有</p>
+  </div>
+</footer>
+
+<!-- 全局弹窗：案例详情弹窗 -->
+<div id="caseModal" class="fixed inset-0 z-[100] modal-mask hidden items-center justify-center p-4">
+  <div class="bg-white rounded-xl w-full max-w-4xl overflow-hidden">
+    <div class="bg-brand text-white px-5 py-3 flex justify-between items-center">
+      <h3 class="font-bold">电商系统秒杀模块开发 · 教学案例详情</h3>
+      <button onclick="closeCaseModal()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      <!-- 左侧：任务树形目录 -->
+      <div class="p-5 border-r">
+        <h4 class="font-bold mb-4">教学任务目录</h4>
+        <ul class="space-y-3 text-sm">
+          <!-- 任务一 展开 -->
+          <li>
+            <div class="flex items-center gap-2 font-medium">
+              <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+              <span>任务一：需求分析与系统设计</span>
+            </div>
+            <ul class="ml-5 mt-2 space-y-2 text-gray-600">
+              <li class="flex items-center gap-2">
+                <i class="fa-regular fa-circle text-xs"></i>
+                <span>业务需求调研</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-regular fa-circle text-xs"></i>
+                <span>高并发架构设计</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-regular fa-circle text-xs"></i>
+                <span>数据库表设计</span>
+              </li>
+            </ul>
+          </li>
+          <!-- 任务二 收起 -->
+          <li>
+            <div class="flex items-center gap-2 font-medium text-gray-700">
+              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+              <span>任务二：核心功能开发</span>
+            </div>
+          </li>
+          <!-- 任务三 收起 -->
+          <li>
+            <div class="flex items-center gap-2 font-medium text-gray-700">
+              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+              <span>任务三：Redis缓存优化</span>
+            </div>
+          </li>
+          <!-- 任务四 收起 -->
+          <li>
+            <div class="flex items-center gap-2 font-medium text-gray-700">
+              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+              <span>任务四：性能测试与调优</span>
+            </div>
+          </li>
+          <!-- 任务五 收起 -->
+          <li>
+            <div class="flex items-center gap-2 font-medium text-gray-700">
+              <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+              <span>任务五：项目部署与交付</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <!-- 右侧：能力图谱雷达图 -->
+      <div class="p-5">
+        <h4 class="font-bold mb-4">岗位能力图谱</h4>
+        <div class="flex justify-center">
+          <!-- SVG 雷达图 -->
+          <svg width="280" height="280" viewBox="0 0 280 280">
+            <!-- 背景六边形网格 -->
+            <polygon points="140,30 239,87 239,193 140,250 41,193 41,87" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+            <polygon points="140,60 214,103 214,177 140,220 66,177 66,103" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+            <polygon points="140,90 189,119 189,161 140,190 91,161 91,119" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+            <polygon points="140,120 164,135 164,145 140,160 116,145 116,135" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+            <!-- 轴线 -->
+            <line x1="140" y1="30" x2="140" y2="250" stroke="#e5e7eb" stroke-width="1"/>
+            <line x1="41" y1="87" x2="239" y2="193" stroke="#e5e7eb" stroke-width="1"/>
+            <line x1="41" y1="193" x2="239" y2="87" stroke="#e5e7eb" stroke-width="1"/>
+            <!-- 能力数据区域 -->
+            <polygon points="140,50 224,98 219,180 140,225 60,185 65,95" fill="rgba(25,88,217,0.2)" stroke="#1958d9" stroke-width="2"/>
+            <!-- 维度标签 -->
+            <text x="140" y="20" text-anchor="middle" class="text-xs fill-gray-600">系统设计</text>
+            <text x="250" y="90" text-anchor="start" class="text-xs fill-gray-600">编码实现</text>
+            <text x="250" y="198" text-anchor="start" class="text-xs fill-gray-600">缓存优化</text>
+            <text x="140" y="270" text-anchor="middle" class="text-xs fill-gray-600">性能调优</text>
+            <text x="30" y="198" text-anchor="end" class="text-xs fill-gray-600">问题解决</text>
+            <text x="30" y="90" text-anchor="end" class="text-xs fill-gray-600">团队协作</text>
+          </svg>
+        </div>
+        <div class="flex justify-center gap-4 mt-2 text-xs text-gray-500">
+          <span>六项核心岗位能力维度</span>
+        </div>
+      </div>
+    </div>
+    <div class="px-5 py-3 bg-gray-50 flex justify-end gap-3">
+      <button onclick="closeCaseModal()" class="border border-gray-300 px-4 py-1.5 rounded-lg text-sm">关闭</button>
+      <button class="bg-brand text-white px-4 py-1.5 rounded-lg text-sm">查看完整案例</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 案例详情弹窗控制
+  function openCaseModal(){
+    document.getElementById('caseModal').classList.remove('hidden');
+    document.getElementById('caseModal').classList.add('flex');
+  }
+  function closeCaseModal(){
+    document.getElementById('caseModal').classList.add('hidden');
+    document.getElementById('caseModal').classList.remove('flex');
+  }
+
+  // 通知标签切换
+  function switchTab(index){
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach((tab, i) => {
+      if(i === index){
+        tab.classList.add('active','border-b-2','border-brand','text-brand');
+        tab.classList.remove('text-gray-500');
+      }else{
+        tab.classList.remove('active','border-b-2','border-brand','text-brand');
+        tab.classList.add('text-gray-500');
+      }
+    })
+  }
+</script>
+</body>
+</html>
