@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>家庭任务管理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #EEF2FF;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --bg: #F3F4F6;
+            --card: #FFFFFF;
+            --text: #1F2937;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* PC端布局 */
+        .pc-layout {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* 移动端布局 */
+        .mobile-layout {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .mobile-header {
+            background: var(--card);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .mobile-content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 10;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 16px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* 通用组件 */
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover { opacity: 0.9; }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .tag-pending { background: #FEF3C7; color: #92400E; }
+        .tag-progress { background: #DBEAFE; color: #1E40AF; }
+        .tag-review { background: #FCE7F3; color: #9D174D; }
+        .tag-done { background: #D1FAE5; color: #065F46; }
+
+        /* 任务卡片 */
+        .task-item {
+            display: flex;
+            gap: 14px;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .task-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.08);
+        }
+
+        .task-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .task-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+
+        .task-points {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .task-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        /* 积分卡片 */
+        .points-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .points-number {
+            font-size: 42px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        .points-label {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        /* 统计网格 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: var(--primary-light);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* 角色切换 */
+        .role-switch {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .role-btn.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* 奖励列表 */
+        .reward-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            margin-bottom: 10px;
+        }
+
+        .reward-name {
+            font-weight: 500;
+        }
+
+        .reward-cost {
+            color: var(--warning);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* 隐藏/显示 */
+        .hidden { display: none !important; }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* 响应式断点 */
+        @media (min-width: 768px) {
+            .pc-layout { display: flex; }
+            .mobile-layout { display: none; }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .task-item {
+                padding: 20px;
+            }
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+<!-- PC端布局 -->
+<div class="pc-layout">
+    <aside class="sidebar">
+        <div class="sidebar-card">
+            <div class="role-switch">
+                <button class="role-btn active" onclick="switchRole('parent')">👨 家长</button>
+                <button class="role-btn" onclick="switchRole('child')">👶 孩子</button>
+            </div>
+
+            <div id="pc-points-section">
+                <div class="points-card" style="margin-bottom: 20px;">
+                    <div class="points-label">家庭总积分</div>
+                    <div class="points-number" id="pc-total-points">286</div>
+                    <div style="font-size: 13px; opacity: 0.8; margin-top: 8px;">本周新增 +45</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">快捷操作</div>
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="openModal()" id="pc-btn-publish">
+                    <span>➕</span> 发布任务
+                </button>
+                <button class="btn btn-outline" style="width: 100%;" onclick="showPage('rewards')">
+                    <span>🎁</span> 奖励设置
+                </button>
+            </div>
+
+            <div class="card" style="margin-top: 16px;">
+                <div class="card-title">家庭成员</div>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">爸</div>
+                    <div>
+                        <div style="font-weight: 500;">爸爸</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">家长</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--success); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">宝</div>
+                    <div>
+                        <div style="font-weight: 500;">宝宝</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">孩子 · 128积分</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content" id="pc-main">
+        <!-- 动态内容 -->
+    </main>
+</div>
+
+<!-- 移动端布局 -->
+<div class="mobile-layout">
+    <header class="mobile-header">
+        <div style="font-weight: 600; font-size: 18px;">家庭任务</div>
+        <div class="role-switch" style="margin: 0; width: auto;">
+            <button class="role-btn active" style="padding: 8px 16px; font-size: 13px;" onclick="switchRole('parent')">家长</button>
+            <button class="role-btn" style="padding: 8px 16px; font-size: 13px;" onclick="switchRole('child')">孩子</button>
+        </div>
+    </header>
+
+    <div class="mobile-content" id="mobile-content">
+        <!-- 动态内容 -->
+    </div>
+
+    <nav class="mobile-nav">
+        <button class="nav-item active" onclick="showPage('home')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span>首页</span>
+        </button>
+        <button class="nav-item" onclick="showPage('tasks')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            <span>任务</span>
+        </button>
+        <button class="nav-item" onclick="showPage('points')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>积分</span>
+        </button>
+        <button class="nav-item" onclick="showPage('stats')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            <span>统计</span>
+        </button>
+    </nav>
+</div>
+
+<!-- 发布任务弹窗 -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">发布新任务</div>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <form onsubmit="publishTask(event)">
+            <div class="form-group">
+                <label class="form-label">任务名称</label>
+                <input type="text" class="form-input" placeholder="例如：背诵古诗《静夜思》" required id="task-title">
+            </div>
+            <div class="form-group">
+                <label class="form-label">任务描述</label>
+                <textarea class="form-textarea" placeholder="详细描述任务要求..." id="task-desc"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">积分奖励</label>
+                    <input type="number" class="form-input" placeholder="10" min="1" max="100" value="10" id="task-points">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">截止时间</label>
+                    <input type="date" class="form-input" id="task-deadline">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">执行人</label>
+                    <select class="form-select" id="task-assignee">
+                        <option value="宝宝">宝宝</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">验收方式</label>
+                    <select class="form-select" id="task-verify">
+                        <option value="auto">自动通过</option>
+                        <option value="photo">提交照片</option>
+                        <option value="manual">人工确认</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">发布任务</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// 数据
+let currentRole = 'parent';
+let currentPage = 'home';
+
+const tasks = [
+    { id: 1, title: '背诵古诗《静夜思》', desc: '需要流利背诵，家长检查', points: 15, status: 'pending', assignee: '宝宝', deadline: '今天', icon: '📖', verify: 'manual' },
+    { id: 2, title: '整理书桌', desc: '把书本分类摆放整齐', points: 10, status: 'progress', assignee: '宝宝', deadline: '今天', icon: '📚', verify: 'photo' },
+    { id: 3, title: '跳绳100下', desc: '分两组完成，每组50下', points: 20, status: 'review', assignee: '宝宝', deadline: '明天', icon: '🏃', verify: 'photo' },
+    { id: 4, title: '洗碗', desc: '晚饭后清洗自己的碗筷', points: 10, status: 'done', assignee: '宝宝', deadline: '昨天', icon: '🍽️', verify: 'auto' },
+];
+
+const rewards = [
+    { id: 1, name: '周末去公园', cost: 50 },
+    { id: 2, name: '买一本新书', cost: 80 },
+    { id: 3, name: '看30分钟动画', cost: 30 },
+    { id: 4, name: '选择晚餐菜单', cost: 40 },
+];
+
+// 角色切换
+function switchRole(role) {
+    currentRole = role;
+    document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    render();
+}
+
+// 页面切换
+function showPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    event.target.closest('.nav-item')?.classList.add('active');
+    render();
+}
+
+// 渲染
+function render() {
+    const pcMain = document.getElementById('pc-main');
+    const mobileContent = document.getElementById('mobile-content');
+    const content = currentRole === 'parent' ? renderParent() : renderChild();
+
+    if (pcMain) pcMain.innerHTML = content;
+    if (mobileContent) mobileContent.innerHTML = content;
+
+    // 控制PC端积分区显示
+    const pcPoints = document.getElementById('pc-points-section');
+    if (pcPoints) pcPoints.style.display = currentRole === 'child' ? 'none' : 'block';
+}
+
+// 家长视图
+function renderParent() {
+    if (currentPage === 'home' || !document.querySelector('.mobile-layout').offsetParent) {
+        return `
+            <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="stat-box">
+                    <div class="stat-number">${tasks.filter(t => t.status === 'pending').length}</div>
+                    <div class="stat-label">待领取</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">${tasks.filter(t => t.status === 'progress').length}</div>
+                    <div class="stat-label">进行中</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">${tasks.filter(t => t.status === 'review').length}</div>
+                    <div class="stat-label">待验收</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">${tasks.filter(t => t.status === 'done').length}</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span>任务管理</span>
+                    <button class="btn btn-primary btn-sm" onclick="openModal()">➕ 发布</button>
+                </div>
+                ${tasks.map(task => renderTaskItem(task, 'parent')).join('')}
+            </div>
+
+            <div class="card">
+                <div class="card-title">待验收任务</div>
+                ${tasks.filter(t => t.status === 'review').length === 0 ? 
+                    '<div class="empty-state"><div class="empty-icon">✅</div><div>暂无待验收任务</div></div>' :
+                    tasks.filter(t => t.status === 'review').map(t => renderTaskItem(t, 'parent')).join('')
+                }
+            </div>
+        `;
+    }
+
+    if (currentPage === 'tasks') {
+        return `
+            <div class="card">
+                <div class="card-title">
+                    <span>全部任务</span>
+                    <button class="btn btn-primary btn-sm" onclick="openModal()">➕ 发布</button>
+                </div>
+                ${tasks.map(task => renderTaskItem(task, 'parent')).join('')}
+            </div>
+        `;
+    }
+
+    if (currentPage === 'points' || currentPage === 'rewards') {
+        return `
+            <div class="card">
+                <div class="card-title">奖励设置</div>
+                <div style="margin-bottom: 16px;">
+                    <button class="btn btn-primary btn-sm" onclick="alert('添加奖励功能')">➕ 添加奖励</button>
+                </div>
+                ${rewards.map(r => `
+                    <div class="reward-item">
+                        <div>
+                            <div class="reward-name">${r.name}</div>
+                            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">已兑换 0 次</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="reward-cost">${r.cost} 积分</span>
+                            <button class="btn btn-outline btn-sm" onclick="alert('编辑')">编辑</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    if (currentPage === 'stats') {
+        return `
+            <div class="card">
+                <div class="card-title">本周统计</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">发布任务</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">9</div>
+                        <div class="stat-label">已完成</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">75%</div>
+                        <div class="stat-label">完成率</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">128</div>
+                        <div class="stat-label">发放积分</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="margin-top: 16px;">
+                <div class="card-title">任务趋势</div>
+                <div style="height: 200px; display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; padding: 20px 0;">
+                    ${[3,5,2,7,4,6,8].map((h, i) => `
+                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <div style="width: 100%; background: var(--primary); border-radius: 6px 6px 0 0; height: ${h * 20}px; opacity: ${0.3 + (i * 0.1)};"></div>
+                            <span style="font-size: 12px; color: var(--text-secondary);">周${['一','二','三','四','五','六','日'][i]}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    return '';
+}
+
+// 孩子视图
+function renderChild() {
+    if (currentPage === 'home') {
+        return `
+            <div class="points-card" style="margin-bottom: 20px;">
+                <div class="points-label">我的积分</div>
+                <div class="points-number">128</div>
+                <div style="font-size: 13px; opacity: 0.8; margin-top: 8px;">家庭排名第 1 名</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">我的任务</div>
+                ${tasks.filter(t => t.status !== 'done').map(task => renderTaskItem(task, 'child')).join('')}
+            </div>
+
+            <div class="card">
+                <div class="card-title">已完成</div>
+                ${tasks.filter(t => t.status === 'done').map(task => renderTaskItem(task, 'child')).join('')}
+            </div>
+        `;
+    }
+
+    if (currentPage === 'tasks') {
+        return `
+            <div class="card">
+                <div class="card-title">全部任务</div>
+                ${tasks.map(task => renderTaskItem(task, 'child')).join('')}
+            </div>
+        `;
+    }
+
+    if (currentPage === 'points') {
+        return `
+            <div class="points-card" style="margin-bottom: 20px;">
+                <div class="points-label">我的积分</div>
+                <div class="points-number">128</div>
+            </div>
+            <div class="card">
+                <div class="card-title">积分明细</div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500;">完成：背诵古诗</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">今天 14:30</div>
+                        </div>
+                        <span style="color: var(--success); font-weight: 600;">+15</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500;">完成：整理书桌</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">昨天 19:15</div>
+                        </div>
+                        <span style="color: var(--success); font-weight: 600;">+10</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+                        <div>
+                            <div style="font-weight: 500;">兑换：看30分钟动画</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">前天 20:00</div>
+                        </div>
+                        <span style="color: var(--danger); font-weight: 600;">-30</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="margin-top: 16px;">
+                <div class="card-title">奖励商城</div>
+                ${rewards.map(r => `
+                    <div class="reward-item">
+                        <div class="reward-name">${r.name}</div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="reward-cost">${r.cost} 积分</span>
+                            <button class="btn btn-primary btn-sm" onclick="alert('兑换申请已发送给家长')">兑换</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    if (currentPage === 'stats') {
+        return `
+            <div class="card">
+                <div class="card-title">我的成就</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-number">9</div>
+                        <div class="stat-label">本周完成</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">连续天数</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">128</div>
+                        <div class="stat-label">总积分</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">兑换次数</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    return '';
+}
+
+// 任务卡片
+function renderTaskItem(task, role) {
+    const statusMap = {
+        pending: { label: '待领取', class: 'tag-pending' },
+        progress: { label: '进行中', class: 'tag-progress' },
+        review: { label: '待验收', class: 'tag-review' },
+        done: { label: '已完成', class: 'tag-done' }
+    };
+    const s = statusMap[task.status];
+
+    let actions = '';
+    if (role === 'parent') {
+        if (task.status === 'review') {
+            actions = `
+                <button class="btn btn-success btn-sm" onclick="approveTask(${task.id})">通过</button>
+                <button class="btn btn-outline btn-sm" style="margin-top: 6px; color: var(--danger); border-color: #FECACA;" onclick="rejectTask(${task.id})">驳回</button>
+            `;
+        } else {
+            actions = `<button class="btn btn-outline btn-sm" onclick="alert('编辑任务')">编辑</button>`;
+        }
+    } else {
+        if (task.status === 'pending') {
+            actions = `<button class="btn btn-primary btn-sm" onclick="claimTask(${task.id})">领取</button>`;
+        } else if (task.status === 'progress') {
+            actions = `<button class="btn btn-success btn-sm" onclick="submitTask(${task.id})">完成</button>`;
+        } else if (task.status === 'review') {
+            actions = `<span style="font-size: 13px; color: var(--text-secondary);">等待验收</span>`;
+        } else {
+            actions = `<span style="font-size: 13px; color: var(--success);">✓ 已完成</span>`;
+        }
+    }
+
+    return `
+        <div class="task-item">
+            <div class="task-icon" style="background: var(--primary-light);">${task.icon}</div>
+            <div class="task-info">
+                <div class="task-title">${task.title}</div>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5;">${task.desc}</div>
+                <div class="task-meta">
+                    <span class="tag ${s.class}">${s.label}</span>
+                    <span class="task-points">${task.points} 积分</span>
+                    <span>截止：${task.deadline}</span>
+                </div>
+            </div>
+            <div class="task-actions">
+                ${actions}
+            </div>
+        </div>
+    `;
+}
+
+// 任务操作
+function claimTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (task) { task.status = 'progress'; render(); }
+}
+
+function submitTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (task) { task.status = 'review'; render(); }
+}
+
+function approveTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (task) { task.status = 'done'; render(); }
+}
+
+function rejectTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (task) { task.status = 'progress'; render(); }
+}
+
+// 弹窗
+function openModal() {
+    document.getElementById('modal').classList.add('show');
+    document.getElementById('task-deadline').valueAsDate = new Date();
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('show');
+}
+
+function publishTask(e) {
+    e.preventDefault();
+    const title = document.getElementById('task-title').value;
+    const desc = document.getElementById('task-desc').value;
+    const points = parseInt(document.getElementById('task-points').value);
+    const deadline = document.getElementById('task-deadline').value;
+    const assignee = document.getElementById('task-assignee').value;
+    const verify = document.getElementById('task-verify').value;
+
+    tasks.unshift({
+        id: Date.now(),
+        title,
+        desc,
+        points,
+        status: 'pending',
+        assignee,
+        deadline: deadline ? new Date(deadline).toLocaleDateString('zh-CN', {month: 'numeric', day: 'numeric'}) : '无期限',
+        icon: '📝',
+        verify
+    });
+
+    closeModal();
+    e.target.reset();
+    render();
+}
+
+// 点击遮罩关闭弹窗
+document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+// 初始化
+render();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知与企业画册在线制作系统</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+  :root { --bg:#f2f3f5; --sidebar-bg:#fff; --border:#e5e7eb; --primary:#2563eb; --primary-light:#eff6ff; --text:#111827; --text-secondary:#6b7280; --text-muted:#9ca3af; --danger:#ef4444; --success:#22c55e; --warning:#f59e0b; --shadow-sm:0 1px 2px rgba(0,0,0,0.04); --shadow-md:0 4px 16px rgba(0,0,0,0.06); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); height:100vh; overflow:hidden; display:flex; flex-direction:column; -webkit-font-smoothing:antialiased; }
+
+  /* ===== 顶部工具栏 ===== */
+  .toolbar { height:60px; background:var(--sidebar-bg); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 24px; flex-shrink:0; z-index:10; }
+  .toolbar-left { display:flex; align-items:center; gap:12px; }
+  .toolbar-title { font-size:17px; font-weight:700; letter-spacing:-0.3px; display:flex; align-items:center; }
+  .toolbar-divider { width:1px; height:24px; background:var(--border); margin:0 4px; }
+
+  /* ===== 按钮 ===== */
+  .btn { padding:8px 18px; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.18s; font-family:inherit; line-height:1.4; display:inline-flex; align-items:center; gap:6px; }
+  .btn-primary { background:var(--primary); color:white; box-shadow:0 1px 2px rgba(37,99,235,0.3); }
+  .btn-primary:hover { background:#1d4ed8; box-shadow:0 2px 6px rgba(37,99,235,0.4); transform:translateY(-1px); }
+  .btn-primary:active { transform:translateY(0); }
+  .btn-secondary { background:var(--sidebar-bg); color:var(--text); border:1px solid var(--border); }
+  .btn-secondary:hover { background:var(--bg); border-color:#d1d5db; }
+  .btn-danger { background:var(--danger); color:white; }
+  .btn-danger:hover { background:#dc2626; }
+  .btn-success { background:var(--success); color:white; }
+  .btn-success:hover { background:#16a34a; }
+  .btn-warning { background:var(--warning); color:white; }
+  .btn-warning:hover { background:#d97706; }
+  .btn:disabled { opacity:0.45; cursor:not-allowed; transform:none; box-shadow:none; }
+  .btn-sm { padding:5px 12px; font-size:12px; border-radius:6px; }
+  .file-input { display:none; }
+
+  /* ===== 主体布局 ===== */
+  .main { flex:1; display:flex; overflow:hidden; }
+  .sidebar-left { width:240px; background:var(--sidebar-bg); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; }
+  .sidebar-header { padding:18px 20px; font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; border-bottom:1px solid var(--border); }
+  .page-list { flex:1; overflow-y:auto; padding:10px; }
+  .page-item { padding:14px 12px; border-radius:10px; cursor:pointer; margin-bottom:4px; display:flex; align-items:center; gap:12px; transition:all 0.18s; border:1.5px solid transparent; }
+  .page-item:hover { background:var(--bg); }
+  .page-item.active { background:var(--primary-light); border-color:var(--primary); }
+  .page-thumb { width:42px; height:56px; background:linear-gradient(135deg,#e8eaf0,#dce0e8); border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; color:var(--text-secondary); overflow:hidden; }
+  .page-info { flex:1; min-width:0; }
+  .page-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.3; }
+  .page-id { font-size:11px; color:var(--text-secondary); margin-top:3px; }
+  .page-status { width:8px; height:8px; border-radius:50%; background:#e5e7eb; flex-shrink:0; }
+  .page-status.filled { background:var(--success); }
+
+  /* ===== 预览区 ===== */
+  .preview-area { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; overflow:auto; background:#e3e5e8; position:relative; }
+  .empty-state { text-align:center; color:var(--text-muted); }
+  .empty-state svg { width:40px; height:40px; margin-bottom:16px; opacity:0.3; }
+  .preview-hint-card { position:absolute; top:12px; right:16px; background:white; color:var(--text-secondary); padding:5px 12px; border-radius:6px; font-size:11px; box-shadow:0 1px 4px rgba(0,0,0,0.08); z-index:5; pointer-events:none; }
+  .preview-wrapper { background:white; box-shadow:0 2px 20px rgba(0,0,0,0.10); border-radius:4px; }
+  .preview-iframe { width:210mm; height:297mm; border:none; display:block; border-radius:4px; }
+
+  /* ===== 右侧面板 ===== */
+  .sidebar-right { width:420px; background:var(--sidebar-bg); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; }
+
+  /* ===== 聊天头部 ===== */
+  .chat-header { padding:18px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .chat-header-title { font-size:15px; font-weight:600; line-height:1.3; }
+  .chat-header-sub { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+
+  /* ===== 聊天消息 ===== */
+  .chat-messages { flex:1; overflow-y:auto; padding:18px 20px; display:flex; flex-direction:column; gap:14px; }
+  .message { max-width:88%; padding:12px 16px; border-radius:14px; font-size:13px; line-height:1.6; word-break:break-word; }
+  .message.user { align-self:flex-end; background:var(--primary); color:white; border-bottom-right-radius:6px; }
+  .message.ai { align-self:flex-start; background:#f3f4f6; color:var(--text); border-bottom-left-radius:6px; }
+  .message.ai pre { background:#1e293b; color:#e2e8f0; padding:10px 14px; border-radius:8px; overflow-x:auto; font-size:12px; margin-top:10px; line-height:1.5; }
+  .message.ai .field-tag { display:inline-block; background:var(--primary); color:white; padding:3px 8px; border-radius:5px; font-size:11px; margin-right:5px; margin-bottom:2px; }
+  .message.ai .style-tag { display:inline-block; background:var(--warning); color:white; padding:3px 8px; border-radius:5px; font-size:11px; margin-right:5px; margin-bottom:2px; }
+
+  /* ===== 聊天输入 ===== */
+  .chat-input-area { padding:18px 20px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:10px; background:#fafbfc; }
+  .chat-input { width:100%; min-height:56px; max-height:120px; padding:12px 16px; border:1.5px solid var(--border); border-radius:10px; font-size:13px; font-family:inherit; resize:none; outline:none; transition:border-color 0.2s, box-shadow 0.2s; background:white; line-height:1.6; }
+  .chat-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.08); }
+  .chat-actions { display:flex; justify-content:space-between; align-items:center; }
+  .attachment-btn { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); cursor:pointer; padding:6px 10px; border-radius:6px; transition:all 0.18s; }
+  .attachment-btn:hover { background:var(--bg); color:var(--primary); }
+  .attachment-list { font-size:11px; color:var(--text-muted); }
+
+  /* ===== 弹窗 ===== */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(4px); }
+  .modal-overlay.show { display:flex; }
+  .modal { background:white; border-radius:16px; width:480px; max-width:92vw; max-height:90vh; overflow:auto; box-shadow:0 12px 40px rgba(0,0,0,0.12); animation:modalIn 0.22s ease; }
+  @keyframes modalIn { from { opacity:0; transform:translateY(16px) scale(0.96); } to { opacity:1; transform:translateY(0) scale(1); } }
+  .modal-header { padding:20px 24px; border-bottom:1px solid var(--border); font-size:17px; font-weight:600; display:flex; align-items:center; gap:12px; }
+  .modal-header-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .modal-header-icon.text { background:#dbeafe; color:#2563eb; }
+  .modal-header-icon.html { background:#fef3c7; color:#d97706; }
+  .modal-header-icon.image { background:#dcfce7; color:#16a34a; }
+  .modal-header-icon.list { background:#ede9fe; color:#7c3aed; }
+  .modal-header-info { flex:1; min-width:0; }
+  .modal-header-title { font-size:16px; font-weight:600; line-height:1.3; }
+  .modal-header-sub { font-size:12px; color:var(--text-secondary); margin-top:3px; display:flex; align-items:center; gap:6px; }
+  .modal-body { padding:24px; }
+  .form-group { margin-bottom:20px; }
+  .form-group:last-child { margin-bottom:0; }
+  .form-label { display:block; font-size:13px; font-weight:600; margin-bottom:8px; color:var(--text); }
+  .form-input { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; font-family:inherit; outline:none; transition:border-color 0.2s, box-shadow 0.2s; background:#fafbfc; resize:vertical; line-height:1.6; }
+  .form-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.1); background:white; }
+  .form-input.single-line { resize:none; min-height:44px; }
+  .form-hint { font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .modal-footer { padding:16px 24px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; background:#fafbfc; border-radius:0 0 16px 16px; }
+  .field-item-type { font-size:10px; color:var(--text-secondary); background:#f3f4f6; padding:1px 7px; border-radius:4px; font-weight:500; display:inline-block; }
+  .typing-indicator { display:flex; gap:4px; padding:14px 16px; align-self:flex-start; background:#f3f4f6; border-radius:14px; border-bottom-left-radius:6px; }
+  .typing-indicator span { width:7px; height:7px; background:#9ca3af; border-radius:50%; animation:bounce 1.4s infinite ease-in-out both; }
+  .typing-indicator span:nth-child(1) { animation-delay:-0.32s; }
+  .typing-indicator span:nth-child(2) { animation-delay:-0.16s; }
+  @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+
+  /* ===== 字段编辑器（弹窗内） ===== */
+  .field-editor-img-preview { max-width:100%; max-height:180px; border-radius:10px; margin:12px 0 0; border:1px solid var(--border); }
+  .file-upload-label { display:flex; align-items:center; justify-content:center; gap:8px; padding:16px; border:1.5px dashed var(--border); border-radius:10px; cursor:pointer; transition:all 0.2s; color:var(--text-secondary); font-size:13px; }
+  .file-upload-label:hover { border-color:var(--primary); background:var(--primary-light); color:var(--primary); }
+  .file-upload-label svg { flex-shrink:0; opacity:0.6; }
+
+  /* ===== Toast ===== */
+  .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); background:#1e293b; color:white; padding:10px 22px; border-radius:10px; font-size:13px; z-index:9999; box-shadow:0 8px 24px rgba(0,0,0,0.18); animation:toastIn 0.25s ease; }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(12px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-left">
+    <div class="toolbar-title"><img src="https://www.zhiyu.com.cn/img/logo.png" style="height:28px;margin-right:8px;">企业画册在线制作系统 <span style="font-size:11px;font-weight:400;color:var(--text-muted);background:#f3f4f6;padding:2px 8px;border-radius:10px;vertical-align:middle;margin-left:4px;">v2.14</span></div>
+  </div>
+  <div class="toolbar-left">
+    <button class="btn btn-secondary" onclick="showConfig()">⚙️ AI 配置</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('templateInput').click()">📂 导入模板</button>
+    <input type="file" id="templateInput" class="file-input" accept=".html,.zip" onchange="handleImport(event)">
+    <button class="btn btn-danger" onclick="clearAllCache()">🗑 清空缓存</button>
+    <button class="btn btn-primary" id="exportBtn" onclick="exportImages()" disabled>📥 导出画册</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar-left">
+    <div class="sidebar-header">页面列表</div>
+    <div class="page-list" id="pageList"><div style="padding:20px;text-align:center;color:var(--text-secondary);font-size:13px;">请先导入模板</div></div>
+  </div>
+
+  <div class="preview-area" id="previewArea">
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <div style="font-size:14px;margin-bottom:4px;">暂无模板</div>
+      <div style="font-size:12px;">点击 「导入模板」 开始</div>
+    </div>
+  </div>
+
+  <div class="sidebar-right">
+    <div class="chat-header">
+      <div>
+        <div class="chat-header-title" id="chatTitle">AI 内容助手</div>
+        <div class="chat-header-sub" id="chatSub"></div>
+      </div>
+      <button class="btn btn-sm btn-secondary" onclick="clearChat()" style="flex-shrink:0;">🗑 清理上下文</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area" id="chatInputArea" style="display:none;">
+      <textarea class="chat-input" id="chatInput" placeholder="描述你想要的内容..."></textarea>
+      <div class="chat-actions">
+        <label class="attachment-btn" onclick="document.getElementById('attachmentInput').click()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+          附件
+        </label>
+        <input type="file" id="attachmentInput" class="file-input" onchange="handleAttachment(event)">
+        <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">发送</button>
+      </div>
+      <div class="attachment-list" id="attachmentList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="configModal">
+  <div class="modal">
+    <div class="modal-header">⚙️ AI 配置</div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">API Base URL</label><input type="text" class="form-input" id="cfgBaseUrl" placeholder="https://api.deepseek.com"><div class="form-hint">OpenAI 兼容格式的 API 地址</div></div>
+      <div class="form-group"><label class="form-label">API Key</label><input type="password" class="form-input" id="cfgApiKey" placeholder="sk-..."></div>
+      <div class="form-group"><label class="form-label">模型名称</label><input type="text" class="form-input" id="cfgModel" placeholder="deepseek-v4-flash"></div>
+      <div class="form-group"><label class="form-label">Temperature</label><input type="number" class="form-input" id="cfgTemp" min="0" max="2" step="0.1" value="0.7"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeConfig()">取消</button>
+      <button class="btn btn-primary" onclick="saveConfig()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="fieldEditModal">
+  <div class="modal" style="width:540px;">
+    <div class="modal-header" id="fieldEditModalHeader">编辑字段</div>
+    <div class="modal-body" id="fieldEditModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeFieldEditor()">取消</button>
+      <button class="btn btn-success" onclick="saveFieldEdit()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const State = {
+  config: null, templateHTML: '', pages: [], currentPageId: null,
+  chats: new Map(), attachments: [], uploadedImages: new Map(),
+  editingField: null, doc: null,
+  pending: null,
+  previewActive: false,
+};
+
+function loadConfig() {
+  const saved = localStorage.getItem('bc_config');
+  if (saved) { State.config = JSON.parse(saved); }
+  else {
+    State.config = { baseUrl: 'https://api.deepseek.com', apiKey: 'sk-f1a3d753ab3d430e81fa6642197b6fec', model: 'deepseek-v4-flash', temperature: 0.7 };
+  }
+  document.getElementById('cfgBaseUrl').value = State.config.baseUrl;
+  document.getElementById('cfgApiKey').value = State.config.apiKey;
+  document.getElementById('cfgModel').value = State.config.model;
+  document.getElementById('cfgTemp').value = State.config.temperature;
+}
+function showConfig() { loadConfig(); document.getElementById('configModal').classList.add('show'); }
+function closeConfig() { document.getElementById('configModal').classList.remove('show'); }
+function saveConfig() {
+  State.config = {
+    baseUrl: document.getElementById('cfgBaseUrl').value.trim(),
+    apiKey: document.getElementById('cfgApiKey').value.trim(),
+    model: document.getElementById('cfgModel').value.trim(),
+    temperature: parseFloat(document.getElementById('cfgTemp').value)
+  };
+  localStorage.setItem('bc_config', JSON.stringify(State.config));
+  closeConfig(); showToast('配置已保存');
+}
+
+/* ==================== 缓存持久化 ==================== */
+function saveToCache() {
+  const data = {
+    templateHTML: State.templateHTML,
+    pages: State.pages.map(p => ({ id: p.id, name: p.name, elementHTML: p.element.outerHTML, fields: p.fields })),
+    currentPageId: State.currentPageId,
+    chats: Array.from(State.chats.entries()).map(([pageId, msgs]) => [pageId, msgs.filter(m => m.role !== 'typing')]),
+    pending: State.pending || null,
+  };
+  try { localStorage.setItem('bc_template', JSON.stringify(data)); } catch (e) {}
+}
+
+function restoreFromCache() {
+  const saved = localStorage.getItem('bc_template');
+  if (!saved) return false;
+  try {
+    const data = JSON.parse(saved);
+    if (!data.templateHTML) return false;
+    State.templateHTML = data.templateHTML;
+    parseTemplate(data.templateHTML);
+    if (data.pages && Array.isArray(data.pages)) {
+      data.pages.forEach(savedPage => {
+        const page = State.pages.find(p => p.id === savedPage.id);
+        if (page && savedPage.elementHTML) {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(savedPage.elementHTML, 'text/html');
+          const restoredEl = doc.querySelector('.a4-page') || doc.body.firstElementChild;
+          if (restoredEl) {
+            page.element = restoredEl;
+            page.fields = savedPage.fields || [];
+            if (!page.fields.length) {
+              page.element.querySelectorAll('[data-field]').forEach(f => {
+                page.fields.push({
+                  name: f.getAttribute('data-field'),
+                  type: f.getAttribute('data-type') || 'text',
+                  currentValue: getFieldValue(f)
+                });
+              });
+            }
+          }
+        }
+      });
+    }
+    if (data.chats && Array.isArray(data.chats)) {
+      State.chats = new Map(data.chats);
+      data.chats.forEach(([pageId]) => {
+        if (!State.chats.has(pageId)) State.chats.set(pageId, []);
+      });
+    }
+    if (data.currentPageId && State.pages.some(p => p.id === data.currentPageId)) {
+      State.currentPageId = data.currentPageId;
+      selectPage(data.currentPageId);
+    } else if (State.pages.length > 0) {
+      selectPage(State.pages[0].id);
+    }
+    State.pending = data.pending || null;
+    for (const [, msgs] of State.chats) {
+      for (const m of msgs) {
+        if (m.pending) { break; }
+      }
+    }
+    if (State.pending) previewDiff();
+    renderPageList();
+    document.getElementById('exportBtn').disabled = false;
+    showToast('已恢复上次的进度');
+    return true;
+  } catch (e) { return false; }
+}
+
+function clearAllCache() {
+  if (!confirm('确定清除所有缓存？模板、编辑进度、AI 对话将全部丢失。')) return;
+  localStorage.removeItem('bc_template');
+  localStorage.removeItem('bc_config');
+  State.templateHTML = '';
+  State.pages = [];
+  State.currentPageId = null;
+  State.chats = new Map();
+  State.pending = null;
+  State.previewActive = false;
+  renderPageList();
+  document.getElementById('previewArea').innerHTML =
+    '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><div style="font-size:14px;margin-bottom:4px;">暂无模板</div><div style="font-size:12px;">点击 「导入模板」 开始</div></div>';
+  document.getElementById('chatMessages').innerHTML = '';
+  document.getElementById('exportBtn').disabled = true;
+  document.getElementById('chatInputArea').style.display = 'none';
+  showToast('缓存已清除');
+}
+
+/* ==================== 模板导入 ==================== */
+async function handleImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    let htmlContent = '';
+    if (file.name.endsWith('.zip')) {
+      const zip = await JSZip.loadAsync(file);
+      const htmlFile = zip.file('index.html') || zip.file(/\.html$/i)[0];
+      if (!htmlFile) throw new Error('ZIP 中未找到 HTML 文件');
+      htmlContent = await htmlFile.async('text');
+    } else {
+      htmlContent = await file.text();
+    }
+    State.templateHTML = htmlContent;
+    localStorage.removeItem('bc_template');
+    State.chats = new Map();
+    parseTemplate(htmlContent);
+    saveToCache();
+    showToast('模板导入成功');
+    document.getElementById('exportBtn').disabled = false;
+  } catch (err) { alert('导入失败: ' + err.message); }
+  event.target.value = '';
+}
+
+function parseTemplate(html) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const pageEls = doc.querySelectorAll('.a4-page');
+  State.pages = [];
+  pageEls.forEach((el, idx) => {
+    const pageId = el.getAttribute('data-page-id') || 'page_' + idx;
+    const pageName = el.getAttribute('data-page-name') || '页面 ' + (idx + 1);
+    const fields = [];
+    el.querySelectorAll('[data-field]').forEach(f => {
+      fields.push({
+        name: f.getAttribute('data-field'),
+        type: f.getAttribute('data-type') || 'text',
+        currentValue: getFieldValue(f)
+      });
+    });
+    State.pages.push({ id: pageId, name: pageName, fields: fields, element: el.cloneNode(true) });
+    if (!State.chats.has(pageId)) State.chats.set(pageId, []);
+  });
+  renderPageList();
+  if (State.pages.length > 0) selectPage(State.pages[0].id);
+}
+
+function getFieldValue(el) {
+  const type = el.getAttribute('data-type') || 'text';
+  if (type === 'image') return el.src || el.getAttribute('src') || '';
+  if (type === 'list') return Array.from(el.children).map(li => li.outerHTML).join('');
+  if (type === 'text') return (el.textContent || '').trim();
+  return el.innerHTML;
+}
+
+function renderPageList() {
+  const container = document.getElementById('pageList');
+  if (State.pages.length === 0) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-secondary);font-size:13px;">请先导入模板</div>';
+    return;
+  }
+  container.innerHTML = State.pages.map(p => {
+    const hasFilled = (State.chats.get(p.id) || []).length > 0;
+    return '<div class="page-item ' + (p.id === State.currentPageId ? 'active' : '') + '" onclick="selectPage(\'' + p.id + '\')">' +
+      '<div class="page-thumb">' + p.name.charAt(0) + '</div>' +
+      '<div class="page-info"><div class="page-name">' + p.name + '</div><div class="page-id">' + p.id + ' · ' + p.fields.length + ' 个字段</div></div>' +
+      '<div class="page-status ' + (hasFilled ? 'filled' : '') + '"></div></div>';
+  }).join('');
+}
+
+function selectPage(pageId) {
+  State.currentPageId = pageId;
+  State.editingField = null;
+  State.pending = null;
+  State.previewActive = false;
+  showSidebar();
+  renderPageList();
+  renderPreview(pageId);
+  renderChat(pageId);
+  const page = State.pages.find(p => p.id === pageId);
+  document.getElementById('chatTitle').textContent = page ? '当前编辑页面：' + page.name : 'AI 内容助手';
+  document.getElementById('chatSub').textContent = '';
+  document.getElementById('chatInputArea').style.display = page ? 'flex' : 'none';
+}
+
+function renderPreview(pageId) {
+  const page = State.pages.find(p => p.id === pageId);
+  if (!page) return;
+  const previewArea = document.getElementById('previewArea');
+  previewArea.innerHTML = '<div class="preview-wrapper" id="previewWrapper"><iframe class="preview-iframe" id="previewFrame"></iframe></div><div class="preview-hint-card" id="previewHintCard">💡 双击文字或图片可直接编辑</div>';
+  const iframe = document.getElementById('previewFrame');
+  iframe.onload = () => {
+    State.doc = iframe.contentDocument || iframe.contentWindow.document;
+    autoScalePreview();
+  };
+  iframe.srcdoc = buildPreviewHTML(page);
+
+  // 确保缩放被计算（iframe onload 可能因浏览器而异）
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => autoScalePreview());
+  });
+}
+
+// 窗口缩放时重新计算
+window.addEventListener('resize', () => {
+  if (State.currentPageId) autoScalePreview();
+});
+
+function autoScalePreview() {
+  const wrapper = document.getElementById('previewWrapper');
+  const iframe = document.getElementById('previewFrame');
+  if (!wrapper || !iframe) return;
+  const containerWidth = wrapper.parentElement.clientWidth - 40;
+  const containerHeight = wrapper.parentElement.clientHeight - 40;
+  const a4Width = 794;
+  const a4Height = 1123;
+  const scaleX = containerWidth / a4Width;
+  const scaleY = containerHeight / a4Height;
+  const scale = Math.min(scaleX, scaleY, 1);
+  wrapper.style.transform = 'scale(' + scale + ')';
+  wrapper.style.transformOrigin = 'top center';
+  wrapper.style.width = a4Width + 'px';
+  wrapper.style.height = a4Height + 'px';
+  iframe.style.overflow = 'hidden';
+}
+
+function buildPreviewHTML(maybePage, extraCSS, noEdit) {
+  let pageElement;
+  let css = extraCSS || '';
+  if (typeof maybePage === 'string') css = maybePage;
+  if (maybePage && maybePage.element) pageElement = maybePage.element;
+  else if (maybePage && maybePage.tagName) pageElement = maybePage;
+
+  const parser = new DOMParser();
+  const origDoc = parser.parseFromString(State.templateHTML, 'text/html');
+  const origHead = origDoc.head ? origDoc.head.innerHTML : '';
+  const cleanHead = origHead.replace(/<meta[^>]*viewport[^>]*>/gi, '');
+  const forceA4 = '<style>' +
+    '@page { size: A4; margin: 0; }' +
+    'html, body { margin: 0; padding: 0; background: white; width: 100%; }' +
+    '.a4-page { width: 210mm !important; height: 297mm !important; box-sizing: border-box !important; page-break-after: always !important; position: relative !important; overflow: hidden !important; background: white; }' +
+    '.a4-page:last-child { page-break-after: auto !important; }' +
+    '</style>';
+  const customStyle = css ? '<style>' + css + '</style>' : '';
+  const editHead = noEdit ? '' :
+    '<style>[data-field]{cursor:pointer;transition:outline 0.15s;}[data-field]:hover{outline:2px dashed var(--primary,#2563eb);outline-offset:2px;}</style>';
+  const editBody = noEdit ? '' :
+    '<script>document.querySelectorAll("[data-field]").forEach(el=>{el.addEventListener("dblclick",function(e){e.stopPropagation();parent.postMessage({type:"editField",fieldName:this.getAttribute("data-field")},"*");});});<\/script>';
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8">' + cleanHead + forceA4 + customStyle + editHead + '</head><body>' + (pageElement ? pageElement.outerHTML : '') + editBody + '</body></html>';
+}
+
+/* ==================== 字段编辑器（弹窗） ==================== */
+function editField(fieldName) {
+  const page = State.pages.find(p => p.id === State.currentPageId);
+  if (!page) return;
+  const field = page.fields.find(f => f.name === fieldName);
+  if (!field) return;
+  State.editingField = field;
+  openFieldEditorModal();
+}
+
+function openFieldEditorModal() {
+  if (!State.editingField) return;
+  const field = State.editingField;
+
+  const header = document.getElementById('fieldEditModalHeader');
+  const iconMap = { text: '📝', html: '🔖', image: '🖼️', list: '📋' };
+  const iconType = field.type || 'text';
+  header.innerHTML =
+    '<div class="modal-header-icon ' + iconType + '">' + (iconMap[iconType] || '📝') + '</div>' +
+    '<div class="modal-header-info">' +
+      '<div class="modal-header-title">编辑字段</div>' +
+      '<div class="modal-header-sub"><span class="field-item-type" style="font-size:11px;padding:2px 8px;">' + escapeHtml(field.type) + '</span>' + escapeHtml(field.name) + '</div>' +
+    '</div>';
+
+  const body = document.getElementById('fieldEditModalBody');
+  let inputHTML = '';
+  if (field.type === 'image') {
+    inputHTML =
+      '<div class="form-group"><label class="form-label">图片链接</label>' +
+      '<textarea class="form-input single-line" id="fieldEditValue" placeholder="输入图片URL地址或粘贴 base64 编码...">' + escapeHtml(field.currentValue) + '</textarea></div>' +
+      '<label class="file-upload-label" for="fieldImageInput">' +
+        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>' +
+        '点击上传本地图片' +
+      '</label>' +
+      '<input type="file" id="fieldImageInput" class="file-input" accept="image/*" onchange="handleFieldImageUpload(event)">' +
+      (field.currentValue ? '<img class="field-editor-img-preview" src="' + field.currentValue + '" onerror="this.style.display=\'none\'">' : '');
+  } else if (field.type === 'list') {
+    const items = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString('<ul>' + field.currentValue + '</ul>', 'text/html');
+    doc.querySelectorAll('li').forEach(li => items.push(li.innerHTML));
+    inputHTML = '<div class="form-group"><label class="form-label">列表项</label>' +
+      '<div class="form-hint" style="margin-bottom:8px;">每行一项，支持 HTML 标签</div>' +
+      '<textarea class="form-input" id="fieldEditValue" rows="6" style="min-height:140px;font-family:inherit;">' + escapeHtml(items.join('\n')) + '</textarea></div>';
+  } else if (field.type === 'html') {
+    inputHTML = '<div class="form-group"><label class="form-label">HTML 内容</label>' +
+      '<div class="form-hint" style="margin-bottom:8px;">可直接编辑 HTML 标签和样式</div>' +
+      '<textarea class="form-input" id="fieldEditValue" rows="8" style="min-height:160px;font-family:\'SF Mono\',Monaco,monospace;font-size:13px;">' + escapeHtml(field.currentValue) + '</textarea></div>';
+  } else {
+    inputHTML = '<div class="form-group"><label class="form-label">文本内容</label>' +
+      '<textarea class="form-input single-line" id="fieldEditValue" rows="3" style="min-height:80px;">' + escapeHtml(field.currentValue) + '</textarea></div>';
+  }
+  body.innerHTML = inputHTML;
+  document.getElementById('fieldEditModal').classList.add('show');
+}
+
+function closeFieldEditor() {
+  State.editingField = null;
+  document.getElementById('fieldEditModal').classList.remove('show');
+}
+
+function handleFieldImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const input = document.getElementById('fieldEditValue');
+    if (input) input.value = e.target.result;
+    const body = document.getElementById('fieldEditModalBody');
+    const oldImg = body.querySelector('.field-editor-img-preview');
+    if (oldImg) { oldImg.src = e.target.result; oldImg.style.display = 'block'; }
+    else {
+      const img = document.createElement('img');
+      img.className = 'field-editor-img-preview'; img.src = e.target.result;
+      body.appendChild(img);
+    }
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function saveFieldEdit() {
+  if (!State.editingField) return;
+  const page = State.pages.find(p => p.id === State.currentPageId);
+  if (!page) return;
+  const field = page.fields.find(f => f.name === State.editingField.name);
+  if (!field) return;
+  const input = document.getElementById('fieldEditValue');
+  let value = input.value;
+  if (field.type === 'list') {
+    const lines = value.split('\n').filter(l => l.trim() !== '');
+    value = lines.map(l => '<li>' + l.trim() + '</li>').join('');
+  }
+  applyReplacements(State.currentPageId, [{ field: field.name, type: field.type, value: value }]);
+  field.currentValue = value;
+  saveToCache();
+  showToast('字段已保存');
+  closeFieldEditor();
+  renderPageList();
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ==================== 对话系统 ==================== */
+function clearChat() {
+  if (!State.currentPageId) return;
+  State.chats.set(State.currentPageId, []);
+  renderChat(State.currentPageId);
+  saveToCache();
+  showToast('对话已清空');
+}
+
+function renderChat(pageId) {
+  const messages = State.chats.get(pageId) || [];
+  const container = document.getElementById('chatMessages');
+  container.innerHTML = messages.map(m => formatMessage(m)).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function formatMessage(m) {
+  if (m.role === 'typing') return '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+  const isUser = m.role === 'user';
+  let content = m.content;
+  let buttons = '';
+  if (!isUser && m.pending) {
+    buttons = '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">' +
+      '<button class="btn btn-sm btn-warning" onclick="previewDiff()">👁️ 预览对比</button>' +
+      '<button class="btn btn-sm btn-success" onclick="applyPending()">✅ 应用</button>' +
+      '<button class="btn btn-sm btn-secondary" onclick="rejectPending()">✕ 放弃</button>' +
+      '</div>';
+  }
+  if (!isUser && m.replacements) {
+    const tags = m.replacements.map(r => '<span class="field-tag">' + r.field + '</span>').join(' ');
+    content = '<div style="margin-bottom:6px;">已替换字段: ' + tags + '</div>' + content;
+  }
+  return '<div class="message ' + (isUser ? 'user' : 'ai') + '">' + content + buttons + '</div>';
+}
+
+function handleAttachment(event) {
+  const files = Array.from(event.target.files);
+  if (!files.length) return;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      let text = '';
+      if (file.type.startsWith('image/')) {
+        State.uploadedImages.set(file.name, e.target.result);
+        text = '[图片附件: ' + file.name + ']';
+      } else if (file.name.endsWith('.pdf')) {
+        try {
+          pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+          const pdf = await pdfjsLib.getDocument({ data: e.target.result }).promise;
+          const pages = [];
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            pages.push(content.items.map(it => it.str).join(' '));
+          }
+          text = pages.join('\n');
+        } catch (err) { text = '[PDF 解析失败: ' + err.message + ']'; }
+      } else if (file.name.endsWith('.docx')) {
+        try {
+          const result = await mammoth.extractRawText({ arrayBuffer: e.target.result });
+          text = result.value;
+        } catch (err) { text = '[DOCX 解析失败: ' + err.message + ']'; }
+      } else if (file.name.endsWith('.doc')) {
+        try {
+          const result = await mammoth.extractRawText({ arrayBuffer: e.target.result });
+          text = result.value || '[旧版 .doc 文件，可能解析不完整]';
+        } catch (err) { text = '[DOC 解析失败: ' + err.message + ']'; }
+      } else {
+        text = e.target.result;
+      }
+      State.attachments.push({ name: file.name, type: file.type, data: text, size: file.size });
+      renderAttachments();
+    };
+    if (file.type.startsWith('image/')) reader.readAsDataURL(file);
+    else if (file.name.endsWith('.pdf') || file.name.endsWith('.docx') || file.name.endsWith('.doc')) reader.readAsArrayBuffer(file);
+    else reader.readAsText(file);
+  });
+  event.target.value = '';
+}
+
+function renderAttachments() {
+  const el = document.getElementById('attachmentList');
+  if (!State.attachments.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">已选附件：</div>' +
+    State.attachments.map((a, i) =>
+      '<span style="display:inline-flex;align-items:center;gap:4px;background:#f3f4f6;padding:2px 8px;border-radius:4px;margin:2px 4px 2px 0;font-size:11px;max-width:180px;">' +
+        '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + a.name + '</span>' +
+        '<span style="cursor:pointer;color:var(--danger);font-weight:600;" onclick="removeAttachment(' + i + ')">×</span>' +
+      '</span>'
+    ).join('');
+}
+
+function removeAttachment(index) {
+  const removed = State.attachments.splice(index, 1)[0];
+  if (removed && removed.type.startsWith('image/')) State.uploadedImages.delete(removed.name);
+  renderAttachments();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text && State.attachments.length === 0) return;
+  if (!State.currentPageId) return;
+  if (!State.config || !State.config.apiKey) { alert('请先配置 AI API'); showConfig(); return; }
+
+  const page = State.pages.find(p => p.id === State.currentPageId);
+  const chatHistory = State.chats.get(State.currentPageId) || [];
+
+  let userContent = text;
+  let attachmentsForChat = [];
+  if (State.attachments.length > 0) {
+    userContent += '\n\n【附件内容】\n';
+    attachmentsForChat = State.attachments.map(a => a.name);
+    State.attachments.forEach(att => {
+      if (att.type.startsWith('image/')) userContent += '[图片附件: ' + att.name + '，已上传可用]\n';
+      else userContent += '--- ' + att.name + ' ---\n' + att.data + '\n\n';
+    });
+  }
+
+  let userMsg = text || '';
+  if (attachmentsForChat && attachmentsForChat.length) {
+    userMsg += (userMsg ? ' ' : '') + '<span style="font-size:10px;opacity:0.7;">📎 ' + attachmentsForChat.join(', ') + '</span>';
+  }
+  chatHistory.push({ role: 'user', content: userMsg || '(发送了附件)' });
+  State.attachments = [];
+  renderAttachments();
+  input.value = '';
+  chatHistory.push({ role: 'typing' });
+  renderChat(State.currentPageId);
+
+  try {
+    response = await callAI(page, chatHistory, userContent);
+    chatHistory.pop();
+
+    if (!State.pending) State.pending = { css: '', html: '', replacements: {} };
+
+    if (response.replacements && response.replacements.length > 0) {
+      response.replacements.forEach(r => { State.pending.replacements[r.field] = r; });
+    }
+    State.pending.css = (State.pending.css ? State.pending.css + '\n' : '') + (response.css || '');
+    if (response.html) State.pending.html = response.html;
+
+    let msgContent = response.reasoning || '已完成修改';
+    const parts = [];
+    if (response.replacements && response.replacements.length > 0) parts.push('内容 ' + response.replacements.length + ' 个字段');
+    if (response.css) parts.push('CSS 样式');
+    if (response.html) parts.push('HTML 结构');
+    if (parts.length > 0) msgContent += '<br><span style="color:var(--text-muted);font-size:11px;">涉及：' + parts.join(' / ') + '</span>';
+
+    for (let i = chatHistory.length - 1; i >= 0; i--) {
+      if (chatHistory[i].pending) { chatHistory[i].pending = false; chatHistory[i].content += '<br><span style="color:var(--text-muted);font-size:11px;">已被新回复替换</span>'; }
+    }
+
+    chatHistory.push({ role: 'assistant', content: msgContent, pending: true });
+  } catch (err) {
+    chatHistory.pop();
+    chatHistory.push({ role: 'assistant', content: '❌ 调用失败: ' + err.message });
+  }
+  renderChat(State.currentPageId);
+  State.previewActive = false;
+  if (State.pending) previewDiff();
+  renderPageList();
+  saveToCache();
+}
+
+/* ==================== 统一 AI 调用 ==================== */
+async function callAI(page, history, userContent) {
+  const fieldsDesc = page.fields.map(f => {
+    let desc = '- ' + f.name + ' (' + f.type + ')';
+    let displayVal = f.currentValue;
+    if (State.pending && State.pending.replacements && State.pending.replacements[f.name]) {
+      displayVal = State.pending.replacements[f.name].value;
+    }
+    if (displayVal && displayVal.length < 100) {
+      desc += ': 当前值="' + displayVal.replace(/<[^>]*>/g, '').substring(0, 50) + '"';
+    }
+    return desc;
+  }).join('\n');
+
+  let imageHint = '';
+  if (State.uploadedImages.size > 0) {
+    imageHint = '\n\n【已上传图片附件】\n以下图片已上传，可直接用于替换 image 类型字段：\n' +
+      Array.from(State.uploadedImages.keys()).map(name => '- ' + name).join('\n') +
+      '\n\n如果用户要求替换图片字段且未提供外部URL，请直接返回图片文件名作为 value，系统会自动匹配对应的图片数据。';
+  }
+
+  let pageHTML = page.element.outerHTML;
+  if (State.pending && (State.pending.css || State.pending.html)) {
+    const workingEl = page.element.cloneNode(true);
+    if (State.pending.css) {
+      let s = workingEl.querySelector('style[data-bc-custom]');
+      if (!s) { s = document.createElement('style'); s.setAttribute('data-bc-custom','true'); workingEl.insertBefore(s, workingEl.firstChild); }
+      s.textContent = (s.textContent||'') + '\n' + State.pending.css;
+    }
+    if (State.pending.html) {
+      const parser = new DOMParser();
+      const nd = parser.parseFromString(State.pending.html, 'text/html');
+      const np = nd.querySelector('.a4-page') || nd.body.firstElementChild;
+      if (np) {
+        np.querySelectorAll('[data-field]').forEach(el => {
+          const o = workingEl.querySelector('[data-field="'+el.getAttribute('data-field')+'"]');
+          if (o) el.innerHTML = o.innerHTML;
+        });
+        if (!np.classList.contains('a4-page')) np.classList.add('a4-page');
+        workingEl.innerHTML = np.innerHTML;
+      }
+    }
+    pageHTML = workingEl.outerHTML;
+  }
+
+  const systemPrompt = '你是企业宣传册设计与内容专家，同时处理文案和样式。\n\n【页面 HTML（含未保存修改）】\n' + pageHTML + '\n\n【可替换字段】\n' + fieldsDesc + imageHint + '\n\n【规则】\n- 修改文案→返回 replacements 数组\n- 调整样式→返回 css（可选 html）\n- 两者可同时返回\n- 禁止删除/修改 data-field、data-page-id、data-page-name 属性\n- 保持 .a4-page 为 210mm×297mm\n- 优先用 CSS 改样式，少动 HTML 结构\n- 改背景色时用 background 短写而非 background-color，否则渐变不会被覆盖；必要时加 !important\n\n【输出】严格 JSON：{"replacements":[{"field":"字段名","type":"text|html|image|list","value":"内容"}],"css":"CSS","html":"HTML","reasoning":"说明"}。不需要的字段留空数组/空字符串。';
+
+  return callAIAPI(systemPrompt, history, userContent);
+}
+
+/* ==================== 通用 AI API 调用 ==================== */
+async function callAIAPI(systemPrompt, history, userContent) {
+  const messages = [{ role: 'system', content: systemPrompt }];
+  history.forEach(h => {
+    if (h.role !== 'typing') {
+      const apiRole = h.role === 'ai' ? 'assistant' : h.role;
+      messages.push({ role: apiRole, content: h.content });
+    }
+  });
+  messages.push({ role: 'user', content: userContent });
+
+  const res = await fetch(State.config.baseUrl + '/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + State.config.apiKey },
+    body: JSON.stringify({ model: State.config.model, temperature: State.config.temperature, messages: messages })
+  });
+
+  if (!res.ok) { const err = await res.text(); throw new Error('HTTP ' + res.status + ': ' + err); }
+  const data = await res.json();
+  const aiContent = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '';
+
+  try {
+    const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
+    if (jsonMatch) return JSON.parse(jsonMatch[0]);
+    return { reasoning: aiContent, replacements: [], css: '', html: '' };
+  } catch (e) { return { reasoning: aiContent, replacements: [], css: '', html: '' }; }
+}
+
+/* ==================== 样式应用（字段保护） ==================== */
+function applyStyleCSS(pageId, css) {
+  const page = State.pages.find(p => p.id === pageId);
+  if (!page || !css) return;
+  // 在页面元素内创建一个 style 标签存储自定义 CSS
+  let styleEl = page.element.querySelector('style[data-bc-custom]');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.setAttribute('data-bc-custom', 'true');
+    page.element.insertBefore(styleEl, page.element.firstChild);
+  }
+  styleEl.textContent += '\n/* AI 生成样式 */\n' + css;
+  renderPreview(pageId);
+  saveToCache();
+  showToast('CSS 样式已应用');
+}
+
+function safeReplaceHTML(pageId, newHtml) {
+  if (!newHtml) return;
+  const page = State.pages.find(p => p.id === pageId);
+  if (!page) return;
+
+  // 1. 备份字段值
+  const fieldBackup = {};
+  page.fields.forEach(f => { fieldBackup[f.name] = { type: f.type, value: f.currentValue }; });
+
+  // 2. 提取自定义 CSS（如果有）
+  const customStyle = page.element.querySelector('style[data-bc-custom]');
+  const customCSS = customStyle ? customStyle.textContent : '';
+
+  // 3. 替换页面 HTML
+  const parser = new DOMParser();
+  const newDoc = parser.parseFromString(newHtml, 'text/html');
+  let newPageEl = newDoc.querySelector('.a4-page');
+  if (!newPageEl) {
+    // 如果没有 .a4-page 包裹，尝试直接取 body 内容
+    newPageEl = newDoc.body.firstElementChild;
+  }
+  if (!newPageEl) { showToast('HTML 结构无效，未应用'); return; }
+
+  // 确保必要的属性存在
+  if (!newPageEl.getAttribute('data-page-id')) newPageEl.setAttribute('data-page-id', page.id);
+  if (!newPageEl.getAttribute('data-page-name')) newPageEl.setAttribute('data-page-name', page.name);
+  if (!newPageEl.classList.contains('a4-page')) newPageEl.classList.add('a4-page');
+
+  page.element = newPageEl;
+
+  // 4. 恢复字段值
+  page.fields.forEach(f => {
+    const el = page.element.querySelector('[data-field="' + f.name + '"]');
+    if (el && fieldBackup[f.name]) {
+      el.setAttribute('data-type', fieldBackup[f.name].type);
+      applyValueToElement(el, fieldBackup[f.name].type, fieldBackup[f.name].value);
+      f.currentValue = fieldBackup[f.name].value;
+    }
+  });
+
+  // 5. 恢复自定义 CSS
+  if (customCSS) {
+    let styleEl = page.element.querySelector('style[data-bc-custom]');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.setAttribute('data-bc-custom', 'true');
+      page.element.insertBefore(styleEl, page.element.firstChild);
+    }
+    styleEl.textContent = customCSS;
+  }
+
+  // 6. 重新解析字段（AI 可能新增了字段）
+  const existingNames = new Set(page.fields.map(f => f.name));
+  page.element.querySelectorAll('[data-field]').forEach(el => {
+    const name = el.getAttribute('data-field');
+    const type = el.getAttribute('data-type') || 'text';
+    if (!existingNames.has(name)) {
+      page.fields.push({ name: name, type: type, currentValue: getFieldValue(el) });
+      existingNames.add(name);
+    }
+  });
+
+  renderPreview(pageId);
+  saveToCache();
+  showToast('HTML 结构已更新（字段值已保护）');
+}
+
+/* ==================== 预览对比 ==================== */
+function hideSidebar() {
+  document.querySelector('.sidebar-left').style.display = 'none';
+}
+function showSidebar() {
+  document.querySelector('.sidebar-left').style.display = '';
+}
+
+function previewDiff() {
+  if (!State.pending || State.previewActive) return;
+  if (!State.currentPageId) return;
+  const page = State.pages.find(p => p.id === State.currentPageId);
+  if (!page) return;
+  State.previewActive = true;
+  hideSidebar();
+  const previewArea = document.getElementById('previewArea');
+  const areaWidth = previewArea.clientWidth - 40;
+  const areaHeight = previewArea.clientHeight - 40;
+  const scale = Math.min((areaWidth / 2 - 6) / 794, areaHeight / 1123, 1);
+
+  const leftHTML = buildPreviewHTML(page, '', true);
+
+  const workingPage = page.element.cloneNode(true);
+  if (State.pending.css) {
+    let s = workingPage.querySelector('style[data-bc-custom]');
+    if (!s) { s = document.createElement('style'); s.setAttribute('data-bc-custom','true'); workingPage.insertBefore(s, workingPage.firstChild); }
+    s.textContent = (s.textContent||'') + '\n' + State.pending.css;
+  }
+  if (State.pending.html) {
+    const parser = new DOMParser();
+    const nd = parser.parseFromString(State.pending.html, 'text/html');
+    const np = nd.querySelector('.a4-page') || nd.body.firstElementChild;
+    if (np) {
+      np.querySelectorAll('[data-field]').forEach(el => {
+        const o = workingPage.querySelector('[data-field="'+el.getAttribute('data-field')+'"]');
+        if (o) el.innerHTML = o.innerHTML;
+      });
+      if (!np.classList.contains('a4-page')) np.classList.add('a4-page');
+      workingPage.innerHTML = np.innerHTML;
+    }
+  }
+  Object.values(State.pending.replacements || {}).forEach(r => {
+    const el = workingPage.querySelector('[data-field="' + r.field + '"]');
+    if (!el) return;
+    const type = r.type || el.getAttribute('data-type') || 'text';
+    switch (type) {
+      case 'text': el.innerText = r.value; break;
+      case 'html': el.innerHTML = r.value; break;
+      case 'image': el.src = r.value; el.setAttribute('src', r.value); el.style.backgroundImage = 'url(' + r.value + ')'; break;
+      case 'list': el.innerHTML = r.value; break;
+    }
+  });
+  const rightHTML = buildPreviewHTML(workingPage, '', true);
+
+  const hasStyle = State.pending.css || State.pending.html;
+  const hasContent = Object.keys(State.pending.replacements || {}).length > 0;
+  const label = '修改后（已累积' + (hasStyle ? ' CSS' : '') + (hasStyle && hasContent ? ' +' : '') + (hasContent ? ' 内容' : '') + '）';
+
+  previewArea.innerHTML =
+    '<div style="display:flex;gap:8px;align-items:flex-start;justify-content:center;padding:0;">' +
+      '<div style="text-align:center;">' +
+        '<div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:2px;padding:2px 8px;background:#f3f4f6;border-radius:6px;display:inline-block;">修改前</div>' +
+        '<div style="width:' + (794*scale) + 'px;height:' + (1123*scale) + 'px;overflow:hidden;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.08);background:white;">' +
+          '<iframe style="width:794px;height:1123px;border:none;display:block;transform:scale(' + scale + ');transform-origin:0 0;" srcdoc="' + escapeHtmlForAttr(leftHTML) + '"></iframe>' +
+        '</div>' +
+      '</div>' +
+      '<div style="text-align:center;">' +
+        '<div style="font-size:11px;font-weight:600;color:white;margin-bottom:2px;padding:2px 8px;background:var(--primary);border-radius:6px;display:inline-block;">' + label + '</div>' +
+        '<div style="width:' + (794*scale) + 'px;height:' + (1123*scale) + 'px;overflow:hidden;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.08);background:white;">' +
+          '<iframe style="width:794px;height:1123px;border:none;display:block;transform:scale(' + scale + ');transform-origin:0 0;" srcdoc="' + escapeHtmlForAttr(rightHTML) + '"></iframe>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function applyPending() {
+  if (!State.pending) return;
+  const pageId = State.currentPageId;
+  if (State.pending.css) applyStyleCSS(pageId, State.pending.css);
+  if (State.pending.html) safeReplaceHTML(pageId, State.pending.html);
+  if (State.pending.replacements && Object.keys(State.pending.replacements).length) {
+    applyReplacements(pageId, Object.values(State.pending.replacements));
+  }
+  const chatHistory = State.chats.get(pageId) || [];
+  for (let i = chatHistory.length - 1; i >= 0; i--) {
+    if (chatHistory[i].pending) { chatHistory[i].pending = false; }
+  }
+  State.pending = null;
+  State.previewActive = false;
+  showSidebar();
+  renderPreview(pageId);
+  renderPageList();
+  renderChat(pageId);
+  saveToCache();
+  showToast('修改已应用');
+}
+
+function rejectPending() {
+  const pageId = State.currentPageId;
+  const chatHistory = State.chats.get(pageId) || [];
+  for (let i = chatHistory.length - 1; i >= 0; i--) {
+    if (chatHistory[i].pending) { chatHistory[i].pending = false; chatHistory[i].content += '<br><span style="color:var(--text-muted);font-size:11px;">已放弃</span>'; }
+  }
+  State.pending = null;
+  State.previewActive = false;
+  showSidebar();
+  renderPreview(pageId);
+  renderChat(pageId);
+  saveToCache();
+  showToast('已放弃修改');
+}
+
+function escapeHtmlForAttr(str) {
+  return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function applyValueToElement(el, type, value) {
+  if (!el || value === undefined) return;
+  switch (type) {
+    case 'text': el.innerText = value; break;
+    case 'html': el.innerHTML = value; break;
+    case 'image': el.src = value; el.setAttribute('src', value); el.style.backgroundImage = 'url(' + value + ')'; break;
+    case 'list': el.innerHTML = value; break;
+    default: el.innerText = value;
+  }
+}
+
+/* ==================== 内容替换（兼容） ==================== */
+function applyReplacements(pageId, replacements) {
+  const page = State.pages.find(p => p.id === pageId);
+  if (!page) return;
+  replacements.forEach(r => {
+    const el = page.element.querySelector('[data-field="' + r.field + '"]');
+    if (!el) return;
+    const type = r.type || el.getAttribute('data-type') || 'text';
+    el.setAttribute('data-type', type);
+    let value = r.value;
+    if (type === 'image' && value) {
+      const isValidUrl = value.startsWith('http') || value.startsWith('data:image') || value.startsWith('blob:');
+      if (!isValidUrl && State.uploadedImages.has(value)) {
+        value = State.uploadedImages.get(value);
+      } else if (!isValidUrl) {
+        const lowerVal = value.toLowerCase();
+        for (const [name, data] of State.uploadedImages) {
+          if (name.toLowerCase() === lowerVal || name.toLowerCase().replace(/\.[^.]+$/, '') === lowerVal.replace(/\.[^.]+$/, '')) {
+            value = data; break;
+          }
+        }
+      }
+    }
+    switch (type) {
+      case 'text': {
+        const nodes = [];
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        let n;
+        while (n = walker.nextNode()) nodes.push(n);
+        if (nodes.length === 0) { el.textContent = value; break; }
+        const oldTotal = el.textContent.length || 1;
+        let pos = 0;
+        nodes.forEach((node, i) => {
+          if (i === nodes.length - 1) {
+            node.textContent = value.substring(pos);
+          } else {
+            const len = Math.round((node.textContent.length / oldTotal) * value.length);
+            node.textContent = value.substring(pos, pos + len);
+            pos += len;
+          }
+        });
+        break;
+      }
+      case 'html': el.innerHTML = value; break;
+      case 'image': el.src = value; el.setAttribute('src', value); el.style.backgroundImage = 'url(' + value + ')'; break;
+      case 'list': el.innerHTML = value; break;
+    }
+    const field = page.fields.find(f => f.name === r.field);
+    if (field) field.currentValue = value;
+  });
+  renderPreview(pageId);
+  saveToCache();
+}
+
+/* ==================== 画册导出（PNG 打包） ==================== */
+async function exportImages() {
+  if (State.pages.length === 0) { alert('没有可导出的页面'); return; }
+  const btn = document.getElementById('exportBtn');
+  const originalText = btn.textContent;
+  btn.textContent = '导出中...';
+  btn.disabled = true;
+  try {
+    const zip = new JSZip();
+    const tempDiv = document.createElement('div');
+    tempDiv.style.cssText = 'position:fixed;top:0;left:0;z-index:9999;';
+    document.body.appendChild(tempDiv);
+    for (let i = 0; i < State.pages.length; i++) {
+      const page = State.pages[i];
+      const html = buildPreviewHTML(page);
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '794px';
+      iframe.style.height = '1123px';
+      iframe.style.border = 'none';
+      iframe.srcdoc = html;
+      tempDiv.appendChild(iframe);
+      await new Promise(r => { iframe.onload = r; });
+      await new Promise(r => setTimeout(r, 1000));
+      const body = iframe.contentDocument.body;
+      body.querySelectorAll('[data-type="image"]').forEach(el => {
+        if (!el.offsetWidth || !el.offsetHeight) el.remove();
+      });
+      const canvas = await html2canvas(body, { scale: 2, useCORS: true, logging: false, allowTaint: true });
+      const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+      zip.file((page.name || page.id || ('page_' + (i + 1))) + '.png', blob);
+      iframe.remove();
+    }
+    tempDiv.remove();
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(zipBlob);
+    a.download = 'brochure.zip';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('画册导出成功');
+  } catch (err) { alert('导出失败: ' + err.message); }
+  finally { btn.textContent = originalText; btn.disabled = false; }
+}
+
+function showToast(msg) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
+loadConfig();
+if (!restoreFromCache()) {
+  const previewArea = document.getElementById('previewArea');
+  previewArea.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><div style="font-size:14px;margin-bottom:4px;">暂无模板</div><div style="font-size:12px;">点击 「导入模板」 开始</div></div>';
+}
+
+// 监听预览区 iframe 双击事件
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'editField' && e.data.fieldName && State.currentPageId) {
+    editField(e.data.fieldName);
+  }
+});
+</script>
+</body>
+</html>
