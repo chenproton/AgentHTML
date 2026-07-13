@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>职业院校教学资源共享商城</title>
+  <!-- 外部资源 与前序页面保持一致 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors:{
+            brand:'#1958d9',
+            // 五大品类专属配色 与前序领域色体系一致
+            cat1:'#3b82f6', // 岗位包 蓝
+            cat2:'#10b981', // 场景包 绿
+            cat3:'#8b5cf6', // 课程包 紫
+            cat4:'#f59e0b', // 测评包 橙
+            cat5:'#06b6d4', // 素材包 青
+            bgPage:'#f4f8ff'
+          },
+          fontFamily:{
+            sans:['Inter','system-ui','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .card-hover{transition: all .28s ease;}
+      .card-hover:hover{transform: translateY(-6px);box-shadow:0 12px 28px rgba(25,88,217,0.16)}
+      .modal-mask{background: rgba(0,0,0,0.45);backdrop-filter: blur(2px);}
+    }
+  </style>
+</head>
+<body class="bg-bgPage font-sans text-[#182233]">
+<!-- 顶部导航栏 与前序页面结构统一 -->
+<header class="bg-white shadow sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
+    <div class="text-brand text-xl font-bold">职教教学资源共享商城</div>
+    <nav class="hidden md:flex gap-7 text-[#334155]">
+      <a href="#" class="hover:text-brand font-medium text-brand">商城首页</a>
+      <a href="#" class="hover:text-brand">岗位包</a>
+      <a href="#" class="hover:text-brand">课程包</a>
+      <a href="#" class="hover:text-brand">素材包</a>
+      <a href="#" class="hover:text-brand">机构入驻</a>
+      <a href="#" class="hover:text-brand">机构后台</a>
+    </nav>
+    <div class="flex gap-4 items-center">
+      <input placeholder="搜索资源名称、专业、关键词..." class="border border-gray-200 rounded-lg px-3 py-2 w-44 md:w-60">
+      <i class="fa-solid fa-cart-shopping text-lg text-brand cursor-pointer" title="我的订单"></i>
+      <button class="px-3 py-2 bg-brand text-white rounded-lg">机构登录</button>
+    </div>
+  </div>
+</header>
+
+<!-- 首屏Banner区域 -->
+<section class="max-w-7xl mx-auto mt-6 px-4 md:px-6">
+  <div class="bg-brand rounded-2xl p-7 text-white grid md:grid-cols-2 gap-5 items-center">
+    <div>
+      <h1 class="text-[clamp(1.6rem,3vw,2.6rem)] font-bold">职业院校教学资源共享商城</h1>
+      <p class="mt-3 opacity-90">连接企业供给与院校采购 · 买断制永久授权 · 一站式教学资源交易交付平台</p>
+      <div class="flex flex-wrap gap-4 mt-5">
+        <button class="bg-white text-brand px-5 py-2.5 rounded-lg font-medium">浏览全部资源</button>
+        <button class="border border-white px-5 py-2.5 rounded-lg font-medium">申请机构入驻</button>
+      </div>
+    </div>
+    <div class="hidden md:block text-right">
+      <div class="inline-block bg-white/10 rounded-xl p-6 backdrop-blur">
+        <p class="text-3xl font-bold">5大类资源</p>
+        <p class="opacity-80 mt-1">岗位/场景/课程/测评/素材</p>
+        <p class="text-3xl font-bold mt-4">买断制授权</p>
+        <p class="opacity-80 mt-1">一次付费 永久使用 可私有化部署</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 五大品类快捷入口 -->
+<section class="max-w-7xl mx-auto px-4 md:px-6 mt-7">
+  <h2 class="text-xl font-bold mb-4">资源品类导航</h2>
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <div class="bg-white rounded-xl p-5 card-hover shadow-sm cursor-pointer border-t-4 border-cat1">
+      <i class="fa-solid fa-briefcase text-2xl text-cat1 mb-3"></i>
+      <h3 class="font-bold">岗位包</h3>
+      <p class="text-sm text-gray-500 mt-1">能力模型、胜任标准</p>
+    </div>
+    <div class="bg-white rounded-xl p-5 card-hover shadow-sm cursor-pointer border-t-4 border-cat2">
+      <i class="fa-solid fa-diagram-project text-2xl text-cat2 mb-3"></i>
+      <h3 class="font-bold">场景包</h3>
+      <p class="text-sm text-gray-500 mt-1">任务链、评价标准</p>
+    </div>
+    <div class="bg-white rounded-xl p-5 card-hover shadow-sm cursor-pointer border-t-4 border-cat3">
+      <i class="fa-solid fa-book-open text-2xl text-cat3 mb-3"></i>
+      <h3 class="font-bold">课程包</h3>
+      <p class="text-sm text-gray-500 mt-1">课件、任务化课程</p>
+    </div>
+    <div class="bg-white rounded-xl p-5 card-hover shadow-sm cursor-pointer border-t-4 border-cat4">
+      <i class="fa-solid fa-file-circle-check text-2xl text-cat4 mb-3"></i>
+      <h3 class="font-bold">测评包</h3>
+      <p class="text-sm text-gray-500 mt-1">题库、试卷、量规</p>
+    </div>
+    <div class="bg-white rounded-xl p-5 card-hover shadow-sm cursor-pointer border-t-4 border-cat5">
+      <i class="fa-solid fa-folder-open text-2xl text-cat5 mb-3"></i>
+      <h3 class="font-bold">素材包</h3>
+      <p class="text-sm text-gray-500 mt-1">文档、视频、工具</p>
+    </div>
+  </div>
+</section>
+
+<!-- 多维度筛选面板 匹配PRD筛选字段 -->
+<section class="max-w-7xl mx-auto px-4 md:px-6 mt-7">
+  <div class="bg-white p-5 rounded-xl shadow-sm">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <p class="font-semibold mb-3">所属专业</p>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <span class="border px-3 py-1.5 rounded-md bg-brand text-white cursor-pointer">全部</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">信息安全</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">计算机网络</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">软件技术</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">电子商务</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">智能制造</span>
+        </div>
+      </div>
+      <div>
+        <p class="font-semibold mb-3">适用层次</p>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <span class="border px-3 py-1.5 rounded-md bg-brand text-white cursor-pointer">全部</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">中职</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">高职</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">本科</span>
+        </div>
+      </div>
+      <div>
+        <p class="font-semibold mb-3">难度等级</p>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <span class="border px-3 py-1.5 rounded-md bg-brand text-white cursor-pointer">全部</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">初级</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">中级</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">高级</span>
+        </div>
+      </div>
+      <div>
+        <p class="font-semibold mb-3">排序方式</p>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <span class="border px-3 py-1.5 rounded-md bg-brand text-white cursor-pointer">默认排序</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">最新上架</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">销量最高</span>
+          <span class="border px-3 py-1.5 rounded-md hover:border-brand cursor-pointer">价格从低到高</span>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 pt-4 border-t flex items-center gap-3">
+      <span class="font-semibold text-sm">价格区间：</span>
+      <input type="number" placeholder="最低价" class="border rounded px-2 py-1 w-24 text-sm">
+      <span>-</span>
+      <input type="number" placeholder="最高价" class="border rounded px-2 py-1 w-24 text-sm">
+      <button class="bg-brand text-white px-3 py-1 rounded text-sm">筛选</button>
+    </div>
+  </div>
+</section>
+
+<!-- 核心资源卡片列表 匹配PRD买断制字段 -->
+<section class="max-w-7xl mx-auto px-4 md:px-6 mt-7 pb-14">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+    <!-- 资源卡片1 课程包 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm">
+      <img src="https://picsum.photos/id/20/400/220" class="w-full h-40 object-cover" alt="资源封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-cat3/10 text-cat3 text-xs px-2 py-0.5 rounded">课程包</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">高职</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">中级</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">网络安全攻防实战任务化课程包</h3>
+        <p class="text-sm text-[#5c6778] mt-2 mb-3 line-clamp-2">包含完整课件、实训任务书、攻防环境配置指南，适配高职网络安全专业核心课程。</p>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <span><i class="fa-solid fa-building-columns"></i> 某职教科技有限公司</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
+          <span>销量 128</span>
+          <span>浏览 2341</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-bold text-xl text-red-500">¥1299</span>
+            <span class="text-xs text-gray-500">买断·永久使用</span>
+          </div>
+          <button onclick="openOrderModal('网络安全攻防实战任务化课程包',1299)" class="bg-brand text-white px-3 py-1.5 rounded text-sm">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 资源卡片2 岗位包 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm">
+      <img src="https://picsum.photos/id/48/400/220" class="w-full h-40 object-cover" alt="资源封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-cat1/10 text-cat1 text-xs px-2 py-0.5 rounded">岗位包</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">高职</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">高级</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">信息安全运维岗位能力模型</h3>
+        <p class="text-sm text-[#5c6778] mt-2 mb-3 line-clamp-2">包含岗位胜任标准、能力分级模型、人才培养方案、岗位技能图谱全套资料。</p>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <span><i class="fa-solid fa-building-columns"></i> 某网络安全研究院</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
+          <span>销量 86</span>
+          <span>浏览 1792</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-bold text-xl text-red-500">¥899</span>
+            <span class="text-xs text-gray-500">买断·永久使用</span>
+          </div>
+          <button onclick="openOrderModal('信息安全运维岗位能力模型',899)" class="bg-brand text-white px-3 py-1.5 rounded text-sm">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 资源卡片3 场景包 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm">
+      <img src="https://picsum.photos/id/60/400/220" class="w-full h-40 object-cover" alt="资源封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-cat2/10 text-cat2 text-xs px-2 py-0.5 rounded">场景包</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">中职</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">初级</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">办公网络搭建实训场景任务包</h3>
+        <p class="text-sm text-[#5c6778] mt-2 mb-3 line-clamp-2">包含完整实训场景设计、任务链清单、过程评价标准、实训指导手册。</p>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <span><i class="fa-solid fa-building-columns"></i> 某职业技术学院</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
+          <span>销量 215</span>
+          <span>浏览 3024</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-bold text-xl text-red-500">¥599</span>
+            <span class="text-xs text-gray-500">买断·永久使用</span>
+          </div>
+          <button onclick="openOrderModal('办公网络搭建实训场景任务包',599)" class="bg-brand text-white px-3 py-1.5 rounded text-sm">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 资源卡片4 测评包 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm">
+      <img src="https://picsum.photos/id/96/400/220" class="w-full h-40 object-cover" alt="资源封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-cat4/10 text-cat4 text-xs px-2 py-0.5 rounded">测评包</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">高职</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">中级</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">计算机网络技术技能考核题库</h3>
+        <p class="text-sm text-[#5c6778] mt-2 mb-3 line-clamp-2">包含1200+道标准化试题、10套模拟试卷、评分量规，支持自动阅卷配置。</p>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <span><i class="fa-solid fa-building-columns"></i> 某教育测评中心</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
+          <span>销量 342</span>
+          <span>浏览 4156</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-bold text-xl text-red-500">¥799</span>
+            <span class="text-xs text-gray-500">买断·永久使用</span>
+          </div>
+          <button onclick="openOrderModal('计算机网络技术技能考核题库',799)" class="bg-brand text-white px-3 py-1.5 rounded text-sm">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 资源卡片5 素材包 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm">
+      <img src="https://picsum.photos/id/119/400/220" class="w-full h-40 object-cover" alt="资源封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-cat5/10 text-cat5 text-xs px-2 py-0.5 rounded">素材包</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">全层次</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">通用</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">职教信息化教学素材全套资源包</h3>
+        <p class="text-sm text-[#5c6778] mt-2 mb-3 line-clamp-2">包含教学PPT模板、实训视频、动画素材、工具软件合集，覆盖计算机大类专业。</p>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <span><i class="fa-solid fa-building-columns"></i> 某数字教育公司</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
+          <span>销量 527</span>
+          <span>浏览 6890</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-bold text-xl text-red-500">¥399</span>
+            <span class="text-xs text-gray-500">买断·永久使用</span>
+          </div>
+          <button onclick="openOrderModal('职教信息化教学素材全套资源包',399)" class="bg-brand text-white px-3 py-1.5 rounded text-sm">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 资源卡片6 课程包 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm">
+      <img src="https://picsum.photos/id/160/400/220" class="w-full h-40 object-cover" alt="资源封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-cat3/10 text-cat3 text-xs px-2 py-0.5 rounded">课程包</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">本科</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">高级</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">人工智能应用开发核心课程</h3>
+        <p class="text-sm text-[#5c6778] mt-2 mb-3 line-clamp-2">包含完整课程体系、项目实训案例、源码工程、教学大纲，适配应用型本科。</p>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <span><i class="fa-solid fa-building-columns"></i> 某科技大学教研团队</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
+          <span>销量 94</span>
+          <span>浏览 1865</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-bold text-xl text-red-500">¥1999</span>
+            <span class="text-xs text-gray-500">买断·永久使用</span>
+          </div>
+          <button onclick="openOrderModal('人工智能应用开发核心课程',1999)" class="bg-brand text-white px-3 py-1.5 rounded text-sm">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 资源卡片7 岗位包 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm">
+      <img src="https://picsum.photos/id/180/400/220" class="w-full h-40 object-cover" alt="资源封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-cat1/10 text-cat1 text-xs px-2 py-0.5 rounded">岗位包</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">中职</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">中级</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">电子商务运营岗位标准包</h3>
+        <p class="text-sm text-[#5c6778] mt-2 mb-3 line-clamp-2">包含电商运营岗位能力要求、实训标准、人才培养方案、职业技能等级标准。</p>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <span><i class="fa-solid fa-building-columns"></i> 某电商职业教育集团</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
+          <span>销量 176</span>
+          <span>浏览 2543</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-bold text-xl text-red-500">¥699</span>
+            <span class="text-xs text-gray-500">买断·永久使用</span>
+          </div>
+          <button onclick="openOrderModal('电子商务运营岗位标准包',699)" class="bg-brand text-white px-3 py-1.5 rounded text-sm">立即购买</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 资源卡片8 场景包 -->
+    <div class="bg-white rounded-xl overflow-hidden card-hover shadow-sm">
+      <img src="https://picsum.photos/id/201/400/220" class="w-full h-40 object-cover" alt="资源封面">
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="bg-cat2/10 text-cat2 text-xs px-2 py-0.5 rounded">场景包</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">高职</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">高级</span>
+        </div>
+        <h3 class="font-bold line-clamp-1">工业机器人调试实训场景包</h3>
+        <p class="text-sm text-[#5c6778] mt-2 mb-3 line-clamp-2">智能制造专业实训场景全套资源，包含任务流程、评价标准、设备操作指南。</p>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <span><i class="fa-solid fa-building-columns"></i> 某智能制造实训基地</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
+          <span>销量 63</span>
+          <span>浏览 1247</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-bold text-xl text-red-500">¥1599</span>
+            <span class="text-xs text-gray-500">买断·永久使用</span>
+          </div>
+          <button onclick="openOrderModal('工业机器人调试实训场景包',1599)" class="bg-brand text-white px-3 py-1.5 rounded text-sm">立即购买</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 订单确认弹窗 匹配PRD订单确认页 -->
+<div id="orderModal" class="fixed inset-0 z-[100] modal-mask hidden items-center justify-center p-4">
+  <div class="bg-white rounded-xl w-full max-w-md overflow-hidden">
+    <div class="bg-brand text-white px-5 py-3 flex justify-between items-center">
+      <h3 class="font-bold">确认买断订单</h3>
+      <button onclick="closeOrderModal()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="p-5">
+      <div class="flex gap-3 mb-4">
+        <img id="modalCover" src="https://picsum.photos/id/20/120/80" class="w-24 h-16 object-cover rounded" alt="资源封面">
+        <div>
+          <h4 id="modalResourceName" class="font-bold">资源名称</h4>
+          <p class="text-sm text-gray-500 mt-1">授权模式：买断 · 永久使用</p>
+          <p class="text-sm text-gray-500">采购机构：XX职业技术学院</p>
+        </div>
+      </div>
+      <div class="border-t border-b py-4 my-4 flex justify-between items-center">
+        <span class="text-gray-600">应付金额</span>
+        <span id="modalPrice" class="text-2xl font-bold text-red-500">¥0</span>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="closeOrderModal()" class="flex-1 border border-gray-300 py-2.5 rounded-lg">取消</button>
+        <button onclick="mockPay()" class="flex-1 bg-brand text-white py-2.5 rounded-lg">确认支付（模拟）</button>
+      </div>
+      <p class="text-xs text-gray-400 text-center mt-3">* MVP演示版 点击即支付成功 无需真实付款</p>
+    </div>
+  </div>
+</div>
+
+<!-- 支付成功弹窗 匹配PRD支付成功提示 -->
+<div id="successModal" class="fixed inset-0 z-[100] modal-mask hidden items-center justify-center p-4">
+  <div class="bg-white rounded-xl w-full max-w-md overflow-hidden text-center">
+    <div class="p-6">
+      <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="fa-solid fa-check text-2xl text-green-500"></i>
+      </div>
+      <h3 class="text-xl font-bold">支付成功</h3>
+      <p class="text-gray-500 mt-2">您已成功买断该资源，永久授权使用</p>
+      <p class="text-sm text-gray-400 mt-1">授权证书已生成，可在已购资源库下载附件</p>
+      <div class="flex gap-3 mt-6">
+        <button onclick="closeSuccessModal()" class="flex-1 border border-gray-300 py-2.5 rounded-lg">继续浏览</button>
+        <button class="flex-1 bg-brand text-white py-2.5 rounded-lg">查看已购资源</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 页脚 -->
+<footer class="bg-white py-7 border-t">
+  <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
+    <p>职业院校教学资源共享商城 · 买断制教学资源交易平台</p>
+    <p class="mt-2">MVP演示版 v1.1 · 仅用于产品功能演示</p>
+  </div>
+</footer>
+
+<script>
+  // 打开订单弹窗
+  function openOrderModal(resourceName, price){
+    document.getElementById('modalResourceName').innerText = resourceName;
+    document.getElementById('modalPrice').innerText = '¥' + price;
+    document.getElementById('orderModal').classList.remove('hidden');
+    document.getElementById('orderModal').classList.add('flex');
+  }
+
+  // 关闭订单弹窗
+  function closeOrderModal(){
+    document.getElementById('orderModal').classList.add('hidden');
+    document.getElementById('orderModal').classList.remove('flex');
+  }
+
+  // 模拟支付
+  function mockPay(){
+    closeOrderModal();
+    setTimeout(()=>{
+      document.getElementById('successModal').classList.remove('hidden');
+      document.getElementById('successModal').classList.add('flex');
+    },300)
+  }
+
+  // 关闭成功弹窗
+  function closeSuccessModal(){
+    document.getElementById('successModal').classList.add('hidden');
+    document.getElementById('successModal').classList.remove('flex');
+  }
+</script>
+</body>
+</html>

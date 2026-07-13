@@ -85,6 +85,8 @@
   .attachment-btn { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); cursor:pointer; padding:6px 10px; border-radius:6px; transition:all 0.18s; }
   .attachment-btn:hover { background:var(--bg); color:var(--primary); }
   .attachment-list { font-size:11px; color:var(--text-muted); }
+  .suggestion-chip { display:inline-block; padding:4px 10px; border-radius:14px; font-size:11px; color:var(--text-secondary); background:#f3f4f6; border:1px solid var(--border); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .suggestion-chip:hover { background:var(--primary-light); border-color:var(--primary); color:var(--primary); }
 
   /* ===== 弹窗 ===== */
   .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(4px); }
@@ -165,6 +167,16 @@
       <button class="btn btn-sm btn-secondary" onclick="clearChat()" style="flex-shrink:0;">🗑 清理上下文</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-suggestions" id="chatSuggestions" style="display:none;padding:0 20px 10px;">
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">💡 试试问这些：</div>
+      <div style="display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;padding-bottom:2px;">
+        <span class="suggestion-chip" onclick="fillInput('把页面背景改成浅蓝色')">把页面背景改成浅蓝色</span>
+        <span class="suggestion-chip" onclick="fillInput('标题字体大小增加一号')">标题字体大小增加一号</span>
+        <span class="suggestion-chip" onclick="fillInput('把文字颜色改成深灰色')">把文字颜色改成深灰色</span>
+        <span class="suggestion-chip" onclick="fillInput('将公司名称改成 某某科技有限公司')">将公司名称改成 某某科技有限公司</span>
+        <span class="suggestion-chip" onclick="fillInput('在页面底部增加联系方式')">在页面底部增加联系方式</span>
+      </div>
+    </div>
     <div class="chat-input-area" id="chatInputArea" style="display:none;">
       <textarea class="chat-input" id="chatInput" placeholder="描述你想要的内容..."></textarea>
       <div class="chat-actions">
@@ -413,6 +425,7 @@ function selectPage(pageId) {
   document.getElementById('chatTitle').textContent = page ? '当前编辑页面：' + page.name : 'AI 内容助手';
   document.getElementById('chatSub').textContent = '';
   document.getElementById('chatInputArea').style.display = page ? 'flex' : 'none';
+  document.getElementById('chatSuggestions').style.display = page ? 'block' : 'none';
 }
 
 function renderPreview(pageId) {
@@ -1103,19 +1116,22 @@ async function exportImages() {
   btn.textContent = '导出中...';
   btn.disabled = true;
   try {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+    overlay.innerHTML = '<div style="color:white;font-size:16px;margin-bottom:20px;">正在生成中，请稍后…</div>';
+    const thumb = document.createElement('div');
+    thumb.style.cssText = 'width:278px;height:393px;overflow:hidden;position:relative;flex-shrink:0;border-radius:4px;';
+    overlay.appendChild(thumb);
+    document.body.appendChild(overlay);
     const zip = new JSZip();
-    const tempDiv = document.createElement('div');
-    tempDiv.style.cssText = 'position:fixed;top:0;left:0;z-index:9999;';
-    document.body.appendChild(tempDiv);
     for (let i = 0; i < State.pages.length; i++) {
       const page = State.pages[i];
       const html = buildPreviewHTML(page);
       const iframe = document.createElement('iframe');
-      iframe.style.width = '794px';
-      iframe.style.height = '1123px';
-      iframe.style.border = 'none';
+      iframe.style.cssText = 'width:794px;height:1123px;border:none;background:white;transform:scale(0.35);transform-origin:0 0;position:absolute;top:0;left:0;';
       iframe.srcdoc = html;
-      tempDiv.appendChild(iframe);
+      thumb.innerHTML = '';
+      thumb.appendChild(iframe);
       await new Promise(r => { iframe.onload = r; });
       await new Promise(r => setTimeout(r, 1000));
       const body = iframe.contentDocument.body;
@@ -1125,9 +1141,8 @@ async function exportImages() {
       const canvas = await html2canvas(body, { scale: 2, useCORS: true, logging: false, allowTaint: true });
       const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
       zip.file((page.name || page.id || ('page_' + (i + 1))) + '.png', blob);
-      iframe.remove();
     }
-    tempDiv.remove();
+    overlay.remove();
     const zipBlob = await zip.generateAsync({ type: 'blob' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(zipBlob);
@@ -1137,6 +1152,11 @@ async function exportImages() {
     showToast('画册导出成功');
   } catch (err) { alert('导出失败: ' + err.message); }
   finally { btn.textContent = originalText; btn.disabled = false; }
+}
+
+function fillInput(text) {
+  document.getElementById('chatInput').value = text;
+  document.getElementById('chatInput').focus();
 }
 
 function showToast(msg) {
