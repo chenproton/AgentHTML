@@ -441,11 +441,10 @@ button:active {
   position: absolute;
   display: block;
   max-width: 200px;
-  padding: 8px 14px;
+  padding: 8px 14px 8px 28px;
   border-radius: 12px;
   background: #FFFFFF;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
-  border-left: 3px solid rgb(var(--card-color-rgb));
   color: #333344;
   font-size: 18px;
   line-height: 26px;
@@ -454,6 +453,17 @@ button:active {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.timeline-unit__point::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgb(var(--card-color-rgb));
 }
 .timeline-unit__point--tl {
   right: 50%;
