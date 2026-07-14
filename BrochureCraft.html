@@ -748,10 +748,9 @@ async function doExportInner() {
   btn.textContent = '导出中...';
   btn.disabled = true;
   try {
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;display:flex;align-items:center;justify-content:center;';
-    overlay.innerHTML = '<div style="color:white;font-size:16px;">正在生成 ' + w + '×' + h + '，请稍后…</div>';
-    document.body.appendChild(overlay);
+    const scale = Math.min(300 / w, 200 / h, 0.5);
+    const thumbHTML = '<div style="width:' + (w * scale) + 'px;height:' + (h * scale) + 'px;overflow:hidden;position:relative;flex-shrink:0;border-radius:4px;"><iframe id="exportInnerThumbFrame" style="width:' + w + 'px;height:' + h + 'px;border:none;background:white;transform:scale(' + scale + ');transform-origin:0 0;"></iframe></div>';
+    const overlay = showExportOverlay(thumbHTML);
     
     const page = State.pages[0];
     const parser = new DOMParser();
@@ -761,10 +760,8 @@ async function doExportInner() {
     const innerHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8">' + cleanHead +
       '<style>html,body{margin:0;padding:0;width:' + w + 'px;height:' + h + 'px;}</style></head><body>' + (page.element ? page.element.outerHTML : '') + '</body></html>';
     
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'width:' + w + 'px;height:' + h + 'px;border:none;background:white;transform:scale(0.01);transform-origin:0 0;position:absolute;top:0;left:0;';
+    const iframe = document.getElementById('exportInnerThumbFrame');
     iframe.srcdoc = innerHTML;
-    overlay.appendChild(iframe);
     await new Promise(r => { iframe.onload = r; });
     await new Promise(r => setTimeout(r, 1500));
     
@@ -780,7 +777,7 @@ async function doExportInner() {
     const ctx = exportCanvas.getContext('2d');
     ctx.drawImage(canvas, 0, 0, w, h);
     
-    overlay.remove();
+    removeExportOverlay();
     
     const a = document.createElement('a');
     a.href = exportCanvas.toDataURL('image/png');
@@ -801,6 +798,10 @@ async function doExportInnerPDF() {
   btn.textContent = '生成中...';
   btn.disabled = true;
   try {
+    const scale = Math.min(300 / w, 200 / h, 0.5);
+    const thumbHTML = '<div style="width:' + (w * scale) + 'px;height:' + (h * scale) + 'px;overflow:hidden;position:relative;flex-shrink:0;border-radius:4px;"><iframe id="exportInnerPdfThumbFrame" style="width:' + w + 'px;height:' + h + 'px;border:none;background:white;transform:scale(' + scale + ');transform-origin:0 0;"></iframe></div>';
+    const overlay = showExportOverlay(thumbHTML);
+    
     const page = State.pages[0];
     const parser = new DOMParser();
     const origDoc = parser.parseFromString(State.templateHTML, 'text/html');
@@ -809,10 +810,8 @@ async function doExportInnerPDF() {
     const innerHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8">' + cleanHead +
       '<style>html,body{margin:0;padding:0;width:' + w + 'px;height:' + h + 'px;}</style></head><body>' + (page.element ? page.element.outerHTML : '') + '</body></html>';
     
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'width:' + w + 'px;height:' + h + 'px;border:none;background:white;';
+    const iframe = document.getElementById('exportInnerPdfThumbFrame');
     iframe.srcdoc = innerHTML;
-    document.body.appendChild(iframe);
     await new Promise(r => { iframe.onload = r; });
     await new Promise(r => setTimeout(r, 1500));
     
@@ -820,18 +819,22 @@ async function doExportInnerPDF() {
     body.querySelectorAll('[data-type="image"]').forEach(el => {
       if (!el.offsetWidth || !el.offsetHeight) el.remove();
     });
-    const canvas = await html2canvas(body, { scale: 2, useCORS: true, logging: false, allowTaint: true, width: w, height: h });
-    iframe.remove();
+    const canvas = await html2canvas(body, { scale: 1, useCORS: true, logging: false, allowTaint: true, width: w, height: h });
+    removeExportOverlay();
     
     const mmW = w * 0.264583;
     const mmH = h * 0.264583;
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: mmW > mmH ? 'landscape' : 'portrait', unit: 'mm', format: [mmW, mmH] });
-    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, mmW, mmH);
+    const imgData = canvas.toDataURL('image/jpeg', 0.85);
+    pdf.addImage(imgData, 'JPEG', 0, 0, mmW, mmH, undefined, 'FAST');
     pdf.save('inner_page.pdf');
     showToast('内页 PDF 导出成功 (' + w + '×' + h + 'px)');
-  } catch (err) { alert('导出失败: ' + err.message); }
-  finally { btn.textContent = origText; btn.disabled = false; }
+    btn.textContent = origText; btn.disabled = false;
+  } catch (err) { 
+    btn.textContent = origText; btn.disabled = false;
+    alert('导出失败: ' + err.message); 
+  }
 }
 
 /* ==================== 字段编辑器（弹窗） ==================== */
@@ -1497,6 +1500,26 @@ function applyReplacements(pageId, replacements) {
   saveToCache();
 }
 
+/* ==================== 导出遮罩 ==================== */
+function showExportOverlay(customHTML) {
+  const overlay = document.createElement('div');
+  overlay.id = 'exportOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+  overlay.innerHTML = '<div style="color:white;font-size:16px;margin-bottom:20px;">正在导出，请稍后…</div>';
+  if (customHTML) {
+    const thumb = document.createElement('div');
+    thumb.style.cssText = 'overflow:hidden;position:relative;flex-shrink:0;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+    thumb.innerHTML = customHTML;
+    overlay.appendChild(thumb);
+  }
+  document.body.appendChild(overlay);
+  return overlay;
+}
+function removeExportOverlay() {
+  const el = document.getElementById('exportOverlay');
+  if (el) el.remove();
+}
+
 /* ==================== 画册导出（PNG 打包） ==================== */
 async function exportImages() {
   if (State.mode === 'inner') { exportInner(); return; }
@@ -1506,22 +1529,15 @@ async function exportImages() {
   btn.textContent = '导出中...';
   btn.disabled = true;
   try {
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;';
-    overlay.innerHTML = '<div style="color:white;font-size:16px;margin-bottom:20px;">正在生成中，请稍后…</div>';
-    const thumb = document.createElement('div');
-    thumb.style.cssText = 'width:278px;height:393px;overflow:hidden;position:relative;flex-shrink:0;border-radius:4px;';
-    overlay.appendChild(thumb);
-    document.body.appendChild(overlay);
+    const thumbHTML = '<div style="width:278px;height:393px;overflow:hidden;position:relative;flex-shrink:0;border-radius:4px;"><iframe id="exportThumbFrame" style="width:794px;height:1123px;border:none;background:white;transform:scale(0.35);transform-origin:0 0;"></iframe></div>';
+    const overlay = showExportOverlay(thumbHTML);
+    const thumb = overlay.querySelector('#exportThumbFrame').parentElement;
     const zip = new JSZip();
     for (let i = 0; i < State.pages.length; i++) {
       const page = State.pages[i];
       const html = buildPreviewHTML(page);
-      const iframe = document.createElement('iframe');
-      iframe.style.cssText = 'width:794px;height:1123px;border:none;background:white;transform:scale(0.35);transform-origin:0 0;position:absolute;top:0;left:0;';
+      const iframe = document.getElementById('exportThumbFrame');
       iframe.srcdoc = html;
-      thumb.innerHTML = '';
-      thumb.appendChild(iframe);
       await new Promise(r => { iframe.onload = r; });
       await new Promise(r => setTimeout(r, 1000));
       const body = iframe.contentDocument.body;
@@ -1532,7 +1548,7 @@ async function exportImages() {
       const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
       zip.file((page.name || page.id || ('page_' + (i + 1))) + '.png', blob);
     }
-    overlay.remove();
+    removeExportOverlay();
     const zipBlob = await zip.generateAsync({ type: 'blob' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(zipBlob);
@@ -1558,20 +1574,16 @@ async function exportPDFGrid(quality) {
   btn.disabled = true;
   const isHD = quality === 'hd';
   try {
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;';
-    overlay.innerHTML = '<div style="color:white;font-size:16px;margin-bottom:20px;">正在生成印刷 PDF（' + (isHD ? '最高清' : '标准') + '版），请稍后…</div>';
-    document.body.appendChild(overlay);
+    const thumbHTML = '<div style="width:278px;height:393px;overflow:hidden;position:relative;flex-shrink:0;border-radius:4px;"><iframe id="exportPdfThumbFrame" style="width:794px;height:1123px;border:none;background:white;transform:scale(0.35);transform-origin:0 0;"></iframe></div>';
+    const overlay = showExportOverlay(thumbHTML);
     const canvases = [];
-    const foldOrder = [1, 2, 3, 6, 7, 0, 4, 5]; // 折页印刷顺序：第2、3、4、7、8、1、5、6页
+    const foldOrder = [1, 2, 3, 6, 7, 0, 4, 5];
     for (const idx of foldOrder) {
       if (idx >= State.pages.length) continue;
       const page = State.pages[idx];
       const html = buildPreviewHTML(page);
-      const iframe = document.createElement('iframe');
-      iframe.style.cssText = 'width:794px;height:1123px;border:none;background:white;';
+      const iframe = document.getElementById('exportPdfThumbFrame');
       iframe.srcdoc = html;
-      overlay.appendChild(iframe);
       await new Promise(r => { iframe.onload = r; });
       await new Promise(r => setTimeout(r, 1000));
       const body = iframe.contentDocument.body;
@@ -1580,9 +1592,8 @@ async function exportPDFGrid(quality) {
       });
       const canvas = await html2canvas(body, { scale: 4, useCORS: true, logging: false, allowTaint: true });
       canvases.push(canvas);
-      iframe.remove();
     }
-    overlay.remove();
+    removeExportOverlay();
     const { jsPDF } = window.jspdf;
     const cols = 4;
     const rows = Math.ceil(canvases.length / cols);
