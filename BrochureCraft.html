@@ -813,6 +813,15 @@ function deleteUnit(jobIndex, unitIndex) {
   showToast('单元已删除');
 }
 
+function getUsedPointPositions(unitEl) {
+  const used = new Set();
+  unitEl.querySelectorAll('.timeline-unit__point').forEach(p => {
+    const m = p.className.match(/timeline-unit__point--(\w+)/);
+    if (m) used.add(m[1]);
+  });
+  return used;
+}
+
 function addPoint(jobIndex, unitIndex) {
   const page = getInnerPage();
   if (!page) return;
@@ -822,10 +831,12 @@ function addPoint(jobIndex, unitIndex) {
   const unit = job.units[unitIndex];
   if (!unit) return;
   if (unit.points.length >= 4) { showToast('每单元最多 4 个知识点'); return; }
+  const posCycle = ['tl', 'tr', 'bl', 'br'];
+  const used = getUsedPointPositions(unit.el);
+  const newPos = posCycle.find(pos => !used.has(pos));
+  if (!newPos) { showToast('没有空余位置'); return; }
   const lastPoint = unit.points[unit.points.length - 1].el;
   const clone = lastPoint.cloneNode(true);
-  const posCycle = ['tl', 'tr', 'bl', 'br'];
-  const newPos = posCycle[unit.points.length % 4];
   clone.className = 'timeline-unit__point timeline-unit__point--' + newPos;
   clone.textContent = '新知识点';
   unit.el.appendChild(clone);
