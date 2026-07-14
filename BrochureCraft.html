@@ -64,6 +64,10 @@
   .preview-hint-card { position:absolute; top:12px; right:16px; background:white; color:var(--text-secondary); padding:5px 12px; border-radius:6px; font-size:11px; box-shadow:0 1px 4px rgba(0,0,0,0.08); z-index:5; pointer-events:none; }
   .preview-wrapper { background:white; box-shadow:0 2px 20px rgba(0,0,0,0.10); border-radius:4px; }
   .preview-iframe { width:210mm; height:297mm; border:none; display:block; border-radius:4px; }
+  .preview-zoom-bar { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:6px; background:white; padding:6px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12); z-index:20; }
+  .preview-zoom-btn { width:30px; height:30px; border:1px solid var(--border); background:white; border-radius:6px; cursor:pointer; font-size:15px; line-height:1; display:flex; align-items:center; justify-content:center; color:var(--text); transition:all 0.15s; }
+  .preview-zoom-btn:hover { background:var(--primary-light); border-color:var(--primary); color:var(--primary); }
+  .preview-zoom-value { min-width:50px; text-align:center; font-size:12px; font-weight:600; color:var(--text-secondary); user-select:none; }
 
   /* ===== 右侧面板 ===== */
   .sidebar-right { width:420px; background:var(--sidebar-bg); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; }
@@ -270,6 +274,7 @@ const State = {
   previewActive: false,
   mode: 'cover', // 'cover' | 'inner'
   innerWidth: 9920, innerHeight: 6732,
+  previewScale: null, // null = 自适应, number = 用户手动缩放比例
 };
 
 function loadConfig() {
@@ -437,6 +442,7 @@ function clearAllCache() {
   State.pending = null;
   State.previewActive = false;
   State.mode = 'cover';
+  State.previewScale = null;
   document.querySelector('.sidebar-left').style.display = '';
   renderPageList();
   document.getElementById('previewArea').innerHTML =
@@ -496,6 +502,7 @@ async function handleImportInner(event) {
     });
     State.pages.push({ id: 'inner_page', name: '内页编辑', fields, element: pageEl.cloneNode(true) });
     State.currentPageId = 'inner_page';
+    State.previewScale = null;
     if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
     // 隐藏左侧栏
     document.querySelector('.sidebar-left').style.display = 'none';
@@ -528,6 +535,7 @@ async function handleImport(event) {
     State.templateHTML = htmlContent;
     localStorage.removeItem('bc_template');
     State.chats = new Map();
+    State.previewScale = null;
     parseTemplate(htmlContent);
     saveToCache();
     showToast('模板导入成功');
@@ -604,7 +612,7 @@ function renderPreview(pageId) {
   const page = State.pages.find(p => p.id === pageId);
   if (!page) return;
   const previewArea = document.getElementById('previewArea');
-  previewArea.innerHTML = '<div class="preview-wrapper" id="previewWrapper"><iframe class="preview-iframe" id="previewFrame"></iframe></div><div class="preview-hint-card" id="previewHintCard">💡 双击文字或图片可直接编辑</div>';
+  previewArea.innerHTML = '<div class="preview-wrapper" id="previewWrapper"><iframe class="preview-iframe" id="previewFrame"></iframe></div><div class="preview-hint-card" id="previewHintCard">💡 双击文字或图片可直接编辑</div>' + getZoomBarHTML();
   const iframe = document.getElementById('previewFrame');
   iframe.onload = () => {
     State.doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -620,8 +628,50 @@ function renderPreview(pageId) {
 
 // 窗口缩放时重新计算
 window.addEventListener('resize', () => {
-  if (State.currentPageId) autoScalePreview();
+  if (!State.currentPageId) return;
+  if (State.mode === 'inner') {
+    applyInnerPreviewScale();
+  } else {
+    autoScalePreview();
+  }
 });
+
+function getZoomBarHTML() {
+  return '<div class="preview-zoom-bar" id="previewZoomBar">' +
+    '<button class="preview-zoom-btn" onclick="zoomPreview(-0.1)" title="缩小">−</button>' +
+    '<span class="preview-zoom-value" id="previewZoomValue">100%</span>' +
+    '<button class="preview-zoom-btn" onclick="zoomPreview(0.1)" title="放大">+</button>' +
+    '<button class="preview-zoom-btn" onclick="fitPreview()" title="适应窗口" style="font-size:13px;">⟲</button>' +
+  '</div>';
+}
+
+function updateZoomDisplay(scale) {
+  const el = document.getElementById('previewZoomValue');
+  if (el) el.textContent = Math.round((scale || 1) * 100) + '%';
+}
+
+function zoomPreview(delta) {
+  let current;
+  if (State.mode === 'inner') {
+    const previewArea = document.getElementById('previewArea');
+    current = State.previewScale || Math.min((previewArea.clientWidth - 40) / State.innerWidth, (previewArea.clientHeight - 40) / State.innerHeight, 0.6);
+  } else {
+    const wrapper = document.getElementById('previewWrapper');
+    const containerWidth = wrapper ? wrapper.parentElement.clientWidth - 40 : 0;
+    const containerHeight = wrapper ? wrapper.parentElement.clientHeight - 40 : 0;
+    current = State.previewScale || Math.min(containerWidth / 794, containerHeight / 1123, 1);
+  }
+  const newScale = Math.max(0.1, Math.min(3, current + delta));
+  State.previewScale = newScale;
+  if (State.mode === 'inner') applyInnerPreviewScale();
+  else autoScalePreview();
+}
+
+function fitPreview() {
+  State.previewScale = null;
+  if (State.mode === 'inner') applyInnerPreviewScale();
+  else autoScalePreview();
+}
 
 function autoScalePreview() {
   const wrapper = document.getElementById('previewWrapper');
@@ -629,16 +679,30 @@ function autoScalePreview() {
   if (!wrapper || !iframe) return;
   const containerWidth = wrapper.parentElement.clientWidth - 40;
   const containerHeight = wrapper.parentElement.clientHeight - 40;
-  const a4Width = 794;
-  const a4Height = 1123;
-  const scaleX = containerWidth / a4Width;
-  const scaleY = containerHeight / a4Height;
-  const scale = Math.min(scaleX, scaleY, 1);
+  const autoScale = Math.min(containerWidth / 794, containerHeight / 1123, 1);
+  const scale = State.previewScale || autoScale;
   wrapper.style.transform = 'scale(' + scale + ')';
   wrapper.style.transformOrigin = 'top center';
-  wrapper.style.width = a4Width + 'px';
-  wrapper.style.height = a4Height + 'px';
+  wrapper.style.width = '794px';
+  wrapper.style.height = '1123px';
   iframe.style.overflow = 'hidden';
+  updateZoomDisplay(scale);
+}
+
+function applyInnerPreviewScale() {
+  const iframe = document.getElementById('previewFrame');
+  const container = iframe ? iframe.parentElement : null;
+  if (!iframe || !container) return;
+  const previewArea = document.getElementById('previewArea');
+  const containerW = previewArea ? previewArea.clientWidth - 40 : 0;
+  const containerH = previewArea ? previewArea.clientHeight - 40 : 0;
+  const autoScale = Math.min(containerW / State.innerWidth, containerH / State.innerHeight, 0.6);
+  const scale = State.previewScale || autoScale;
+  iframe.style.transform = 'scale(' + scale + ')';
+  iframe.style.transformOrigin = '0 0';
+  container.style.width = (State.innerWidth * scale) + 'px';
+  container.style.height = (State.innerHeight * scale) + 'px';
+  updateZoomDisplay(scale);
 }
 
 function buildPreviewHTML(maybePage, extraCSS, noEdit) {
@@ -671,20 +735,15 @@ function renderPreviewInner() {
   const page = State.pages.find(p => p.id === 'inner_page');
   if (!page) return;
   const previewArea = document.getElementById('previewArea');
-  
+
   const parser = new DOMParser();
   const origDoc = parser.parseFromString(State.templateHTML, 'text/html');
   const origHead = origDoc.head ? origDoc.head.innerHTML : '';
   const cleanHead = origHead.replace(/<meta[^>]*viewport[^>]*>/gi, '');
-  
+
   const width = State.innerWidth;
   const height = State.innerHeight;
-  
-  // 计算缩放
-  const containerW = previewArea.clientWidth - 40;
-  const containerH = previewArea.clientHeight - 40;
-  const scale = Math.min(containerW / width, containerH / height, 0.6);
-  
+
   const innerHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8">' + cleanHead +
     '<style>' +
     'html,body{margin:0;padding:0;width:' + width + 'px;height:' + height + 'px;overflow:hidden;}' +
@@ -692,19 +751,21 @@ function renderPreviewInner() {
     '[data-field]:hover{outline:2px dashed #2563eb;outline-offset:2px;}' +
     '</style></head><body>' + (page.element ? page.element.outerHTML : '') +
     '<script>document.querySelectorAll("[data-field]").forEach(el=>{el.addEventListener("dblclick",function(e){e.stopPropagation();parent.postMessage({type:"editField",fieldName:this.getAttribute("data-field")},"*");});});<\/script></body></html>';
-  
+
   previewArea.innerHTML =
     '<div class="preview-hint-card">💡 双击文字或图片可直接编辑 | ' + width + '×' + height + 'px</div>' +
-    '<div style="overflow:hidden;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.08);background:white;width:' + (width*scale) + 'px;height:' + (height*scale) + 'px;flex-shrink:0;">' +
-      '<iframe id="previewFrame" style="width:' + width + 'px;height:' + height + 'px;border:none;display:block;transform:scale(' + scale + ');transform-origin:0 0;" srcdoc="' + escapeHtmlForAttr(innerHTML) + '"></iframe>' +
-    '</div>';
-  
+    '<div id="previewWrapper" style="overflow:hidden;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.08);background:white;flex-shrink:0;">' +
+      '<iframe id="previewFrame" style="width:' + width + 'px;height:' + height + 'px;border:none;display:block;transform-origin:0 0;" srcdoc="' + escapeHtmlForAttr(innerHTML) + '"></iframe>' +
+    '</div>' +
+    getZoomBarHTML();
+
   const iframe = document.getElementById('previewFrame');
   if (iframe) {
     iframe.onload = () => {
       State.doc = iframe.contentDocument || iframe.contentWindow.document;
     };
   }
+  applyInnerPreviewScale();
 }
 
 function escapeHtmlForAttr(str) {
