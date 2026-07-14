@@ -150,30 +150,30 @@ body {
   border-radius: 14px 14px 0 14px;
 }
 
-/* 节点2: 左上 */
-.node-2 { top: 15%; left: 8%; }
+/* 节点2: 左上 — 标签向左延伸(远离中心) */
+.node-2 { top: 15%; left: 8%; flex-direction: row-reverse; }
 .node-2 .node-label {
-  left: 100%; margin-left: 8px;
+  right: 100%; margin-right: 8px;
+  border-radius: 14px 0 14px 14px;
 }
 
-/* 节点3: 左下 */
-.node-3 { bottom: 12%; left: 15%; }
+/* 节点3: 左下 — 标签向左延伸(远离中心) */
+.node-3 { bottom: 12%; left: 15%; flex-direction: row-reverse; }
 .node-3 .node-label {
+  right: 100%; margin-right: 8px;
+  border-radius: 14px 0 14px 14px;
+}
+
+/* 节点4: 右下 — 标签向右延伸(远离中心) */
+.node-4 { bottom: 12%; right: 15%; }
+.node-4 .node-label {
   left: 100%; margin-left: 8px;
 }
 
-/* 节点4: 右下 */
-.node-4 { bottom: 12%; right: 15%; flex-direction: row-reverse; }
-.node-4 .node-label {
-  right: 100%; margin-right: 8px;
-  border-radius: 14px 0 14px 14px;
-}
-
-/* 节点5: 右上 */
-.node-5 { top: 15%; right: 8%; flex-direction: row-reverse; }
+/* 节点5: 右上 — 标签向右延伸(远离中心) */
+.node-5 { top: 15%; right: 8%; }
 .node-5 .node-label {
-  right: 100%; margin-right: 8px;
-  border-radius: 14px 0 14px 14px;
+  left: 100%; margin-left: 8px;
 }
 
 /* ====== 连接线 ====== */
@@ -193,76 +193,56 @@ body {
   transform: translateX(-50%);
 }
 
-/* 左上连接线 */
+/* 左上连接线 (圆在右, 线向右→向下到中心) */
 .node-2::before {
-  width: 50px;
-  height: 2px;
-  right: 95%;
-  top: 50%;
+  width: 50px; height: 2px;
+  left: 100%; top: 50%;
 }
 .node-2::after {
   content: '';
   position: absolute;
-  width: 2px;
-  height: 30px;
-  bottom: 100%;
-  right: calc(95% + 50px - 1px);
-  background: #004a88;
-  z-index: 1;
+  width: 2px; height: 40px;
+  left: calc(100% + 50px - 1px); bottom: 100%;
+  background: #004a88; z-index: 1;
 }
 
-/* 左下连接线 */
+/* 左下连接线 (圆在右, 线向右→向上到中心) */
 .node-3::before {
-  width: 40px;
-  height: 2px;
-  right: 95%;
-  top: 50%;
+  width: 40px; height: 2px;
+  left: 100%; top: 50%;
 }
 .node-3::after {
   content: '';
   position: absolute;
-  width: 2px;
-  height: 25px;
-  top: 100%;
-  right: calc(95% + 40px - 1px);
-  background: #004a88;
-  z-index: 1;
+  width: 2px; height: 40px;
+  left: calc(100% + 40px - 1px); top: 100%;
+  background: #004a88; z-index: 1;
 }
 
-/* 右下连接线 */
+/* 右下连接线 (圆在左, 线向左→向上到中心) */
 .node-4::before {
-  width: 40px;
-  height: 2px;
-  left: 95%;
-  top: 50%;
+  width: 40px; height: 2px;
+  right: 100%; top: 50%;
 }
 .node-4::after {
   content: '';
   position: absolute;
-  width: 2px;
-  height: 25px;
-  top: 100%;
-  left: calc(95% + 40px - 1px);
-  background: #004a88;
-  z-index: 1;
+  width: 2px; height: 40px;
+  right: calc(100% + 40px - 1px); top: 100%;
+  background: #004a88; z-index: 1;
 }
 
-/* 右上连接线 */
+/* 右上连接线 (圆在左, 线向左→向下到中心) */
 .node-5::before {
-  width: 50px;
-  height: 2px;
-  left: 95%;
-  top: 50%;
+  width: 50px; height: 2px;
+  right: 100%; top: 50%;
 }
 .node-5::after {
   content: '';
   position: absolute;
-  width: 2px;
-  height: 30px;
-  bottom: 100%;
-  left: calc(95% + 50px - 1px);
-  background: #004a88;
-  z-index: 1;
+  width: 2px; height: 40px;
+  right: calc(100% + 50px - 1px); bottom: 100%;
+  background: #004a88; z-index: 1;
 }
 </style>
 </head>
