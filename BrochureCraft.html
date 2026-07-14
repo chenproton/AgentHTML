@@ -172,7 +172,7 @@
     <button class="btn btn-secondary" onclick="showConfig()">⚙️ AI 配置</button>
     <button class="btn btn-secondary" onclick="showImportMode()">📂 导入模板</button>
     <input type="file" id="templateInput" class="file-input" accept=".html,.zip" onchange="handleImport(event)">
-    <input type="file" id="templateInputInner" class="file-input" accept=".html" onchange="handleImportInner(event)">
+    <input type="file" id="templateInputInner" class="file-input" accept=".html,.zip" onchange="handleImportInner(event)">
     <button class="btn btn-danger" onclick="clearAllCache()">🗑 清空缓存</button>
     <button class="btn btn-primary" id="exportBtn" onclick="exportImages()" disabled>📥 导出图片</button>
     <button class="btn btn-primary" id="exportPdfBtn" onclick="togglePdfMenu()" disabled>📄 导出 PDF ▾</button>
@@ -272,7 +272,7 @@
           <div class="import-card" onclick="selectImportMode('inner')" style="flex:1;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
             <div style="font-size:40px;margin-bottom:12px;">📋</div>
             <div style="font-size:15px;font-weight:600;margin-bottom:6px;">导入画册内页<br/>(岗位路径)</div>
-            <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">单页长图编辑<br/>自定义导出尺寸<br/>不分页</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">支持 .html / .zip<br/>单页长图编辑<br/>自定义导出尺寸</div>
           </div>
         </div>
       </div>
@@ -515,7 +515,15 @@ async function handleImportInner(event) {
   const file = event.target.files[0];
   if (!file) return;
   try {
-    const htmlContent = await file.text();
+    let htmlContent = '';
+    if (file.name.endsWith('.zip')) {
+      const zip = await JSZip.loadAsync(file);
+      const htmlFile = zip.file('index.html') || zip.file(/\.html$/i)[0];
+      if (!htmlFile) throw new Error('ZIP 中未找到 HTML 文件');
+      htmlContent = await htmlFile.async('text');
+    } else {
+      htmlContent = await file.text();
+    }
     State.templateHTML = htmlContent;
     localStorage.removeItem('bc_template');
     State.chats = new Map();
