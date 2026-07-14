@@ -278,7 +278,7 @@
           <div class="chat-header-sub" id="chatSub"></div>
         </div>
       </div>
-      <button class="btn btn-sm btn-secondary" onclick="clearChat()" style="flex-shrink:0;">🗑 清理上下文</button>
+      <button class="btn btn-sm btn-secondary" id="clearChatBtn" onclick="clearChat()" style="flex-shrink:0;display:none;">🗑 清理上下文</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-suggestions" id="chatSuggestions" style="display:none;padding:0 20px 10px;">
@@ -1779,6 +1779,15 @@ function renderChat(pageId) {
   const container = document.getElementById('chatMessages');
   container.innerHTML = messages.map(m => formatMessage(m)).join('');
   container.scrollTop = container.scrollHeight;
+  updateClearChatButton();
+}
+
+function updateClearChatButton() {
+  const btn = document.getElementById('clearChatBtn');
+  if (!btn) return;
+  const messages = State.chats.get(State.currentPageId) || [];
+  const hasMessages = messages.some(m => m.role !== 'typing');
+  btn.style.display = hasMessages ? '' : 'none';
 }
 
 function formatMessage(m) {
