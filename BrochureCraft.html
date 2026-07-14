@@ -781,13 +781,15 @@ async function handleImportCombined(event) {
 
 function setActiveCombinedMode(mode, shouldSave) {
   if (!State.combined) return;
-  // 把当前激活视图存回对应变量
-  if (State.mode === 'cover') {
-    State.coverTemplateHTML = State.templateHTML;
-    State.coverPages = State.pages;
-  } else if (State.mode === 'inner') {
-    State.innerTemplateHTML = State.templateHTML;
-    State.innerPage = State.pages[0] || null;
+  // 把当前激活视图存回对应变量（仅在正常切换时保存，初始化/恢复时不反向覆盖）
+  if (shouldSave) {
+    if (State.mode === 'cover') {
+      State.coverTemplateHTML = State.templateHTML;
+      State.coverPages = State.pages;
+    } else if (State.mode === 'inner') {
+      State.innerTemplateHTML = State.templateHTML;
+      State.innerPage = State.pages[0] || null;
+    }
   }
   State.mode = mode;
   State.templateHTML = mode === 'cover' ? State.coverTemplateHTML : State.innerTemplateHTML;
