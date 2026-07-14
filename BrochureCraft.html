@@ -968,9 +968,10 @@ function openFieldEditorModal() {
       '<div class="form-hint" style="margin-bottom:8px;">每行一项，支持 HTML 标签</div>' +
       '<textarea class="form-input" id="fieldEditValue" rows="6" style="min-height:140px;font-family:inherit;">' + escapeHtml(items.join('\n')) + '</textarea></div>';
   } else if (field.type === 'html') {
+    const displayValue = (field.currentValue || '').replace(/<br\s*\/?>/gi, '\n');
     inputHTML = '<div class="form-group"><label class="form-label">HTML 内容</label>' +
-      '<div class="form-hint" style="margin-bottom:8px;">可直接编辑 HTML 标签和样式</div>' +
-      '<textarea class="form-input" id="fieldEditValue" rows="8" style="min-height:160px;font-family:\'SF Mono\',Monaco,monospace;font-size:13px;">' + escapeHtml(field.currentValue) + '</textarea></div>';
+      '<div class="form-hint" style="margin-bottom:8px;">可直接编辑 HTML 标签和样式，换行会自动转成 &lt;br&gt;</div>' +
+      '<textarea class="form-input" id="fieldEditValue" rows="8" style="min-height:160px;font-family:inherit;font-size:13px;">' + escapeHtml(displayValue) + '</textarea></div>';
   } else {
     inputHTML = '<div class="form-group"><label class="form-label">文本内容</label>' +
       '<textarea class="form-input single-line" id="fieldEditValue" rows="3" style="min-height:80px;">' + escapeHtml(field.currentValue) + '</textarea></div>';
@@ -1012,6 +1013,9 @@ function saveFieldEdit() {
   if (!field) return;
   const input = document.getElementById('fieldEditValue');
   let value = input.value;
+  if (field.type === 'html') {
+    value = value.replace(/\n/g, '<br>');
+  }
   if (field.type === 'list') {
     const lines = value.split('\n').filter(l => l.trim() !== '');
     value = lines.map(l => '<li>' + l.trim() + '</li>').join('');
