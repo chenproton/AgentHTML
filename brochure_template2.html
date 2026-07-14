@@ -93,74 +93,85 @@ button:active {
 }
 
 .group_1 {
-  background: linear-gradient(135deg, rgba(249,98,23,1) 0%, rgba(255,140,50,1) 100%);
+  background: linear-gradient(160deg, #e85d18 0%, #f87a2c 40%, #ff9a4d 100%);
   position: relative;
   width: 9920px;
   height: 520px;
+  overflow: hidden;
+}
+/* 背景装饰 */
+.group_1::before {
+  content: ''; position: absolute;
+  right: -300px; top: -400px;
+  width: 1200px; height: 1200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.group_1::after {
+  content: ''; position: absolute;
+  left: 6000px; bottom: -200px;
+  width: 800px; height: 800px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
 }
 
 .text_1 {
-  width: 6200px; height: auto;
-  color: #fff; font-size: 140px;
+  width: 6400px; height: auto;
+  color: #fff; font-size: 142px;
   font-family: Microsoft YaHei UI-Bold; font-weight: 700;
-  text-align: left; line-height: 1.25;
-  margin: 160px 0 0 150px;
+  text-align: left; line-height: 1.22;
+  margin: 145px 0 0 180px;
+  letter-spacing: 2px;
 }
 
 .text_2 {
   width: auto; height: auto;
-  color: rgba(51,51,51,1); font-size: 60px;
+  color: rgba(0,0,0,0.7); font-size: 56px;
   font-family: Microsoft YaHei UI-Regular; font-weight: normal;
-  text-align: center; line-height: 1.4;
-  margin: 20px 40px;
+  text-align: center; line-height: 1.45;
+  margin: 0 30px;
 }
 /* 右侧企业信息卡片 */
 .header-card {
-  position: absolute; right: 200px; top: 80px;
-  width: 1700px; background: rgba(255,255,255,0.92);
-  border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.12);
-  padding: 60px 80px;
+  position: absolute; right: 220px; top: 55px;
+  width: 1600px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  padding: 50px 70px 45px;
   display: flex; flex-direction: column; align-items: center;
 }
 .header-card .logo {
-  width: 160px; height: 160px; border-radius: 50%;
-  background: rgba(0,74,136,0.08);
+  width: 140px; height: 140px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0,74,136,0.06), rgba(0,74,136,0.12));
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 .header-card .logo img {
-  width: 120px; height: 120px; object-fit: contain; opacity: 0.8;
+  width: 105px; height: 105px; object-fit: contain; opacity: 0.85;
 }
 /* 底部非卖品 */
 .page-footnote {
-  position: absolute; right: 200px; bottom: 50px;
-  color: rgba(0,0,0,0.35); font-size: 42px;
+  position: absolute; right: 200px; bottom: 40px;
+  color: rgba(0,0,0,0.28); font-size: 40px;
   font-family: Microsoft YaHei UI-Regular;
   white-space: nowrap; z-index: 50;
 }
 
 .text-wrapper_1 {
-  background-color: rgba(255, 255, 255, 1);
-  border-radius: 200px;
-  height: 130px;
-  width: 375px;
-  position: absolute;
-  left: 150px;
-  top: 160px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 100px; height: 90px; width: 270px;
+  position: absolute; left: 180px; top: 35px;
+  display: flex; align-items: center; justify-content: center;
 }
 
 .text_3 {
-  width: 236px;
-  height: 88px;
-  overflow-wrap: break-word;
-  color: rgba(249, 99, 23, 1);
-  font-size: 68px;
-  font-family: Microsoft YaHei UI-Bold;
-  font-weight: 700;
-  text-align: left;
-  white-space: nowrap;
-  line-height: 88px;
-  margin: 21px 0 0 73px;
+  width: auto; height: auto;
+  color: #fff; font-size: 44px;
+  font-family: Microsoft YaHei UI-Bold; font-weight: 700;
+  text-align: center; white-space: nowrap;
+  line-height: 1; margin: 0; letter-spacing: 3px;
 }
 
 .group_2 {
