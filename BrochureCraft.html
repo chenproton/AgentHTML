@@ -692,6 +692,23 @@ function relayoutJobCards(panel) {
   }
 }
 
+const TIMELINE_XS = [257, 771, 1286, 1800, 2314, 2829, 3343];
+
+function updateTimelinePath(timeline) {
+  const svg = timeline.querySelector('svg.timeline__connections');
+  if (!svg) return;
+  const unitCount = timeline.querySelectorAll('.timeline-unit').length;
+  const points = [];
+  for (let i = 0; i < unitCount; i++) {
+    const x = TIMELINE_XS[i] || (257 + i * 514);
+    const y = i % 2 === 0 ? 780 : 260;
+    points.push(x + ',' + y);
+  }
+  const d = points.length ? 'M' + points.join(' L') : '';
+  const path = svg.querySelector('path');
+  if (path) path.setAttribute('d', d);
+}
+
 function relayoutUnits(timeline) {
   // 按 1、2、3、4、5、6、7 从左到右顺序排列：
   // 奇数位单元（1、3、5、7）放底层（奇数列），偶数位单元（2、4、6）放顶层（偶数列）。
@@ -709,6 +726,7 @@ function relayoutUnits(timeline) {
   });
   if (topRow.children.length) timeline.appendChild(topRow);
   if (bottomRow.children.length) timeline.appendChild(bottomRow);
+  updateTimelinePath(timeline);
 }
 
 function normalizeInnerLayout(pageEl) {
