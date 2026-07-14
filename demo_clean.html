@@ -655,10 +655,10 @@ button:active {
       <svg class="page-header__bg" width="9920" height="571" viewBox="0 0 9920 571" preserveAspectRatio="none" aria-hidden="true">
         <path d="M0,0 H9920 V132 H3920 C3800,250 3600,480 3360,570 H0 V0 Z" fill="#F96217" />
       </svg>
-      <h1 class="page-header__title">产业驱动式场景化智慧物流人才-定制化培养路径</h1>
-      <p class="page-header__subtitle">国内领先的数智化综合物流解决方案服务商</p>
+      <h1 class="page-header__title" data-field="header_title" data-type="text">产业驱动式场景化智慧物流人才-定制化培养路径</h1>
+      <p class="page-header__subtitle" data-field="header_subtitle" data-type="text">国内领先的数智化综合物流解决方案服务商</p>
       <div class="page-header__badge">
-        <span class="page-header__badge-text">2026版</span>
+        <span class="page-header__badge-text" data-field="header_badge" data-type="text">2026版</span>
       </div>
       <img
       class="page-header__logo"
@@ -671,7 +671,7 @@ button:active {
       <!-- 内容由 JS 根据 DEFAULT_DATA 渲染 -->
     </section>
 <footer class="page-footer">
-      <p class="page-footer__note">
+      <p class="page-footer__note" data-field="footer_note" data-type="text">
         非卖品&nbsp;由中宝智运（上海）物流科技有限公司与杭州知与未来科技有限公司联合出版
       </p>
     </footer>
@@ -1464,16 +1464,18 @@ button:active {
       feature.className = 'job-card__feature';
       feature.innerHTML = '<div class="feature-label">' +
         '<span class="feature-label__dot"></span>' +
-        '<h3 class="feature-label__text">' + escapeHtml(job.featureTitle) + '</h3>' +
+        '<h3 class="feature-label__text" data-field="job_' + jobIndex + '_feature_title" data-type="text">' + escapeHtml(job.featureTitle) + '</h3>' +
         '</div>' +
-        '<p class="job-card__desc" contenteditable="true" data-field="desc" data-job-id="' + job.id + '">' + escapeHtml(job.featureDesc) + '</p>';
+        '<p class="job-card__desc" contenteditable="true" data-edit-type="desc" data-field="job_' + jobIndex + '_feature_desc" data-type="text" data-job-id="' + job.id + '">' + escapeHtml(job.featureDesc) + '</p>';
       article.appendChild(feature);
 
       // Title
       const title = document.createElement('h2');
       title.className = 'job-card__title';
       title.contentEditable = true;
-      title.dataset.field = 'title';
+      title.dataset.editType = 'title';
+      title.dataset.field = 'job_' + jobIndex + '_title';
+      title.dataset.type = 'text';
       title.dataset.jobId = job.id;
       title.textContent = job.title;
       article.appendChild(title);
@@ -1492,7 +1494,9 @@ button:active {
         const li = document.createElement('li');
         li.className = 'tools-list__item';
         li.contentEditable = true;
-        li.dataset.field = 'tool';
+        li.dataset.editType = 'tool';
+        li.dataset.field = 'job_' + jobIndex + '_tool_' + ti;
+        li.dataset.type = 'text';
         li.dataset.jobId = job.id;
         li.dataset.toolIndex = ti;
         li.textContent = tool;
@@ -1505,6 +1509,8 @@ button:active {
       // Badge
       const badge = document.createElement('span');
       badge.className = 'job-card__tools-badge';
+      badge.dataset.field = 'job_' + jobIndex + '_tools_badge';
+      badge.dataset.type = 'text';
       badge.textContent = '训练工具';
       article.appendChild(badge);
 
@@ -1553,17 +1559,21 @@ button:active {
           const node = document.createElement('div');
           node.className = 'timeline-unit__node';
           node.contentEditable = true;
-          node.dataset.field = 'unit-title';
+          node.dataset.editType = 'unit-title';
           node.dataset.jobId = job.id;
           node.dataset.unitIndex = unitIndex;
-          node.innerHTML = unit.title;
+          node.innerHTML = String(unit.title).split('<br>').map(function (part, idx) {
+            return '<span data-field="job_' + jobIndex + '_unit_' + unitIndex + '_title_' + idx + '" data-type="text">' + escapeHtml(part) + '</span>';
+          }).join('<br>');
           unitEl.appendChild(node);
 
           // Capsule
           const cap = document.createElement('span');
           cap.className = 'timeline-unit__capsule';
           cap.contentEditable = true;
-          cap.dataset.field = 'unit-hours';
+          cap.dataset.editType = 'unit-hours';
+          cap.dataset.field = 'job_' + jobIndex + '_unit_' + unitIndex + '_hours';
+          cap.dataset.type = 'text';
           cap.dataset.jobId = job.id;
           cap.dataset.unitIndex = unitIndex;
           cap.textContent = unit.hours + '课时';
@@ -1575,7 +1585,9 @@ button:active {
             const point = document.createElement('span');
             point.className = 'timeline-unit__point ' + posClass;
             point.contentEditable = true;
-            point.dataset.field = 'point';
+            point.dataset.editType = 'point';
+            point.dataset.field = 'job_' + jobIndex + '_unit_' + unitIndex + '_point_' + pi;
+            point.dataset.type = 'text';
             point.dataset.jobId = job.id;
             point.dataset.unitIndex = unitIndex;
             point.dataset.pointIndex = pi;
@@ -1658,7 +1670,7 @@ button:active {
 
   function handleBlur(e) {
     const el = e.target;
-    const field = el.dataset.field;
+    const field = el.dataset.editType;
     const jobId = el.dataset.jobId;
     const data = window.__currentData;
     const job = data.jobs.find(function (j) { return j.id === jobId; });
@@ -1675,12 +1687,16 @@ button:active {
       if (job.tools[ti] !== undefined) job.tools[ti] = el.innerText.trim();
     } else if (field === 'unit-title') {
       const ui = parseInt(el.dataset.unitIndex, 10);
-      if (job.units[ui]) job.units[ui].title = el.innerHTML.trim();
+      if (job.units[ui]) job.units[ui].title = el.innerText.split('\n').join('<br>').trim();
     } else if (field === 'unit-hours') {
       const ui = parseInt(el.dataset.unitIndex, 10);
       const num = parseInt(el.innerText.replace(/[^\d]/g, ''), 10) || 0;
       if (job.units[ui]) job.units[ui].hours = num;
-      el.textContent = num + '课时';
+      if (el.firstChild && el.firstChild.nodeType === Node.TEXT_NODE) {
+        el.firstChild.textContent = num + '课时';
+      } else {
+        el.textContent = num + '课时';
+      }
     } else if (field === 'point') {
       const ui = parseInt(el.dataset.unitIndex, 10);
       const pi = parseInt(el.dataset.pointIndex, 10);
