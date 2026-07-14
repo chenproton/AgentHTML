@@ -58,7 +58,7 @@
   .page-status.filled { background:var(--success); }
 
   /* ===== 预览区 ===== */
-  .preview-area { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:24px; overflow:auto; background:#e3e5e8; position:relative; }
+  .preview-area { flex:1; display:flex; flex-direction:column; align-items:center; align-items:safe center; justify-content:flex-start; padding:24px; overflow:auto; background:#e3e5e8; position:relative; }
   .empty-state { text-align:center; color:var(--text-muted); margin:auto; }
   .empty-state svg { width:40px; height:40px; margin-bottom:16px; opacity:0.3; }
   .preview-hint-card { position:absolute; top:12px; right:16px; background:white; color:var(--text-secondary); padding:5px 12px; border-radius:6px; font-size:11px; box-shadow:0 1px 4px rgba(0,0,0,0.08); z-index:5; pointer-events:none; }
@@ -681,11 +681,19 @@ function autoScalePreview() {
   const containerHeight = wrapper.parentElement.clientHeight - 40;
   const autoScale = Math.min(containerWidth / 794, containerHeight / 1123, 1);
   const scale = State.previewScale || autoScale;
-  wrapper.style.transform = 'scale(' + scale + ')';
-  wrapper.style.transformOrigin = 'top center';
-  wrapper.style.width = '794px';
-  wrapper.style.height = '1123px';
+  // 缩放 iframe 本身，并把 wrapper 尺寸设为缩放后的实际尺寸，
+  // 这样预览区 overflow:auto 能正确产生左右/上下滚动条。
+  wrapper.style.width = (794 * scale) + 'px';
+  wrapper.style.height = (1123 * scale) + 'px';
+  wrapper.style.margin = '0 auto';
+  wrapper.style.overflow = 'hidden';
+  wrapper.style.transform = 'none';
+  iframe.style.width = '794px';
+  iframe.style.height = '1123px';
+  iframe.style.transform = 'scale(' + scale + ')';
+  iframe.style.transformOrigin = '0 0';
   iframe.style.overflow = 'hidden';
+  iframe.style.display = 'block';
   updateZoomDisplay(scale);
 }
 
@@ -702,6 +710,8 @@ function applyInnerPreviewScale() {
   iframe.style.transformOrigin = '0 0';
   container.style.width = (State.innerWidth * scale) + 'px';
   container.style.height = (State.innerHeight * scale) + 'px';
+  container.style.margin = '0 auto';
+  container.style.overflow = 'hidden';
   updateZoomDisplay(scale);
 }
 
