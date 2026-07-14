@@ -384,6 +384,10 @@ function restoreFromCache() {
         State.pages.push({ id: 'inner_page', name: '内页编辑', fields, element: pageEl.cloneNode(true) });
         State.currentPageId = 'inner_page';
       }
+      if (State.pages.length > 0 && State.pages[0].id === 'inner_page') {
+        normalizeInnerLayout(State.pages[0].element);
+        rebuildInnerFields(State.pages[0]);
+      }
       if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
     } else {
       parseTemplate(data.templateHTML);
@@ -526,6 +530,9 @@ async function handleImportInner(event) {
       });
     });
     State.pages.push({ id: 'inner_page', name: '内页编辑', fields, element: pageEl.cloneNode(true) });
+    const page = State.pages[0];
+    normalizeInnerLayout(page.element);
+    rebuildInnerFields(page);
     State.currentPageId = 'inner_page';
     State.previewScale = null;
     if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
@@ -686,16 +693,26 @@ function relayoutJobCards(panel) {
 }
 
 function relayoutUnits(timeline) {
+  // 按 1、2、3、4、5、6、7 从左到右顺序排列：
+  // 奇数位单元（1、3、5、7）放底层（奇数列），偶数位单元（2、4、6）放顶层（偶数列）。
   const units = Array.from(timeline.querySelectorAll('.timeline-unit'));
   const svg = timeline.querySelector('svg');
   timeline.innerHTML = '';
   if (svg) timeline.appendChild(svg);
-  for (let i = 0; i < units.length; i += 3) {
-    const row = document.createElement('div');
-    row.className = 'timeline__row';
-    units.slice(i, i + 3).forEach(u => row.appendChild(u));
-    timeline.appendChild(row);
-  }
+  const topRow = document.createElement('div');
+  topRow.className = 'timeline__row timeline__row--top';
+  const bottomRow = document.createElement('div');
+  bottomRow.className = 'timeline__row timeline__row--bottom';
+  units.forEach((u, i) => {
+    if (i % 2 === 0) bottomRow.appendChild(u);
+    else topRow.appendChild(u);
+  });
+  if (topRow.children.length) timeline.appendChild(topRow);
+  if (bottomRow.children.length) timeline.appendChild(bottomRow);
+}
+
+function normalizeInnerLayout(pageEl) {
+  pageEl.querySelectorAll('.job-card__timeline').forEach(timeline => relayoutUnits(timeline));
 }
 
 function addJob() {
