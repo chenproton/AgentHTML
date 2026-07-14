@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+<iframe id="frame" style="width:9920px;height:6732px;border:none;"></iframe>
+<script>
+async function run() {
+  try {
+    const resp = await fetch('http://localhost:8765/demo_clean.html');
+    const html = await resp.text();
+    const frame = document.getElementById('frame');
+    frame.srcdoc = html;
+    await new Promise(r => { frame.onload = r; });
+    await new Promise(r => setTimeout(r, 2000));
+    const body = frame.contentDocument.body;
+    console.log('body scroll size', body.scrollWidth, body.scrollHeight);
+    console.log('body client size', body.clientWidth, body.clientHeight);
+    const page = body.querySelector('.page');
+    console.log('page rect', page.getBoundingClientRect().width, page.getBoundingClientRect().height);
+    console.log('cards-panel', !!body.querySelector('.cards-panel'));
+    const target = page || body;
+    try {
+      const canvas = await html2canvas(target, { scale: 1, useCORS: true, logging: true, allowTaint: true, width: 9920, height: 6732 });
+      const data = canvas.toDataURL('image/png');
+      const out = document.createElement('a');
+      out.href = data;
+      out.download = 'test.png';
+      out.textContent = 'download';
+      document.body.appendChild(out);
+      window.__result = { width: canvas.width, height: canvas.height, data: data.slice(0,200) };
+    } catch(e) {
+      window.__error = 'html2canvas: ' + e.message;
+    }
+  } catch(e) {
+    window.__error = 'setup: ' + e.message;
+  }
+}
+run();
+</script>
+</body>
+</html>
