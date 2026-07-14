@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>宝奇智慧物流人才培养体系</title>
+<!-- 设计稿自适应脚本：按 9920px 设计宽度缩放根字号（原设计稿转换工具生成，保留以维持原行为） -->
+<script>
+(function flexible(window, document) {
+  function resetFontSize() {
+    const size = (document.documentElement.clientWidth / 9920) * 37.5;
+    document.documentElement.style.fontSize = size + 'px';
+  }
+  window.addEventListener('pageshow', resetFontSize);
+  window.addEventListener('resize', resetFontSize);
+})(window, document);
+</script>
+<style>
+/* ========== 基础重置 ========== */
+body * {
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+body {
+  font-family: PingFangSC-Regular, Roboto, Helvetica Neue, Helvetica, Tahoma,
+    Arial, PingFang SC-Light, Microsoft YaHei;
+}
+input {
+  background-color: transparent;
+  border: 0;
+}
+button {
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  outline: none;
+  background-color: transparent;
+}
+button:active {
+  opacity: 0.6;
+}
+
+/* ========== 页面画布（9920 x 6732 设计稿尺寸） ========== */
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 9920px;
+  height: 6732px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/* ========== 页头 ========== */
+.page-header {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 9920px;
+  height: 571px;
+  margin-top: -153px;
+  background-color: rgba(249, 98, 23, 1);
+}
+.page-header__title {
+  width: 3216px;
+  height: 180px;
+  margin: 280px 0 0 150px;
+  overflow-wrap: break-word;
+  color: rgba(255, 255, 255, 1);
+  font: 700 150px/180px "Microsoft YaHei UI-Bold";
+  text-align: left;
+  white-space: nowrap;
+}
+.page-header__subtitle {
+  width: 1900px;
+  height: 120px;
+  margin: 451px 79px 0 4575px;
+  overflow-wrap: break-word;
+  color: rgba(51, 51, 51, 1);
+  font-size: 100px;
+  line-height: 120px;
+  font-family: "Microsoft YaHei UI-Regular";
+  text-align: left;
+  white-space: nowrap;
+}
+.page-header__badge {
+  position: absolute;
+  left: 150px;
+  top: 110px;
+  width: 375px;
+  height: 130px;
+  border-radius: 200px;
+  background-color: rgba(255, 255, 255, 1);
+}
+.page-header__badge-text {
+  display: block;
+  width: 236px;
+  height: 88px;
+  margin: 21px 0 0 73px;
+  overflow-wrap: break-word;
+  color: rgba(249, 99, 23, 1);
+  font: 700 68px/88px "Microsoft YaHei UI-Bold";
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* ========== 卡片面板 ========== */
+.cards-panel {
+  position: absolute;
+  left: 80px;
+  top: 498px;
+  display: flex;
+  flex-direction: column;
+  width: 9760px;
+  height: 5908px;
+  border-radius: 100px;
+  background-color: rgba(255, 255, 255, 1);
+}
+.cards-panel__logo {
+  position: absolute;
+  left: 9165px;
+  top: -454px;
+  width: 595px;
+  height: 235px;
+}
+.cards-row {
+  display: flex;
+  flex-direction: row;
+  gap: 80px;
+  width: 9600px;
+  height: 1377px;
+  margin: 80px 0 0 80px;
+}
+.cards-grid {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 80px;
+  width: 9600px;
+  height: 4291px;
+  margin: 80px 0 80px 80px;
+}
+
+/* ========== 岗位卡片 ========== */
+/* 主题变量：蓝卡 = 蓝边框/蓝标题/橙工具；橙卡反之 */
+.job-card {
+  --card-color: rgba(0, 74, 136, 1);
+  --tool-color: rgba(249, 98, 23, 1);
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 4760px;
+  height: 1377px;
+  border: 1px solid var(--card-color);
+  border-radius: 50px;
+  background-color: rgba(255, 255, 255, 1);
+}
+.job-card--orange {
+  --card-color: rgba(249, 98, 23, 1);
+  --tool-color: rgba(0, 74, 136, 1);
+}
+
+/* 左侧：岗位实景特色 */
+.job-card__feature {
+  display: flex;
+  flex-direction: column;
+  width: 476px;
+  height: var(--feature-h, 766px);
+  margin: 40px 0 0 40px;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+}
+.feature-label {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 218px;
+  height: 38px;
+  margin: 40px 0 0 40px;
+}
+.feature-label__dot {
+  width: 22px;
+  height: 22px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 1);
+}
+.feature-label__text {
+  width: 180px;
+  height: 38px;
+  margin: 0;
+  overflow-wrap: break-word;
+  color: rgba(0, 0, 0, 1);
+  font-size: 30px;
+  line-height: 30px;
+  font-family: "Microsoft YaHei UI-Regular";
+  font-weight: 400;
+  text-align: left;
+  white-space: nowrap;
+}
+.job-card__desc {
+  width: 396px;
+  margin: 24px 0 40px 40px;
+  overflow-wrap: break-word;
+  color: rgba(0, 0, 0, 1);
+  font-size: 24px;
+  line-height: 48px;
+  font-family: "Microsoft YaHei UI-Regular";
+  text-align: left;
+}
+
+/* 中部：岗位标题 */
+.job-card__title {
+  width: 1268px;
+  height: 138px;
+  margin: 0 0 0 1230px;
+  padding: 29px 0 0 var(--title-indent, 0px);
+  overflow-wrap: break-word;
+  border-radius: 10px;
+  background-color: var(--card-color);
+  color: rgba(255, 255, 255, 1);
+  font: 700 58px/80px "Microsoft YaHei UI-Bold";
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* 右侧：训练工具 */
+.job-card__tools {
+  display: flex;
+  flex-direction: column;
+  width: 502px;
+  margin: 57px 40px 0 1204px;
+}
+.tools-dots {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 502px;
+  height: 30px;
+}
+.tools-dots__dot {
+  width: 30px;
+  height: 30px;
+  border: 4px solid var(--tool-color);
+  border-radius: 50%;
+}
+.tools-dots__line {
+  position: absolute;
+  left: 20px;
+  top: 13px;
+  width: 468px;
+  height: 4px;
+  background-color: var(--tool-color);
+}
+.tools-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tools-list__item {
+  width: 488px;
+  height: 54px;
+  margin: 20px 0 0 14px;
+  padding: 8px 0 0 24px;
+  overflow-wrap: break-word;
+  border-radius: 10px;
+  background-color: var(--tool-color);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
+  color: rgba(255, 255, 255, 1);
+  font-size: 30px;
+  line-height: 30px;
+  font-family: "Microsoft YaHei UI-Regular";
+  text-align: left;
+  white-space: nowrap;
+}
+.tools-list__item:first-child {
+  margin-top: 33px;
+}
+.job-card__tools-badge {
+  position: absolute;
+  left: 4294px;
+  top: 40px;
+  width: 220px;
+  height: 60px;
+  padding: 7px 0 0 38px;
+  overflow-wrap: break-word;
+  border: 4px solid var(--tool-color);
+  border-radius: 500px;
+  background-color: rgba(255, 255, 255, 1);
+  color: var(--tool-color);
+  font-size: 36px;
+  line-height: 36px;
+  font-family: "Microsoft YaHei UI-Regular";
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* ========== 页脚 ========== */
+.page-footer__note {
+  position: absolute;
+  left: 7286px;
+  top: 6459px;
+  width: 2554px;
+  height: 68px;
+  margin: 0;
+  overflow-wrap: break-word;
+  color: rgba(51, 51, 51, 1);
+  font-size: 68px;
+  line-height: 68px;
+  font-family: "Microsoft YaHei UI-Regular";
+  text-align: left;
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="page-header">
+      <h1 class="page-header__title">产业驱动式场景化智慧物流人才-定制化培养路径</h1>
+      <p class="page-header__subtitle">国内领先的数智化综合物流解决方案服务商</p>
+      <div class="page-header__badge">
+        <span class="page-header__badge-text">2026版</span>
+      </div>
+    </header>
+
+    <section class="cards-panel" aria-label="岗位培养路径">
+      <img
+        class="cards-panel__logo"
+        referrerpolicy="no-referrer"
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlMAAADrCAYAAABNRxPZAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAPPhJREFUeAHt3QlgFOX5P/DvO7O5CPeheKOitl7tTy5vaVUgCZe1qNXaamuh9UBEIAE8VgVycHlUrfytWqtWwRNIgqgV68XpWavWKqioKJccIclmZ97/M6vVKldmszs7M/v96E4myQzZnZ2d95n3eF6AiIiIiIiIiIiIiIiIiIiIiIgoeyhQcES1gbdm5iE3koN6qxDxhkJYRg5MeVh2E0x52FY9IvE65LRtBPaNYc5ZFoiIiChtGEz5Qd+785H7WTfkqKPkHekOW+0J6I6A0UG+7gul2kHbraFRAAO50CoHu37vtDzisozJVttkfbP8G19A6y3yda382llfC228h5yc15C370cSdMVARERErjGY8tKwaGtszesNw+glgc5hUPoQ+elBst5VvhrIHFvOhNXy9QMJsj6GMt6CbSzDfm2fx6wRTSAiIqKdYjCVLsOH5+CTAw6DbQ6Wo3xM4qGxn/wmguCw5Tm/LbVZ78nzf05qxBah99g3EFU2iIiIKIHBVKr0jUbQrvWhaGoaIjU7RdIs9yM5vG0RNgr1EmC9KCvz5DU+jz5lrzO4IiKibMZgqiVKyjtARfrC1j+XSpwi+UkHZJ/P5fGMtFL+DY1Ny/DMxM9BRESURRhMuVVc1RVKl0itzDnS/HWy1NLkgr6mLDkeT8rxuR/xnOex8MqPQUREFHIMpprDqYHSxlA5WgOh9VBktrN4MGg0wcRcqbV7BFbek3hy9AYQERGFEIOpnRk2OxcN758I2zhbIoMLWAPVIhulFm8ObPUAasc9ByIiohBhMPV9593cFhu2XSqF/xkSRPUEpZZSL8ryAeTUP4DHo1+CiIgo4BhM/dfgGd0Rj42StV/Kox0ovTS+kMbSJ2CqKOaWfgoiIqKAYjBVXPVjaLtCjsSpCFYOqLCw5DR8GNq8HrVj/gUiIqKAyd5galDFiYjjBjkCfUH+kBgJaJShZtxrICIiCojsC6aKp/QBjKtlrQTkV9L8FynDvDHvgIiIyOeyJ5gaXP5/iKsbwCAqOJQ0/+WoMjw+7n0QERH5VPiDqUSSTfsaaPV7aUdiH7Eg0pgGK+dmJgElIiI/Cm9w4aQ42LjtImh9rdRwhG+OvOzzuQRVV6N17n2YM7oeREREPhHOYGpQ1Smw7elS+PYAhYvGMpjm5Zg/9mUQERH5QLiCqZ/N3AuNsalSG3U2mOYgzGwJqu6RWqpLWUtFRESZFp5gqrjiLHk1t0kh2wmUJfSHcgpfjpqyJ0BERJQhwQ+mSm7rAGy5T2qjikHZSeH/wWiYgHnRdSAiIvJYsIOposqhUHqWrHUBZTmppYqoX2Fu2T9ARETkoWAGU/1ndIQZmyJrI0D0v7SejNZ5k9mXioiIvBK8YKp/xRGI4HFodAfRjr2OXD0Uj49fBSIiojQL3oi3iK6HoYaCaFdiORpEXuo3aT+YkQubv0OrStSObARRupSUT5M6kyFwS5tjUDOWA3tcCF4wVT3+AxAR+U0kb2/Auq7Z2+v1N8qSwRSlR1HlvtKCM8qJjFztB70ZpnoR5IoBIiIiChcDl7oPpBI7zsC8MRwZ7RKDKSIiojDpH+0ogVQyA7QakavuA7nGYIqIiChMIgV/kCa+9nBNzcbj494HucYpV4gomLRWGDErgn9/lkRTRhqYVg4sNzvk5aFvNB+ZUtBRY79/2rjjjjiU4oCNsHA+FyVVSdRKyTlgWLeDkhLOiY6JKHz63p2PVl+cBGWfIpeugdBqPyk52shv/BFMfcVNbb+NzHPCv5g8NsvjIzme/5avL8mPl6P3xFcQVX54jsE3cOpxsOLHwwvKOEjex4vh3ioJxP6IZJmmmQjkktfCyh2d/HVAa0OO244/u5Z8JhaU7bbpk8EUEfnbsCldUKcukcuVc7fdFeSV1VJCVEmN22zMnfg5KHnFlddKiR0FBVEtasp2O10dm/kyZYDcqRjxP0g0XATKHI1nUJhzITOm+1CiuaLyYtRhony3F8hrztD6mxE3r8PAiksxv+wBENEOsWYq00oqfyLLMZyoOYMM9QyUeQ6HA/vI4Mo2Ur1+oxTmvwH5hL4ZZuN4zItuA7nDmqkga1bNFEfzZVp16bOoHjdQ1s6GUh+CvGfrU2Fb92FQtBUo84ZFcxG3H2Yg5TdqJKy8uxLvDxF9B4MpX1BaIt/ZaDKOkALkWpD3tO4vBcUjoMzbln+7fCb6gXxInY1tBbNARN/BYMpPFo6tQ23Z9UDsaLlorQR5TA1AcdVsDJvtp9Fh2aWk/GrWSPmc1r+Wz8nlIKJvMJjyo5pr3oRp9pa3506Qx+xh2LryRkSj/Gx4bUB5Nwlox4P8T9szMaTiKBBRAgsMv3I6Q9eM+93XzX7M9eIlpS/FsoIpIG+ZRrmc7wUg/1PyXxNuABElMJjyu0Sznz4rMZM3eUfrUhRVTAB5Y9iMjnLMzwYFyRCUVHiTiJLI55hnKghqxj+CoinroNSj8l1HkDcUJqNkyieonvAXUHptbTo3UdvRMrb8C3FQ8+jE9b9lN9QqEQC/BKIsx2AqKGonPIfiyedAmbOTm8CSkqKNm1Fc+RZqSpeD0sfA6XA/O5zsoZ+R9sGHELFW4JjG1xGNskm82bRCv/LDYJpHyvEfKjWDv4Db4EqrobJkZ/Td0eppObINSCWtzpH7hx8jGRq3wFCfwP9Gynm5N5KhtNwEG2+jpbRu1mAwJu0MmkHl/WCpx2SNOZG8sxpm5P+Y1DONistfl8vR0a720WoEaks5TD9VBkw9A6Z1l+ubNTPShZ8Njw2c1Bt25AVZy4Fr6iG5OTwHQVA8dYgEjI8kNe+eggRBugeqx2+EB9hnKmjmjV8oJ9elIC/tCyv+nNR6sCY3bVR3uDODgVSKLRj7GJRxHtwy7XYg7wwu7y6B1ONIKpDCJ7DtMgRFzdgnJCiqQDI0DoSt5niV6obBVBDVTLhblsmdYJSsw7Es/w5Q6h2RyKjt4oKnViO+7hpQ6s0fVyNLnud+VTTtcGmZeBZJz1Wpr8KC8asQJNWlV8nyUSRD4VTUrXzYi4CKwVRQbWu4Wtpya0DecZJJllSOAqXW/h1ddj3XT2DhtDpQekQUZwLwo5LyYTDi/5Dr0L5IzmzUjL8HQWQ2jJDP/QdIih6KuvefxbCKtNagMpgKqkXROOwtF0GpT0He0Xoyh4NnmDb+BkqfmP2eLJtA/nD+1EIUV06BVg9KINUJyVmFGMYiqOZF1yGuS2RtE5KiTkKdfh1FUw5HmjCYCrInp3wmJ9hwuavnCCbvtJKA6v+hX3QPUGZYsY9A6aPzG5liwgf6RiMYNK0I6y0JbrUzM0CS5bWyJAi7GE+XBftzs3DCOzDsc5E0dQCU8RaKKq7D4MrkRgjuQko71Gp5tutH97zYgPEDhIBWaDKgtkDZ6+O2XiV3xJ92blf8ivLT8Osny6pRXH6vHPoLQB5RhyMnv1xWfgvyXutCFvTp1LY+jq1SACsO9vacllKnf/lhiESKpNwZDive8rJUSW16TVktwmD+hBoMrBgl1Qc3IlkK10glxAhpYZgGM/dxzB39H6RASoOptVf0/o0J/UedRMIYX9JOFkCd+Go4nTqUxobN1evWje610FBmjdbWPzrNWPYxMs3KnwAzVixPlLUlXnH6Tw2seA7zy+4FUZjEE8lPWdudbsOH52DNwV3kSP8Qlj4UhtyklVSeiojxw8QMYikpRtXfUF16LcKkZ8MtWJa/hxyflsxQsafsPxXxWKU0oT4vgetT8v0KIOdt9L7yY0SV6/M/ZbceG8uO7WbF7CUqmwp0pTbKncQTcvLf0alqyWJkUtGUUVKFORPkIfUxbPvkwI2O8Zuim/NgbNskF7O8Zm2fn7c3Hr3iM1B6DJ3ZHk2xlXJta16+qVyjOx4f9z5o5wZO2gd25Gw5x/eUcqOLREr7SOl7iPyma/rmo1SvoUPBKbh/ZBinIlPSXHeTLC9DajXKe/OevEefSNPUSqlA+UL+1EcSkP55dzumrM+UFbPuzKpAyqF1B1legLj1ojRvPrD28p6HIVNad79NlkmOdqDk6P1gGrciGmXfQwqRJPv40i7k7COL6VL4j5PrxoWy3i+RByl9gdQb0u5UEtJAyqFR3zBOjufDSC25oVNHyr/eX/7E7+XrNfJoVhqilBQC667sdbFUcZ2KrKXkOKpfKFO9snZ0r+u10+7ttTlnxSSavh7kLa2LsTT/dyAKi635OkVtTJQRUiMVQRHmloZ7pPeiaANaNZwnAdVj8IEW95laf1mffaHtySCnzbSVPK5ef2XvgV+OOfnM9tP+0aw5fVKmV/1fpWCPylo3kJcq0HfaI1jEKTWS0ueyJiytvBKwm5dYLx7bCkqfeEMjcvLlrt9uXq1Jfa4n03VQMyjjPth1l2DudWGtkfquOdEY+kbPQkHBndIk92tkUItrUNaP7uVkJj0D9H0f5UbMAW2qFrd8okU3BkwZCcO4CeS1WtSUFYOI6PsGVvaGrZcgXRS+lIamCage9ydka7ViScXkFnZK3wm1DjWlXXa3VYua+b4c26cfGEjtzP6xuP3C2rG9ToGXck1nqhlmh/ZeEQaW87NARF7SUOopGJFDJJC6HdncPltdNlGCypHyyEjNddLBlJ49zLRt+0+gXdAdDRsL1l3eow+8Mrd0iyyfAHlPq6rEyDQionRTeEGatvqhurQf5rGLQUJ12S0wc/9P1v4OjyUdTK1fvOoG7YxGoF3TyFem8YSTOgJe0fYskPc0usPcFgURUXo0wlDzYepTJXA4CdXjnwZ9l5OEs6bsVCj7TPnuVXgkqQ7oiU7nyhk2yBEfzbSnFbMe+XjGcSfuN/rleqRd68VAw8+RiVGF2U7bX+Krvoj8cLhRUt4Bhnk0KFj2avcSZo3gPH7pFZdLyhK5pCxAPP4XLLwq84mig6B6gtOf+zGUVA6Sq/GFElwNkNaDfKRJcqP5cu3r5cl1ADWblK7HtFodHyOrNyDdakc2ypIzv1OQnAHL3m1iPPKZVZtbg5Mip0MDlKqRm7MXYKqF6DHu7WSycpNEKtWlc+XrXAyaeqBUMJwE2+4vBXJf+U1K5+dzHUytuaLHUbDxS7DOwzU5ZBPXXdljTufpK94BERFlOWVJef+FrLwt6yuk9sQpG16H0fg25kW3fbPZvDJQC80b66Qqch73JiaRbpX/Qxi6O2zlJNvuLgX0UfL1AHl0kEArFy65DqZyDeMqad3LAbmmE9lVDWfExU9ARETZwZBgSevTpcCOQxkNUhpsQWPOZnR7dw1mzWLNntcWRZ3J0t/8+rG9vtF8FOS2QZNRgDy7WXGSq/qldaN6/1QZ+hlQi0QikT7tql5eCiL6Skn5b6AVm/mCJm62xsKxTMVCWc/VaD5t6LGgFrPi8YkgIiKiUGh2MLXm8h59ZOMBoBaT5r4Bm6/s2xlEREQUeM3uMxUxzfEc7Z0yuY321vPl60wQEVF4DZ3ZHrGmUsBu0YwjlCEdWk3G/SN3O9dhs4KpteN6HqbieggoZQylnKl40htM9Zu0HyKRW0CZZetRWDB+FYgo+8Tq2gE5TheZ5k3kTf6ytumPskxNMGXGjQmatVKppdQxOioxVRTpyx1SmNeIRotBcKaZyhmOewWIiCiUdlvtmMh2Dn0eKLW03uPLzb2PQjptrNsgf2i3ETWl3UUYGm0PIiIKpd3XTOXav9Oa1ZPpYGt1DJwEbeni5NIoqXhPKhV7gDJHozUa852aqWtBO6YNJ9dOwIfYa+d66mKia8WUAkQhsctgSs8eZm5YsuoiUFooWB6M6FMfyjvJYCrTlL4QDKZ2rnrcfbjuuvsRZMsL+8C2Xmrm1jEU1nfEEc68awEWjXKKEyLsJpja+PKqYinxUzp/DX3LVir98xtqzpvlD2o/FFeejprSp0DbU8rplBnsjpnFU90FFkfAZjBCFA677jOlMAaUNgpGISiLMOktEVEY7TSY+nLs8QfLbeKJIKLUUDgVRdfuCyIiCpWdBlNWPH4JXE43Q0S7oJ3PU6sLQUREobLzYMnQQ0FppbS9DZRdFNOMEBGFzQ47oG8c1bOvrXEgKL0UmAMq+xyGkorjUV3W3FFfRBRkEdUAS8+FUgrkLY09ofVxzdtYrZHqpcXb/bhLzqZm7LzjYMo2jfPkCYDSywY+A2UfjTNlyWCKKBvMnfi5LH8G8t7AinPletu8YErplzG/LOn3abtmvmejfSNK4zRQ2ilY74Cy0RAMi+aCiIhCYbtg6sgvt56oobuB0koqfDd1bNt2OdJNaQ4i8J+DUZ9zEoiIKBS2K2hNQ/0clHYaaoWKLvIi+zHnhPMj2+wHIiIKhe8EU870MVop3jF7QNvWs/CCzWDKlxT7UBARhcV3gqnNSz45BrY+CpRuth0x7kTaRQ1pTzwA5D8a3VEy9UgQEVHgfWc0X8yO9TU4fDPt5Ag/tcfUZWuQbiV57aD1HiB/0vp0Wf4TRJTdBle2gaV+LE0WvaTWurv8pAO0yoeyQ97n1bTkQrhBqhfelte7BAvKXkBAfTc1glI/BaWdbelp8IKK/ADaAvmU0s6o2Zkgouw0bLaJrSsnII6zpGT4qqb6m6xEsqLDXrfx9TzfTh2O81JLKl6QH01BbVktAuabYGrtuBPaGFbspIDP2x4Er3e+cfnT8IIV3x+saPQvjdNx3IwCvDy6HtluYFWx3J1OQpApK7/Z108l196l+UtRXIFAi5snYeHYOpB7Q2d2Q90Hc+Rc6An6isaJcjxqJKi6A71KL0ZU2QiIb4KpnFhjH8tQhaC0ihjmCHhFGb3B6NjHdA46NfaRlUXIdtrqKifs/yHI3HzUEvM0Itivl5I3tLwbGhtflMBhb9D2NEZgadWR6Bs9DYuiDQiAb9pjm5TBD3aaybX29nbTFi+Bd04H+Zs2eVdKlFWk7S5mPM1Aanf0CSgsuAsB8U0wZRg4BZQ2SqmVkdyGifDK6ZXyQeXITN/TNvO6EWWToqnnywf/YNDuaf0LaQo/FwGQCKZmDxtmNn8yQHJLyX2IDau4fcWbG+GViO4BCgD9I6nKjoCIsoPSY0FulCMa9f2oxsQT/Em3D34kXzqC0kDVa63P7Tx9hbfz8Bn4JSgAVD5yc7uDiMKveMqhcgPF/HLu7I/lrX4Mn0sEU0bMOASUchqot2Ff0WnG8kfgpX5TC+WPDwQFg2myFpEoKzD9UFJsexh8LtG8oCP4seKgr1TbIG2nV3SYsfxeeC3fbocmfQ0oGIyIt7WWRJQhit1pkqHg++TTiWBKAineGaeQ1uo9Oaa/7nDjspeRCXNLP5XldBARkZ90Bbmn4ft+pREdjRobNlefAEoNhTsjubnj2le84F1ncyIiCoK2cE09K9HEQ9LWtQ2BF9kHyv5tYm7SkIms3/TYXkrltgK11FuGxiUdZix7DkRERNszXW2t9A3oVRoNUibw3epxx3R03XirBFS/Q4hEdCS3u+L0bUlTUCvk8EU7ty2uUdFoeE54Ii9Z+LsUMwMQZNr4gdQe3NjMrS0Y9mDZJ9hX3+Pr6rEQlA5Kv4zq8dfIA6GyYkQTht9xCT7ZWCQB1b4IiYiK292gQj4xdWrZGvpdCaKezI2Ys9pULX77qx8vBRElacH4VbJchSArnvqli60t9IwtRDQaR5BVg9JGeTlbhrdmSUBVXLlA7kAuQkhEJJBS8v/zoO1pbdlabZLAaaNS9hoJolbkQC9qO33FOhAREaVPuMfYK7vBmVknLCKdZyy7R77eAyIiIiJyjdNYhMGQ6fshboWsYT3bWOsS/SOIiChwGEyFQSxeDqXPAwWXUutlyWCKiCiA2PM86IorL2QgFQIaHTAoyhQlREQBxGAqyH426QBZVoHCwIAqaA8iIgocBlNBNWyYiYach6VKozMoHBp1BxARUeCwz1RQbet5rQRSPUHhkWM583a9BaJUGlg5Flof28yt70J1GbNHEbnEYCqIiitGyMXxalC42OaRsnwGRKlk6+NlObRZ2yrN848oCWzmC5riipPlincrKHwUOoIok7TKARG5xmAqSIornWa9uXLFczdZJgWDncyM8kREAaRVa6Sd8izFOoOpoOg/qbdUwT8ua+1A4WSgAESZpMCaKb/QyEW49Ua6ae/KSwZTQTCooghGZJ6cGPuAwksp5pmizNIhmiwt6JTqhLByyjTgcKSd9qzMZDDld8VVV8DCQ3LHuAco3Gw231KmKZ6DfqF1fwyZtB/CZlDFibDxJ3hBq5PgEY7m86to1MCy/Gmw7VESSPFukYjST/EGO62UikuQ1NytO6Apsgollatln0/lvWmQrzYCK9F/aX+pHDgQritymn3MvtVvsjM6+sRmb9/CY8tgyq+iURslFevkA9Qo3+WDiCjt2MyXVlp/CXcM2Wd/OEFIIp7I0rdHGQ2uti+6uS3Utgfcnc+G2/fmu3uD/Ku6bAq0fZqsrQYRUbppdkBPK4XPQO4p/X6ztx1cubcEUo/J2lFwRf8LLcCaKb+rnfAiiqb1h4o7WYm7gShshs7shsbGsxB48X1c1ByYWJo/BkUVHjTbqIOa30xiHC/PaRyaz0Zt2TRQ89jqVQkMQG6Zzye+DJttYtv7P5EKpxhy7EbE4/Gvfp/XFrZ9IAx1LOL22XLOJ5NmZjlagMFUENSO+ReKp/WVi/Xf5buDQOFkKAvZqLHhIChVicBz1QTjdPQu96bVxk3hrU+X53S6ix2cwozBVHOZTY/BjtyMrG2vS4LGBuzd9qtAZ9v7bSWQeiqx3uQ0rOV+s1GiS1ayTaEKW7DPBy+jBdjMFxQ1Yz6UJj9nfq0PQOFkow5EFF7zr/pEli0qtLOOwl8wa0QT0kmr+Zg1q0V/g8FUkNROWIt402lycq0DhY/W7jpZElHwmHoUvqrRo93bBlvfjHSL4Qa0EIOpoFl49UoJ1U+WkpcFb9go3aLRJEQUAPPGL5Pr9yRQM6jxWDB+FdJrNp4ufRstxGAqiKrljTdwLihcNNaDiMKvZvx10rQ0GbQzGjauRk1pemullJIb2IibARc7xWAqqOaPd4Z+zgCFSYuG5hJRgNSWXiW10VdJiZ7e/kDB4+RXHIQFZemuvdsmx35woj9yCjCYCjKz4WpZvgoKi40gouxRPX4ybPtQCR6mSWXMG3CGoWSnLfL4u4Qkv0N8XTdUl1UjvTbLkf4tqsc9jxRhaoQgmxfdhv6Vv4epF8p3ns2OTWmSY3wOIsouX/UJGpt4DL8jB59s2A/abouc3DwJtMKdQsGKN8A0N6BHw+rErB+e0B9DG2dhQelipFBk3ehe80DfoRTqlFZrtdbywEcqot7dtrf52n6jX66H3zxZuhQllVOh2aEx4Gxs3mMDiCh7fZUCIPvS33gShSSaUx9G3ByFhWO/QIpFDIV+EjDkgr6lnf91IvdXYmpGW6NgdVPd+tG9F2qFJ3Rj01Nd/vjqp/CLuvpKFBb8XAKqH4OCSUm186ILOUKTiCillARO6lEp1f+MmtIWZTnflYiGkrth3RW0SwqqUI7TGUrjDORG1khgVd1oG9P3vnFxi4dUttiiaByDKi6DhZ+Dgklnce4wI2cTdDylVe7kEaWZL4m8YxdaUNuelbVW8mj/9aONnIh5ci7GoNXniXn8ND6Rx/vShPgqdOELqL447f1R1fore70pf/RIkHsaltRf3VuQE7+qsMpHNVVERETkGWc030ug5CiY0gx4YYMVWbF+dJ9RICIioqxj2LZ+B9QyGtJMas9cP7rXg59Ge7QCERERZQ3DUIrNU6lzdt5m862No47tBiIiIsoKRm7EfAOUQrqbraxnPx97/MEgIiKi0DPqt+Z/LAFAtmZdTQ+FbhGraeFnrKEiIiIKPWOP2xZthTLeB6XaQbmGdZ8uO7EDiIiIKLS+nk5GvyCLQ0CpdsKGWGNUA6NUIhWoh0rKh0OrjiD/y8E/8EQZR9USEQVUIpjSGq+FewKgjBq5/oo+f8fMJU/AW/vLYyLI/5o0k60SEQWYk2cKpqHZCT2NDKVv/OLiI1rDS5bxLCgYIpH3QEREgZUIpuq1/icobTR0t0hBq0vhpVwslWUjyOd0A/IOeAtERBRYiWBq7+kr1mngOVDaSFNq2dpxJ7SBV+aWboHCyyCfUy9jzlkWiIgosIz/rihgGSid2kXisQvhJVs/DfK7hSAiokD7JpiylXoFlG6XwEuGYsoL/+MoPiKigPsmmIKVtwheD9/PMjZwqKeZ0Y3IayA/s2E2LAcREQXaN8FU5xufXyNf2McmzQyr6dfwSjzXmXeR2e39Suv5mBfdBiIiCrTIf1ecpJIbtFqklT4elDYGdA94pfayLSiu/ELWuoL8xzRqQS2itVy6rosqHP6WN6ny/nWEVtFodt6gaK0wsKI9DHWEfNMKlq1hm/WIxFeiZ/wzZOtxCSPnvT5rjoFMOeJfOmjn03cuQOuv7HM6tM0OsWkk7aifd56xzLvgprhisSz7gHxI9UJNKZv5XFh3ZY8fQJtnKoWjtbaPVkp1ket+odykmPCAxG6Wht6iND6R57Baipxldlw/1OWm5e8ibIYPz8HqAwdDmadLBfex8uKdRMA7mR5LOzWsH8g5vVJKlcWw1b2oLV2NQJB3cciMfRGLnQ7DOBxKd5HX2kkebWTd23zWUpshx69J1jZJQPOxHM+P5DnNw/yx/5H19HTD6T95L5jmz+Tv/khe81HyJPaRv9VW/lwBtJGhfN46JosvoeT1a3wsj1egmh5EzVUfoqVKJh0PHZntap+IOhVzS3f5Gf/OgXKG7hvxmLPDXqD0aTLadbplyWZ4oaTyCflQDgb5jHpbAqnDQbu1Mto3v3DTtvMMpf8gxckxctXy3YQNUsr929D6TuTqWR0rV2xCkJ1b3gEbzTIpTC+SV5bslFQ6kfZDWdNRPeFR+FG/qXsgoq+UQNGZgaAb/rcPsd8oCVKhnpPCQ47nxBTkhZQgsaRqkLxLo+WbE+HRzUjLOTkx1R+xb4e7MGtEE5IxaNKJsCLPu9pHWUft7rh/5+TpUvXiFnnT2PSQZma+2QVe0agH+Y/ST4J2a+MVPYe02VL3hqn0nRJB9fBjIOWQJ3WoVqrKjhnvrh/d62odjfq3YN4Zp2mnuHIsNhkfQNnjWhBIOZyeI1IDYDwi/+abKJl8JPxi2M1dUFR+jzRPSi2H8zpxEPwcSDm0PlBajS6QmOdNOZ61KCk/CMkaOPU4+TeWyr/5hPzDpwQnkHIo5zz6E1Zv/A+Kq34BH9nuBNJacxqSNGuyrfag7GboeaCd0lIbtf6KXnfYUI9JbVRgJmGXpr895cv16zdX//uLsX2CM3n8oGhnlFQskCNfJYVAiq9P+kgpr1+VWvJRyLSSil+ibtv78kb9Wt6tfASSHiAVS+9KQDTe1W59oxEJQK6CbTu1Mj0RbNLkbD8gx+BenHdzW/jAdsHUxqbOc+SeYiMofWzb23n6yGfUP5F/MGcc2Ik1Y47fY8OWbc/KdWi4X2uidkee9MFmXL+9YXSvP8DvnD4zVv4L8qz7IX0iEqTNRPHUkciU4nIJFPFXWfNuJor0iUhQNUWCielAMz4jTiDVquAWKXxuCFZN1O7o87Gx/sVEk22GbRdMHXJLbaOccMycnUY56ttRlJSN1HOcQmbHNo/v3SlXN70kBe+xCDqlTQ3ctn5UrzHwq6Ez28M0JZDCYfCEdROKKn4Fr5VUXCdvyFiEjh4tQWLlbjdrlT9Ztv09QklqPiP2PAkYM1rTuMN2Yq2k+ozSplFZDKayWvyvoB2Kx3Cb1vAusa0HtKEnrR/bawD8RyHWeCe+6jPkHUPdhCHXHwWv9K+SZjFcg9BSY1BcMWKnvy6pKJHlOISa7o3CgknIoB0GU59/1FAjXzaA0iJX58RA2ept9I5xHswd2Di656+01mchZKSlMg9x3P5ptEcr+ElxxRWyPBNec/pkxXNvw7Bb09/d4bgZBTDt2xFuTjPf1Si5rcNOfjcT2UDrP7SoY34L7TCYOmLOWzG5O3wQlB62zT5p2esRJjfcMRvqOoSVQrfcTUbm+gt93+Dy7vKk3HVgTiWNE1Ff91ukW4dGZ8aJbgi/fYBNF2/306Ly0xGgARwt1EqqgTPWlLvT5iado29WcXUxKOVyWhmfgbKRjbyGW0Db+XJ0nzMt2N3gktJoMkx1Z5NtL8jX6v1GI5KWvmimRkGTju9pKn26hnGxgnbfP8NAf1lWwA8sw+mI3BnJUPiPLJ1+VvVSG3A4lDpJCmz3qQW0PRr9xtyJhdPqkDbqfCSvUZ7kc/JvOHOcfp5ITKqM1N4IaduQY1cox7STHMejodWApDuI28b5iOpyRNW3z1G14PUrfCTv70PSLPsaLPWBfAo2w4ql/kbQNhVMVSB/p73UIh4OW58mPx0MJDP4RJ8pN6uXZOKGdafBVJeq5e+uG917uVw0gj6E0leUwobWU5Z8DspCeiEei34B2o6l7LOSmGb9A9uwSzpOW/EOvLNg46hjb7EN63FZ/5GbHSXw67F1Qp89M/757z/1NGjrHLil1ctSYozG3HFL5EL27btVVLkvlFUm0eIlcMPJqB7pNEzW7kE69K/4kRTHxyZxXm2CrS5Hm9aPYM4lW+GlwePawGovnwVzihwgdyPUlD4MKyp/KGtv/c9PT4B7TRLYXIiC+jmYE/W6S8rf5fFHFFUdLK//r/KajoM7XbCs4BT56nmKp13eTUjBfwcopaT59C14SengJQ8MK1uzVmontFbu+joorG4yco7rPN3TQCqhw42LV5n1eT+RC6Tb5vo2dmO8AzItEk+mxeFe9Kk/EfNKF38nkHI408bUTLhU3pQoXFOXIl0i6gDXNWYKn0pTUQ8sKP2L54GUY27VFlRP+DNiupd8twZuWUavb9a/Gt12ANyJyz9Sgvml92cgkPpW7bj30WfcifJ+vADXVEYSxO7yRGtSDX9Tzvw4lEqL4CWNdiAfUO9jwYQa0A5JDbjbqXXu6jrtpYzV8rW//YWNcrM53eVu0m4UKUQmDZTaGq2GuNoH6g3UlF6w26aTmlKnz9utcKcHhlSkZ2Sf1u6na3JqpJyCPNOeLvtIgkH3KSSU3vOb9bY5zrXfZTApzXo1E5+CHzjNlbY9wvWchDq+NzJglwe667Q36mzo+0ApEzesh+EtzrPoBwp3g3boregRuVLb4eqib2hjETLMbrKCl4/P1ufBVQGrbZixoc0u0GIdJsrSXTBiqXSNKHQZuOoYWtfPhV/k1T/39QTSLuhvs4Hb2n0KHtvw13RytRP+Ja/JZbO4mZFRs7v9UDXZkelSO8UEgymgof+z57RX3oBXht+RI381VDl7AqoOrfQfQTuUu75RGo60u86mhnLfEybF4hZcFnQZNmx2rhw4l6kn1IOYd/XKZm/+9IhN8t78GW5Y+tJEhu7Uy3W3ufoio01b3+c8F2U0/9g7dAsTQhuGH/vzfuJq62QGQ6TAbv/oXjcuXqWVegzUYkopbwvU1VsPlL/qr9w22WkW5pRtAlEm1a3qJyWNuz40dsR9jiZbObWwzR9N5Yxka9MqmY7SqRaH72hvn5OyM36TsgOBSCXTrCg2x7BvbLLUz0FJkzN0m5VneJu7K64N5GA2KLMsfTOIMk3Zg92NbFNrsGDrS3CrZtwaFFc4zUUlzd7HspwaM85XSYHVrGCq7dTlL64f3WuBrPpxSoRgUHrynl4PiV44xhnpdDaIKLs5c/DFGs9zt5O+FUgyX4/Sc6FV84MpqPOkqe9KLIo2gCiAmt22aMOuAiVJfd7QYDDNBBFlRlPsZDgZot2wzeQ7Y9va6RriZkqydijMPxVEAdXsYKrzjBWL5Is/hkwGiJLbOwu4bN9bl64HEWW1iNaZ6pczwt3majEWjE1+sEzthLWynA93RoEooJodTKmvctxXAvBjBzX/UuqOPWYsnQMiynpxZwoWr50xpRO0Lna1j6HvQksp9YSr7TVOQkl55pOaEiXB1RDC9jOWPaOgWTvVfG9aZs44EFHo5BUY7uZQ09A5MTTBazFzqKvtFbZK8PUMWqq69FFZfuRijzxo4yIQBZDrfAyWMifIHQc7Ce6G1mqVfCnpUvXiFhBR6GiN/VztoLBJd465nYKm5bT+HdxZgOrxHyAl9COuNod2mQeLyB9cB1Ndpi9ZIYGCt0P8A0et1LY9oNOMZR+DiEJHAimppFfXu9lHKaxvj/bezvc2aKqTa663q3208ShSReXcD3d6oiQxWS9RoCSVLdW01XW2gTMAzvu2Pf12k60Hdr1peYru7JIw6I5WsNefBvKeaXyJuWX/AIXahtG9ZkLpH7vZx9ZYraKLvO2A3mSdLbfMbrLLr4a5zV1fp12pHrMCxRXOtbD5E1lrnC/LCSAKkKSCKWfW9I2je860k5olPLy01n+N5OVf3qniBe+r8v+X9eWZUul4L8h78cRngsFUCK0Zc3RhTjy3CKYaLQX+cXBJabwLr5k4x+WQoacxL5raaXKUmiMXx1IXe5wLBlMUMEnP49O+ofX0jQXbLpQAwt30BGGkUCcXrN92nrn8IfiCfTngbqozSgGF/6BV6+mgtLMsa/aG0b09m6JHQxdIs14nGDo/2fHM2lYvwksDqw6Bbf/I1T6Gcj99zO7kxW9Cozm2+XOmSZlSUtEf1WVPgiggkg6m1G2LtsrF7FJZnYcsJdfURrnrujuuItd2nf7SF/CDweXdpXakB8h7hjkCcy7xtk9MllIKXSTA6QIv6ZZkhVGrOh1gepsixbZ/72p7qNcwv3QpUu3RiZ+hpHKJHMDm1+bZ6meyZDBFgdGi2ZU7zlg6X8FIPktucH0ptRA3Sd3PIZ2nL/1D12k+CaQcccXEd5lxL+aN/TuIdkhPUaNf9jrHlMuUCHY10kUrd3mrlP4ZTp3SCUQB0aJgytGUj+Fyv7YZIaehvpDX+Yh8yId1bFu4V6fpy0b5brTeGVP3kOWFIK+tQcRiPjHaCbVQrhX/D17qX+mM4Gt+p2+HttL3HHW+M+F6o4s9OiMvMghEAZF0M99/OZP3rh/d5zfyaQnNhLoKulFq9LcZhrHG1taHppn7XLvCfitVNMlJP73SpK+E2/m3KBUmYe5EbyexpqD4SK6N3ieijGCkq75dyngZ1Vd9iHSpHbkZxZVPybEY2PydbKep7x4QBUCLgylHpxlLnMRsLpOzBc1L8LWBM/aBjrlNzkctpheiZvytINohVVegTW9vwi6I5mOt7utmF9j23Ug3pf8kAZ6LYEq2HThpH8y/6hMQ+VyLm/nIJ6zYDXKh4rxW3loD2+0EspRd9A8bVfwmeOnzvCFyLdjHxR4N6Ngq/SOR7frnZelmRggFyzgPRAHAYCoMSqpOglK/AnlL61FYMH4ViHZBqqXOXH9lr8vhFUO5qf1xhkYuxP0j09/vtfa6zfLcHna1jzKkqS/Kcop8LyXNfJRB/aYWyuX6ZinZ3U26Si2j1G2oKfNJXjHyPY1rtk7o82DrKUvS27duUMX+sNUAuOkwpbWHudHse+XD42aQTB8MzD8K8/E6yH+GRtvDaP3dmVBMuxEN2zanPPmrzzGYCroce5RcDF1Na0Et9j4M81pQJo2FiX/CA7ZWprL1/kqrnyqlB0mYkgf3OsbqbSdtyXikk2WfIlVTnV3to9QjKKmEJ/Q3Cxf7qMGyZDDlR015Y6DjE7f/RT5QXOEEU+9LY+2n8h4+IyfnE6iZ8B6AliRs8y0GU0FWNOUECaRYqHtKS3OI/XPMK1sHyhjDMJd3mLp4Ebx1+xdje3U1LUMCInskXNJQv1h5Qd/rDrxnUQPSRZnnu04uqrW74MtrGr/F8OEVmDWrCRQkzsjyo+T9O0rexP7yqa2SAOvf8tm5w0l2jerxmZ12LcXYFh1UP6vcF8pw+h/kgLyj9RjUTHwNlJX2mLpsTacZSy63tX093FJ6/w5dYm46hrtTVHWwnJ+nInT0AVh9qOu5EMmXDpWwY7rUVP0LA8svRYgwmAqiopvz0KD/ImtdQd5R+jbUTvA2+SL5UpeZK66V5gu3Ge9Vk221R7qY9k8R1mu6sn4DCpOusNUt0rz8NIqnhWJ+XwZTQaO1AuqnydpPQV5agV6Nl4Hoa6ZheNTRqJlsdQXCStvDMKyiHShcEjWp1lJp/jsKAcdgKmiKq26QGpJQVY/6n/oQiJ8Jv2fAJ0811Mc/g1/0rzjCyWmF0FKtUGf1B4WQdqZBe07KtkAPpGIwFSQlUyZLIDUR5KUYTGsAatI41QZRS5nmzxF2yvw9KKw6SNXqPGn2C+wNAYOpIHCa9gZW3ABtTAB5S+s/YN6Ed0DkW3J9UNYvEXYaJ6H/jI6gsNpX3uMHMbiyDQKIwZTfHTejAAMr74CNq0DeUhiL2vF3gcjPSiqPk0KoO8IvArOR0zeFmj4acX0DAoh5pvxsWFVXbIs9IhfK40HeUpiC6rJpIPI7Ww2T5n9Xu8j57eSnexqZZuNGeS69mr+DcZYsykH+sM/K67DxB5O/+b6xKYK4tZe0Ox8g56QzAnOolF/5cOdyDKioxYKyJxEgDKb8avC0k1EXf0zWWK3tOfUnVI+TmsAyEPmegssmPvUxzLw7MHdUeqe2aY6SygekKd1FMKV/jJLJR6J6oifZ72k3vkqk+v1kqs5k1v+Wx1MoqtxX3rM75Rx1N3jAwO0YGj0Gj0e/RECwmc9vBkVbobhihkT3i8BAynsKd6HwwEvh+lafKAOKqk6Qwsrl9DGo9UUg5ajLvUeW7uZwU8ZFoGCoLV2N2rIBEjC7TSNyIOKtoggQBlN+Mqj8p7Dy35S1KxKdSslbCnNQ1zACc86yQBQEyh4Dt7S+H36x6AqpeVDukp/axlBQsNSOl2p+NdXVPrZ9OUoqxsh1OX2zBqQQgyk/GFx5mNRG3QXLmQwSB4G8p1QNqkvPxqJoHOR7jXGb165hMwqgcRrcWYKa0ufhJ5a61dX2zvQyAytDOG1OyOmCqyUwus/dPpgqj70RALwgZdLg8u7SplyBuL1UvrsQlCGqGnX1Z7JpLzNia/K0Vu6OfY6SZoAMMyKGiUzaFhsihVNrV/s4/Vf8dp4f0M65idzgah9b/wqp58PyUCXfr9nIcf8+a+22s3jz1Y5sRJN5pZyzoZzblB3QM8GZkNTQoxDXQ6Wavu1XP9SbQZnwBAobLkJNNAbKiCPmvBVbN7qXy3ZtnfHpJ0zT6A6dwaT4Wv3KuXV3YY0UZI/Ab2aNaEJRxUPy3P7gYq9BGH5HTmLfnXP75nRNzHvqFPp+4DwXbDvE1T4wvn3Nm+s3o1W+872bIDG9LSMLx36BAZXnSPnnVCC0RYgwmMqE2nHvy/Kyrx9EWU85BT1c1DYp1Q8ZJCGM2gB7ElwyFZqQCs48dXXa7fycC1E9fiP8SNk3SpnvJpjqgE82Oh3Rb9/5Js4NqqsQPRdqyxD5Ohu+sHUQtJHrahdtb/lmfVF0K4ornFF1P0DzXYCovhVRlb67hAWl76K4/HJ5b+5GiLCZj4gyTikscbUD9A83jO55CTJAR6PG+it63yYR1WFwpynPiK1DKtTht7LMc7WPUhXwq5oJ/5a453VX+2jsuiO6YXwEt5R5GwZWuawNSoNB0f2hjJlwSxmffu8H7pIOaxyD5ZWTkW414++BE9yHCIMpIso4BWMxXFPT113Ze5zW3ox81cOH56wd1bPvhk3VK5TS7ueJ0+rtVq1eXYNUUMrliDb1IqpL34afaeMvrraHPhkDyrvt9NdKvyYnlrsaFo1OsO3FKKkclZGpa5ypVEqqLoNd4ASW+8ItU39v6ivTqWVz13fKRhlKKp5DyaT0Jou2dXqSrxpwV5uXIhx+T0QZ9+mVPTrnafMDue67n5dL4VOlschWeFNbKqV93wzT6RqvOmil+8jf6CmlUnskSfa9r/OMZeejpQZNPRCW9YG7nfSFX9cG+NegaZ3ldUmwqZvfsV/pMdJ0OX3Hv5Qgu7hymaz0QDK0/OfUmCr1hgRYTs1ZndT8pL75S9uF8u8eBK1PkO+ciX6T6wSu1cdofeCB26V2KamYI68kyYmwpTUb9mvyb7/lfM7gTPyeCs4NkDLOkJUTkHpPIZJ7Mbq+8yH2vuN/jsV1QDRqY9CkE2FF3I1oVdZRu0sUyz5TRJRxe09fsW7dlb0ekYDlArilsbcEKuc6Y9SUkeKBavqrMvXr/1vENPSfkQrx+C+ddtFmU1gPu/Bv8Lt5Y9ZJ8OM0/RQ1ex9bnS0F5MxEIbkd54yoelw2Si6YUonKhmOl4D/2m+Ot0zEQUqXm33USDu8oR56tpsvvzkwud6GW2jn1U9nfbf+8XUscz7QNKj0d8dh7WH2QxurKb/+IUeDM+RdFmrCZj4h8QcWMqxMFfyjphR2mLV+EVFBqsKvtNR70zQi13VHxm9xtj15YUdB7p7/vkH+zbPMJwk7hI2ni23H/qNrSxRKsTUf2cSI245uHTm+8w2CKiHyh0y1LVtvOJKfuh7T73RpL26npLD9wynFSRrisabFvRlCYkZdk+YWrfSx9xk5/d//IzVIhc7XrvlOBo67HvLKdd7g39BSpqHsHlDbBa+YbXLm3VFsWgmhXbCOGmjEfggKly/Rl96+7oteB0gpwA8Jj1B4zX/kPUsEyfiaFopvmmmWJkXJBMbd0C0qq7oV2NU3Or9Fv6vVYOLZuh7+tKb0bJRXdZW0CwulWVJfuetSekxKjeMZZQOw5OGklKOWCF0w1qQK5mDzih6R95FtvyjlyNiiQOs9cNmntqD4NhmG7m8vLZyTiaZL6kAs73rjsIaTCBdF8rMVZ7rqa2LcgaJriDyNiuAmm9kROXGrs8PROt6gum4iiiri8KdcgTBRukUBKanPLdn9W1Ix+E4MqBsNCjXznfqAH7VLwmvmchJfKPgXKmAai73L6Ct+OTuZxvh8GTrvU5cYl02xD/0QCklUIps9srU+UQCp1kwp/ln+qnN/7N3t7hXroxicQNAvHO9mx3aXK0MbvdrtNbdm1UOoiudHaiqBTiMm5MFKCxJGupgeaV/YCDEOaiZXL0aC0O8HsM+VUWVaPGysfjDPlsRpEUGvk4jJELpgX4687qe6nQOkybfkiU0ecC/91GspdP5pMcYbPazWzYxvjB51nLl+KVIrgDHc7qAdQe10Ap6lyggPjQVe7QA9K5GjanerSP6PJOlyuFU6zWBD7UTmB01OI6yPkWpdcreP8ce+hMOdIGMrJ88SJ3VMk2B3Qq0sfRZNE2QoPg7KXVjVS0BwqF5d5oFBpN/PlDZ1mLI1+3tDqYClFLpaaqhe1Ug3wnzVa46amupyDOs1cOlpdtyS1QcywGQVyng9xt5N9O4IqJ/aoy/lKC2DpkmZtufCqj+Va8VuJTp156KrkEYRabLlZVLPkPf0Basr64cnxLeuDN2d0PeaXTpAQYD8JXqPycHIo+XGid/ms6+fkmV0M2/yRrN8rP9sEHwpP0s6SqmFyos2Ug74PKEtIbYVt/x4Lxj8GyhqJ6Vw2VvdQhjraVvpIKRD2MqELtXaR7LGlDFWnbL3BhnpT2/ZTnTsMfE/tMNdRigycfAx0ZDK0/u4NsPreDbHG18fA+BA14y5EkJVUyOvFcc3eXumXpNXiKiSjuKqrlB99pKWjB2x9iLy/7eVYO5m0M1BG6savkmViLZT9qjTLPYseDauRzvPL0W/qHsjVPaW+7hg5FgfJ8ewkAVwOvKKkRlLrenn9G6GM/8iRfxaq/p+YF932ne36PhtBwRInF9lQ2eZo2V6uAWr3iU6VukEqYK7BaRX7I08PhxtmwS2YO+rzXf7zCJNTp3RCrjFDXpWTZZjZ3cPLuag8AG2PRu2EtSAiouw1bEZH1DV0hmnsPPhrNNdi4di0dRcIZ8BRXHm6RKt/lLVDQSGjFstd9yjUjHU5MS4REVF6hDNpZ03pUyjM/bFUj476urqUgm9DYh6uTsZpDKSIiMhPwt8UVjzpAOicCVIQu2sjJb9wJhu9CbY9hU16RETkR9nTr6jf5CMRMafI2iBQADgDS9QTgBVFzcTXQERE5FPZ10l7YNUxspwqNR2pnQWbUkjPh7Ymo/Yqd4n7iIiIMiB7R7w5QZWtb5WC+1iQD2hn6OrTsNXViVnOiYiIAoLpAwZMPRrKmiRHYiB4PLznTItgSxAV0eMwr+wtEBERBQyDh/8qiR4Ene/M3VQMrTuD0m2TVEbdCxg3JeZbJCIiCigGU983aFpnWPb5ElBdAKWPBqWYWirH9hFY5q1YyDn0iIgo+BhM7Uw0amBpXj85RL+Q786URyEoWc70CHfDtB/DXiufxaxZTSAiIgoJBlPNUTSlCwyjvzRLnS+H7FTAwznAgsuWY1UDQz2BSM7DePyKL0FERBRCDKbcGjyjO+KNfaGMc6S5ykmvwGP4X05ncm0/BxV5EGZTNeZO/BxEREQhx0CgJQZP3hNWzskSQJwr3zmBVVtkG6W+lBq7WnnMhiGBVPX4jSAiIsoiDKZSxelj9XJBT0QgzYH6NGkK7C2HNx+ho+qg9KvyGp0mvBpsbXgLi6JxEBERZSkGU+nSNxpB64JjYOMUOLVWCgdLAHIIAkVZEhR+LLVPr8g3r8CKz8P+nd/GrBHsQE5ERPQ1BlNe6je1EKZ1shz2nlD2UVBGV/mpE2Tthcy+F7Y8PpegaaU0Wb4Prd6BgRWwW72M2pGbQURERDvFYMoPBkVbwS48CLblzBvYTd6VPeRrFwluOkmg1U6+dpEaojbyswIJdHKbOZownugQDtTL27wFGlslZvpUAri1sPUG+d0XMPRK+bdfQ36bDzHnkq0gIiIi1xhMBcnw4Tn49955KOhYgLyGtog1tEI8JxcRQ8GI2xIwxWDk1iWCp0Zdj1hdI/szERERERERERERERERERERERERERERUar8f8wHPPjkZAyFAAAAAElFTkSuQmCC"
+        alt=""
+      />
+
+      <div class="cards-row">
+        <article class="job-card" style="--feature-h: 766px; --title-indent: 243px;">
+          <div class="job-card__feature">
+            <div class="feature-label">
+              <span class="feature-label__dot"></span>
+              <h3 class="feature-label__text">岗位实景特色</h3>
+            </div>
+            <p class="job-card__desc">
+              聚焦智慧物流产业数字化转型需求（
+              <br />
+              如智能仓储、数字运输、供应链协同
+              <br />
+              、物流大数据应用等），以“岗位实景
+              <br />
+              还原+能力模块拆解+实战任务驱动”
+              <br />
+              为核心逻辑，构建“产业需求→岗位画
+              <br />
+              像→能力图谱→场景训练→生态赋能
+              <br />
+              ”的全链条培养体系，目标培养具备“
+              <br />
+              技术应用能力+业务洞察力+系统思维
+              <br />
+              ”的复合型实战人才。实现“从课堂到
+              <br />
+              岗位”的无缝衔接，针对性解决“理论
+              <br />
+              脱离实践、技能单一、缺乏系统思维
+              <br />
+              ”等传统培养痛点，助力培养适应智慧
+              <br />
+              物流产业升级的高质量实战人才。
+            </p>
+          </div>
+          <h2 class="job-card__title">智慧物流工程师（1000课时）</h2>
+          <div class="job-card__tools">
+            <div class="tools-dots">
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__line"></span>
+            </div>
+            <ul class="tools-list">
+              <li class="tools-list__item">WMS/TMS模拟系统</li>
+              <li class="tools-list__item">设备运维模拟平台</li>
+              <li class="tools-list__item">运输监控平台</li>
+              <li class="tools-list__item">数据可视化BI看板</li>
+              <li class="tools-list__item">供应链控制塔模拟平台</li>
+            </ul>
+          </div>
+          <span class="job-card__tools-badge">训练工具</span>
+        </article>
+
+        <article class="job-card" style="--feature-h: 910px; --title-indent: 156px;">
+          <div class="job-card__feature">
+            <div class="feature-label">
+              <span class="feature-label__dot"></span>
+              <h3 class="feature-label__text">岗位实景特色</h3>
+            </div>
+            <p class="job-card__desc">
+              本岗位依托中国大型央企&nbsp;20000&nbsp;平真实智能仓全业务场景开展实训，完全复刻智能仓综合运营工程师真实工作全流程，围绕智能仓规划设计、系统运营、设备运维、弱电维护、大数据分析、安全管理、软硬件集成&nbsp;7&nbsp;大核心能力模块，实现从仓内规划、日常运营、设备管控、数据决策到安全合规的全生命周期闭环实操；实训深度融合智慧仓储行业业务逻辑与数字化运营、智能设备运维、大数据分析等专业能力，兼顾央企智能仓标准化管理要求与生产级真实场景落地，打破只学理论不懂实操的痛点，高度贴合智慧仓储行业综合运营岗位真实用工场景。
+            </p>
+          </div>
+          <h2 class="job-card__title">智能仓综合运营工程师（1000课时）</h2>
+          <div class="job-card__tools">
+            <div class="tools-dots">
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__line"></span>
+            </div>
+            <ul class="tools-list">
+              <li class="tools-list__item">WMS&nbsp;仓储管理系统</li>
+              <li class="tools-list__item">AGV&nbsp;无人搬运车</li>
+              <li class="tools-list__item">央企智能仓管理制度模板</li>
+            </ul>
+          </div>
+          <span class="job-card__tools-badge">训练工具</span>
+        </article>
+      </div>
+
+      <div class="cards-grid">
+        <article class="job-card job-card--orange" style="--feature-h: 670px; --title-indent: 185px;">
+          <div class="job-card__feature">
+            <div class="feature-label">
+              <span class="feature-label__dot"></span>
+              <h3 class="feature-label__text">岗位实景特色</h3>
+            </div>
+            <p class="job-card__desc">
+              以物流行业的核心场景与战略需求，
+              <br />
+              在WMS/TMS等模拟系统、虚拟仿真
+              <br />
+              测试平台与真实业务场景中开展实训，系统掌握仓储管理、运输调度、资源整合与系统协同等全链路核心能力。培养对象不仅具备物流解决方案设计与落地的专业技能，更能够深入理解客户业务逻辑与物流供应链痛点，具备数据驱动决策与跨部门协同能力，可独立负责从需求对接到方案交付的全流程项目实战。
+            </p>
+          </div>
+          <h2 class="job-card__title">物流解决方案工程师（1000课时）</h2>
+          <div class="job-card__tools">
+            <div class="tools-dots">
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__line"></span>
+            </div>
+            <ul class="tools-list">
+              <li class="tools-list__item">WMS/TMS模拟实训系统</li>
+              <li class="tools-list__item">资源调度沙盘</li>
+              <li class="tools-list__item">行业方案设计案例库</li>
+              <li class="tools-list__item">项目复盘模板</li>
+              <li class="tools-list__item">产品化设计思维工具</li>
+            </ul>
+          </div>
+          <span class="job-card__tools-badge">训练工具</span>
+        </article>
+
+        <article class="job-card job-card--orange" style="--feature-h: 910px; --title-indent: 140px;">
+          <div class="job-card__feature">
+            <div class="feature-label">
+              <span class="feature-label__dot"></span>
+              <h3 class="feature-label__text">岗位实景特色</h3>
+            </div>
+            <p class="job-card__desc">
+              本实训对标大数据分析岗真实工作场景，依托宝奇网络货运平台完整业务体系开展全真模拟实操。以物流货运全业务流程为核心，覆盖运单流转、车货调度、线路运营、在途监控、风控预警、指标核算等一线工作内容，所用数据均为平台脱敏后的真实业务数据，配套完整货运管理系统、TMS&nbsp;运输模块及移动端应用。实训完全复刻企业日常工作模式，要求学员运用主流数据分析工具完成数据采集、清洗、建模、分析、可视化及报告输出全流程工作，贴合网络货运行业实际岗位需求，实现从理论知识到职场实操的无缝衔接，同时兼顾业务逻辑与数据分析思维双重培养。
+            </p>
+          </div>
+          <h2 class="job-card__title">网络货运平台大数据分析岗（850课时）</h2>
+          <div class="job-card__tools">
+            <div class="tools-dots">
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__line"></span>
+            </div>
+            <ul class="tools-list">
+              <li class="tools-list__item">Excel</li>
+              <li class="tools-list__item">Power&nbsp;BI</li>
+              <li class="tools-list__item">抓包工具</li>
+              <li class="tools-list__item">Neo4j&nbsp;图数据库</li>
+              <li class="tools-list__item">宝奇网络货运管理系统</li>
+            </ul>
+          </div>
+          <span class="job-card__tools-badge">训练工具</span>
+        </article>
+
+        <article class="job-card" style="--feature-h: 766px; --title-indent: 261px;">
+          <div class="job-card__feature">
+            <div class="feature-label">
+              <span class="feature-label__dot"></span>
+              <h3 class="feature-label__text">岗位实景特色</h3>
+            </div>
+            <p class="job-card__desc">
+              物流财务管理师聚焦产业场景下的全
+              <br />
+              链路财务管控，核心特色体现在“物
+              <br />
+              流&nbsp;+&nbsp;财务”&nbsp;深度融合、“合规&nbsp;+&nbsp;效率
+              <br />
+              ”&nbsp;双重导向、“核算&nbsp;+&nbsp;决策”&nbsp;实战属
+              <br />
+              性，依托物流业务数据开展财务预测
+              <br />
+              与风险管控，支撑供应链协同决策，
+              <br />
+              在真实业务场景中锻造复合型财务专
+              <br />
+              家。培养对象不仅掌握核算、税务、
+              <br />
+              预算、成本、风控等财务全模块技能
+              <br />
+              ，更具备物流业务理解力、数据洞察
+              <br />
+              力与经营决策支持力，能够理解物流
+              <br />
+              企业的真实经营需求，独立负责物流
+              <br />
+              业务单元的财务全盘管理工作。
+            </p>
+          </div>
+          <h2 class="job-card__title">物流财务管理师（900课时）</h2>
+          <div class="job-card__tools">
+            <div class="tools-dots">
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__line"></span>
+            </div>
+            <ul class="tools-list">
+              <li class="tools-list__item">收入成本核算模型</li>
+              <li class="tools-list__item">现金流预测模型</li>
+              <li class="tools-list__item">税务法规案例集</li>
+              <li class="tools-list__item">物流成本分析模型</li>
+              <li class="tools-list__item">经营分析报告模板</li>
+            </ul>
+          </div>
+          <span class="job-card__tools-badge">训练工具</span>
+        </article>
+
+        <article class="job-card" style="--feature-h: 814px; --title-indent: 203px;">
+          <div class="job-card__feature">
+            <div class="feature-label">
+              <span class="feature-label__dot"></span>
+              <h3 class="feature-label__text">岗位实景特色</h3>
+            </div>
+            <p class="job-card__desc">
+              本项目基于宝奇已上线商用网络货运&nbsp;TMS&nbsp;真实平台开展前端实训，依托项目原型图与&nbsp;UI&nbsp;稿复刻企业真实开发流程，围绕八大实战任务完成从环境搭建、页面开发、接口联调到多维度测试、缺陷整改、上线验收全流程演练；实训融合&nbsp;HTML/CSS/Vue&nbsp;前端技术与运单、人车线路、数据报表等物流行业业务知识，兼顾页面交互开发、接口调试抓包、多终端兼容、前端性能优化、缺陷闭环等企业高频实操内容，实现前端编码能力与&nbsp;TMS&nbsp;行业业务能力同步落地，高度贴合企业前端岗位真实用工场景。
+            </p>
+          </div>
+          <h2 class="job-card__title">平台系统前端开发岗（820课时）</h2>
+          <div class="job-card__tools">
+            <div class="tools-dots">
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__line"></span>
+            </div>
+            <ul class="tools-list">
+              <li class="tools-list__item">VS&nbsp;Code、Node.js</li>
+              <li class="tools-list__item">Vue、Axios</li>
+              <li class="tools-list__item">Postman、Fiddler</li>
+              <li class="tools-list__item">TestLink</li>
+              <li class="tools-list__item">云效、Excel</li>
+            </ul>
+          </div>
+          <span class="job-card__tools-badge">训练工具</span>
+        </article>
+
+        <article class="job-card job-card--orange" style="--feature-h: 766px; --title-indent: 238px;">
+          <div class="job-card__feature">
+            <div class="feature-label">
+              <span class="feature-label__dot"></span>
+              <h3 class="feature-label__text">岗位实景特色</h3>
+            </div>
+            <p class="job-card__desc">
+              本岗位依托宝奇商用上线的网络货运&nbsp;TMS&nbsp;真实项目开展实训，严格遵循企业级工程开发规范与编码标准，围绕八大实战任务实现从环境搭建、功能开发、调试优化到版本上线的全生命周期闭环演练，实训兼顾&nbsp;Java&nbsp;后端主流技术落地与物流运单、人车线路调度等行业业务知识学习，针对性开展&nbsp;SQL&nbsp;优化、接口幂等、限流防护、大批量报表导出等生产高频疑难问题实操训练，实现技术与业务深度融合，贴合企业真实后端开发用工场景。
+            </p>
+          </div>
+          <h2 class="job-card__title">Java后端研发岗（860课时）</h2>
+          <div class="job-card__tools">
+            <div class="tools-dots">
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__line"></span>
+            </div>
+            <ul class="tools-list">
+              <li class="tools-list__item">IDEA&nbsp;Maven、Git</li>
+              <li class="tools-list__item">Postman、<br />JMeter</li>
+              <li class="tools-list__item">JWT、Spring&nbsp;Security</li>
+              <li class="tools-list__item">云效</li>
+            </ul>
+          </div>
+          <span class="job-card__tools-badge">训练工具</span>
+        </article>
+
+        <article class="job-card job-card--orange" style="--feature-h: 718px; --title-indent: 319px;">
+          <div class="job-card__feature">
+            <div class="feature-label">
+              <span class="feature-label__dot"></span>
+              <h3 class="feature-label__text">岗位实景特色</h3>
+            </div>
+            <p class="job-card__desc">
+              本实训依托宝奇真实商用货运&nbsp;TMS&nbsp;系统开展实景教学，围绕运单、车辆、司机、线路全链条货运业务实施测试实训，摆脱纯理论与虚拟项目授课模式；完整对标企业真实测试全流程，全覆盖用例设计、多维度测试实施、缺陷全周期管控、上线验收及系统优化全岗位工作内容，融合功能、边界异常、兼容性、性能、接口各类测试项目，并依托测试、UAT、生产三段式环境开展实操演练，高度贴合物流&nbsp;TMS&nbsp;行业实际用工需求。
+            </p>
+          </div>
+          <h2 class="job-card__title">系统测试岗（720课时）</h2>
+          <div class="job-card__tools">
+            <div class="tools-dots">
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__dot"></span>
+              <span class="tools-dots__line"></span>
+            </div>
+            <ul class="tools-list">
+              <li class="tools-list__item">Excel、TestLink</li>
+              <li class="tools-list__item">Chrome&nbsp;调试工具</li>
+              <li class="tools-list__item">Selenium</li>
+              <li class="tools-list__item">云效</li>
+              <li class="tools-list__item">Excel、Markdown</li>
+              <li class="tools-list__item">配套宝奇TMS专属测试环境</li>
+            </ul>
+          </div>
+          <span class="job-card__tools-badge">训练工具</span>
+        </article>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <p class="page-footer__note">
+        非卖品&nbsp;由中宝智运（上海）物流科技有限公司与杭州知与未来科技有限公司联合出版
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
