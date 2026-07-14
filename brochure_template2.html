@@ -7,7 +7,7 @@
 <style>
 /* ====== common ====== */
 body * { box-sizing: border-box; flex-shrink: 0; }
-body { font-family: PingFangSC-Regular, Roboto, Helvetica Neue, Helvetica, Tahoma, Arial, PingFang SC-Light, Microsoft YaHei; margin: 0; }
+body { font-family: PingFangSC-Regular, Roboto, Helvetica Neue, Helvetica, Tahoma, Arial, PingFang SC-Light, Microsoft YaHei; margin: 0; overflow-x: auto; }
 input { background-color: transparent; border: 0; }
 button { margin: 0; padding: 0; border: 1px solid transparent; outline: none; background-color: transparent; }
 button:active { opacity: 0.6; }
@@ -163,11 +163,6 @@ button:active { opacity: 0.6; }
 }
 .add-btn:hover { opacity: 0.8; }
 .add-btn.disabled { background: #ccc; cursor: not-allowed; opacity: 0.5; }
-
-/* ====== scaling ====== */
-@media (max-width: 9920px) {
-  .page { transform: scale(calc(100vw / 9920)); }
-}
 </style>
 </head>
 <body>
@@ -317,7 +312,6 @@ function renderModule(data, idx) {
           <span style="border:4px solid ${dc};border-radius:50%;width:30px;height:30px;flex-shrink:0"></span>
           <span style="position:absolute;left:20px;top:13px;width:462px;height:4px;background:${bc};border:none;border-radius:0"></span>
         </div>
-        </div>
         ${toolsHTML}
       </div>
       <div class="module-train-badge ${bg}"><span>训练工具</span></div>
@@ -365,6 +359,16 @@ function addModule() {
 }
 
 renderAll();
+
+// page scaling
+(function() {
+  const page = document.querySelector('.page');
+  function scale() {
+    page.style.transform = 'scale(' + (window.innerWidth / 9920) + ')';
+  }
+  scale();
+  window.addEventListener('resize', scale);
+})();
 </script>
 </body>
 </html>
