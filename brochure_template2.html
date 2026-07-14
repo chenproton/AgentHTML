@@ -15088,6 +15088,74 @@ button:active {
   margin: 7px 0 0 38px;
 }
 
+/* ====== 集群模板 ====== */
+.cluster-box {
+  position: absolute;
+  left: 50%; top: 0;
+  transform: translateX(-50%);
+  width: 1200px; height: 350px;
+}
+.cluster-box .cc {
+  position: absolute;
+  left: 600px; top: 175px;
+  transform: translate(-50%, -50%);
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(194,227,255,0.85);
+  border: 3px solid #004a88;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 10;
+}
+.cluster-box .cc .tt {
+  font-size: 20px; font-weight: 700; color: #004a88;
+  text-align: center; line-height: 1.35;
+}
+.cluster-box .cc .hr {
+  font-size: 14px; font-weight: 600; color: #004a88;
+  margin-top: 6px;
+  background: #fff; border-radius: 50px; padding: 3px 18px;
+}
+.cluster-box .nd {
+  position: absolute; display: flex; align-items: center;
+}
+.cluster-box .nd .nc {
+  width: 48px; height: 48px; flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(194,227,255,0.65);
+  border: 2px solid #004a88;
+  display: flex; align-items: center; justify-content: center;
+}
+.cluster-box .nd .nc::after {
+  content: ''; width: 15px; height: 15px;
+  border-radius: 50%; background: #004a88;
+}
+.cluster-box .nd .nl {
+  background: #fff; border-radius: 0 10px 0 10px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.08);
+  padding: 6px 14px; font-size: 13px; line-height: 1.5;
+  color: #3a475b; white-space: nowrap;
+  position: absolute; top: 50%; transform: translateY(-50%);
+}
+/* 顶部节点 */
+.cluster-box .nd-t { left: 478px; top: 5px; flex-direction: column; }
+.cluster-box .nd-t .nl {
+  top: auto; bottom: 100%; left: 50%;
+  transform: translateX(-50%); margin-bottom: 6px;
+  border-radius: 10px 10px 0 10px;
+}
+/* 左上 */
+.cluster-box .nd-l1 { left: 248px; top: 110px; flex-direction: row-reverse; }
+.cluster-box .nd-l1 .nl { right: 100%; margin-right: 6px; border-radius: 10px 0 10px 10px; }
+/* 左下 */
+.cluster-box .nd-l2 { left: 328px; top: 255px; flex-direction: row-reverse; }
+.cluster-box .nd-l2 .nl { right: 100%; margin-right: 6px; border-radius: 10px 0 10px 10px; }
+/* 右下 */
+.cluster-box .nd-r1 { left: 872px; top: 255px; }
+.cluster-box .nd-r1 .nl { left: 100%; margin-left: 6px; }
+/* 右上 */
+.cluster-box .nd-r2 { left: 952px; top: 110px; }
+.cluster-box .nd-r2 .nl { left: 100%; margin-left: 6px; }
 </style>
 </head>
 <body>
@@ -15179,7 +15247,32 @@ button:active {
 </div>
 <div class="section_4 flex-row">
 <div class="block_5 flex-col justify-between">
-<div class="text-wrapper_6 flex-col"></div>
+<div class="cluster-box">
+  <div class="cc">
+    <span class="tt">物流行业<br/>全认知</span>
+    <span class="hr">150课时</span>
+  </div>
+  <div class="nd nd-t">
+    <div class="nc"></div>
+    <div class="nl">绘制物流园区市场图谱，分析外资、民企、国央企等主要建设运营主体</div>
+  </div>
+  <div class="nd nd-l1">
+    <div class="nc"></div>
+    <div class="nl">基于数据报表，分析拣选效率、库存周转等瓶颈</div>
+  </div>
+  <div class="nd nd-l2">
+    <div class="nc"></div>
+    <div class="nl">管理末端交付、电子签收及代收款等全流程</div>
+  </div>
+  <div class="nd nd-r1">
+    <div class="nc"></div>
+    <div class="nl">处理仓储网络、识别设备等弱电系统常见问题</div>
+  </div>
+  <div class="nd nd-r2">
+    <div class="nc"></div>
+    <div class="nl">操作智慧园区管理平台，完成通行、资产、安防、能耗、招商等核心模块的模拟运维</div>
+  </div>
+</div>
 
 
 </div>
