@@ -586,6 +586,13 @@ button:active {
   display: flex;
   flex-direction: row;
   gap: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.job-card:hover .job-card__actions {
+  opacity: 1;
+  visibility: visible;
 }
 
 .unit-actions {
@@ -595,6 +602,13 @@ button:active {
   flex-direction: row;
   gap: 8px;
   margin-top: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.timeline-unit:hover .unit-actions {
+  opacity: 1;
+  visibility: visible;
 }
 
 .timeline-unit__point {
@@ -618,7 +632,13 @@ button:active {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   border: none;
   padding: 0;
-  transition: transform 0.2s ease, background 0.2s ease;
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease, visibility 0.2s ease;
+}
+.timeline-unit__point:hover .point-del {
+  opacity: 1;
+  visibility: visible;
 }
 .point-del:hover {
   transform: translateY(-50%) scale(1.15);
