@@ -235,9 +235,8 @@ button:active {
 
 .job-card__title {
   position: absolute;
-  left: 50%;
+  left: calc(50% - 634px);
   top: 40px;
-  transform: translateX(-50%);
   z-index: 2;
   display: flex;
   align-items: center;
@@ -456,7 +455,7 @@ button:active {
   position: absolute;
   left: 9px;
   top: 50%;
-  transform: translateY(-50%);
+  margin-top: -6px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -475,24 +474,20 @@ button:active {
   border-left: 14px solid #F5F7FA;
 }
 .timeline-unit__point--tl {
-  right: 50%;
-  bottom: 50%;
-  transform: translate(-110px, -110px);
+  right: calc(50% - 110px);
+  bottom: calc(50% - 110px);
 }
 .timeline-unit__point--tr {
-  left: 50%;
-  bottom: 50%;
-  transform: translate(110px, -110px);
+  left: calc(50% + 110px);
+  bottom: calc(50% - 110px);
 }
 .timeline-unit__point--bl {
-  right: 50%;
-  top: 50%;
-  transform: translate(-110px, 40px);
+  right: calc(50% - 110px);
+  top: calc(50% + 40px);
 }
 .timeline-unit__point--br {
-  left: 50%;
-  top: 50%;
-  transform: translate(110px, 40px);
+  left: calc(50% + 110px);
+  top: calc(50% + 40px);
 }
 
 /* ========== 页脚 ========== */
