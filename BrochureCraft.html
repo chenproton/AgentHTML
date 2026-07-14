@@ -69,6 +69,22 @@
   .preview-zoom-btn:hover { background:var(--primary-light); border-color:var(--primary); color:var(--primary); }
   .preview-zoom-value { min-width:50px; text-align:center; font-size:12px; font-weight:600; color:var(--text-secondary); user-select:none; }
 
+  /* ===== 内页结构编辑面板 ===== */
+  .structure-panel { display:none; flex-direction:column; border-bottom:1px solid var(--border); background:#fafbfc; flex-shrink:0; max-height:35%; min-height:180px; }
+  .structure-header { padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); background:white; }
+  .structure-header span { font-size:13px; font-weight:600; }
+  .structure-tree { flex:1; overflow-y:auto; padding:8px 0; font-size:12px; }
+  .structure-item { display:flex; align-items:center; justify-content:space-between; padding:6px 16px; cursor:default; gap:8px; }
+  .structure-item:hover { background:var(--primary-light); }
+  .structure-item.job { padding-left:16px; font-weight:600; }
+  .structure-item.unit { padding-left:32px; color:var(--text-secondary); }
+  .structure-item.point { padding-left:48px; color:var(--text-muted); }
+  .structure-label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+  .structure-actions { display:flex; gap:4px; flex-shrink:0; }
+  .structure-btn { width:20px; height:20px; border:1px solid var(--border); border-radius:4px; background:white; color:var(--text-secondary); font-size:13px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .structure-btn:hover { border-color:var(--primary); color:var(--primary); }
+  .structure-btn.danger:hover { border-color:var(--danger); color:var(--danger); }
+
   /* ===== 右侧面板 ===== */
   .sidebar-right { width:420px; background:var(--sidebar-bg); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; }
 
@@ -177,6 +193,13 @@
   </div>
 
   <div class="sidebar-right">
+    <div class="structure-panel" id="structurePanel">
+      <div class="structure-header">
+        <span>页面结构</span>
+        <button class="btn btn-sm btn-primary" id="addJobBtn" onclick="addJob()">+ 岗位</button>
+      </div>
+      <div class="structure-tree" id="structureTree"></div>
+    </div>
     <div class="chat-header">
       <div>
         <div class="chat-header-title" id="chatTitle">AI 内容助手</div>
@@ -404,6 +427,7 @@ function restoreFromCache() {
       document.getElementById('exportPdfBtn').disabled = false;
       renderPreviewInner();
       renderChat('inner_page');
+      renderStructurePanel();
     } else {
       document.querySelector('.sidebar-left').style.display = '';
       if (data.currentPageId && State.pages.some(p => p.id === data.currentPageId)) {
@@ -426,6 +450,7 @@ function restoreFromCache() {
       document.getElementById('exportPdfBtn').disabled = false;
     }
     document.getElementById('exportBtn').disabled = false;
+    renderStructurePanel();
     showToast('已恢复上次的进度');
     return true;
   } catch (e) { return false; }
@@ -513,6 +538,7 @@ async function handleImportInner(event) {
       renderPreviewInner();
     renderChat('inner_page');
     saveToCache();
+    renderStructurePanel();
     showToast('内页模板导入成功');
   } catch (err) { alert('导入失败: ' + err.message); }
   event.target.value = '';
@@ -541,6 +567,7 @@ async function handleImport(event) {
     showToast('模板导入成功');
     document.getElementById('exportBtn').disabled = false; document.getElementById('exportPdfBtn').disabled = false;
     document.querySelector('.sidebar-left').style.display = '';
+    renderStructurePanel();
   } catch (err) { alert('导入失败: ' + err.message); }
   event.target.value = '';
 }
@@ -574,6 +601,302 @@ function getFieldValue(el) {
   if (type === 'list') return Array.from(el.children).map(li => li.outerHTML).join('');
   if (type === 'text') return (el.textContent || '').trim();
   return el.innerHTML;
+}
+
+/* ==================== 内页结构编辑 ==================== */
+function getInnerPage() {
+  if (State.mode !== 'inner') return null;
+  return State.pages.find(p => p.id === State.currentPageId) || State.pages[0] || null;
+}
+
+function parseInnerStructure(pageEl) {
+  const jobs = [];
+  const cards = Array.from(pageEl.querySelectorAll('.cards-panel > .cards-row > .job-card, .cards-panel > .cards-grid > .job-card'));
+  cards.forEach((jobEl, jobIndex) => {
+    const titleEl = jobEl.querySelector('.job-card__title');
+    const units = [];
+    jobEl.querySelectorAll('.timeline-unit').forEach((unitEl, unitIndex) => {
+      const titleSpan = unitEl.querySelector('.timeline-unit__node span');
+      const points = [];
+      unitEl.querySelectorAll('.timeline-unit__point').forEach((pointEl, pointIndex) => {
+        points.push({ el: pointEl, text: (pointEl.textContent || '').trim() });
+      });
+      units.push({ el: unitEl, title: titleSpan ? titleSpan.innerHTML.trim() : '', points });
+    });
+    jobs.push({ el: jobEl, title: titleEl ? titleEl.textContent.trim() : '', units });
+  });
+  return jobs;
+}
+
+function renameFieldsInScope(scope, regex, replacement) {
+  scope.querySelectorAll('[data-field]').forEach(el => {
+    const name = el.getAttribute('data-field');
+    if (regex.test(name)) {
+      el.setAttribute('data-field', name.replace(regex, replacement));
+    }
+  });
+}
+
+function renumberInnerFields(pageEl) {
+  const jobs = parseInnerStructure(pageEl);
+  jobs.forEach((job, j) => {
+    renameFieldsInScope(job.el, /^job_\d+/, 'job_' + j);
+    job.units.forEach((unit, u) => {
+      renameFieldsInScope(unit.el, new RegExp('job_' + j + '_unit_\\d+'), 'job_' + j + '_unit_' + u);
+      unit.points.forEach((point, p) => {
+        renameFieldsInScope(point.el, new RegExp('job_' + j + '_unit_' + u + '_point_\\d+'), 'job_' + j + '_unit_' + u + '_point_' + p);
+      });
+    });
+  });
+}
+
+function rebuildInnerFields(page) {
+  const fields = [];
+  page.element.querySelectorAll('[data-field]').forEach(f => {
+    fields.push({
+      name: f.getAttribute('data-field'),
+      type: f.getAttribute('data-type') || 'text',
+      currentValue: getFieldValue(f)
+    });
+  });
+  page.fields = fields;
+}
+
+function relayoutJobCards(panel) {
+  const cards = Array.from(panel.querySelectorAll('.job-card'));
+  let row = panel.querySelector('.cards-row');
+  let grid = panel.querySelector('.cards-grid');
+  if (!row) {
+    row = document.createElement('div');
+    row.className = 'cards-row';
+    if (panel.firstChild) panel.insertBefore(row, panel.firstChild);
+    else panel.appendChild(row);
+  }
+  if (grid) grid.remove();
+  cards.forEach(card => row.appendChild(card));
+  cards.forEach((card, idx) => {
+    card.classList.toggle('job-card--orange', Math.floor(idx / 2) % 2 === 1);
+  });
+  if (cards.length > 2) {
+    grid = document.createElement('div');
+    grid.className = 'cards-grid';
+    cards.slice(2).forEach(card => grid.appendChild(card));
+    panel.appendChild(grid);
+  }
+}
+
+function relayoutUnits(timeline) {
+  const units = Array.from(timeline.querySelectorAll('.timeline-unit'));
+  const svg = timeline.querySelector('svg');
+  timeline.innerHTML = '';
+  if (svg) timeline.appendChild(svg);
+  for (let i = 0; i < units.length; i += 3) {
+    const row = document.createElement('div');
+    row.className = 'timeline__row';
+    units.slice(i, i + 3).forEach(u => row.appendChild(u));
+    timeline.appendChild(row);
+  }
+}
+
+function addJob() {
+  const page = getInnerPage();
+  if (!page) return;
+  const panel = page.element.querySelector('.cards-panel');
+  if (!panel) return;
+  const cards = panel.querySelectorAll('.job-card');
+  if (cards.length >= 8) { showToast('岗位最多 8 个'); return; }
+  const template = cards[cards.length - 1].cloneNode(true);
+  // 重置默认值
+  const titleEl = template.querySelector('.job-card__title');
+  if (titleEl) titleEl.textContent = '新岗位（100课时）';
+  const descEl = template.querySelector('.job-card__desc');
+  if (descEl) descEl.textContent = '请输入岗位实景描述';
+  template.querySelectorAll('.tools-list__item').forEach(li => { li.textContent = '训练工具'; });
+  // 只保留一个单元和一个知识点
+  const units = template.querySelectorAll('.timeline-unit');
+  for (let i = 1; i < units.length; i++) units[i].remove();
+  const firstUnit = template.querySelector('.timeline-unit');
+  if (firstUnit) {
+    const nodeSpan = firstUnit.querySelector('.timeline-unit__node span');
+    if (nodeSpan) nodeSpan.innerHTML = '新单元';
+    const capsule = firstUnit.querySelector('.timeline-unit__capsule');
+    if (capsule) capsule.textContent = '100课时';
+    const points = firstUnit.querySelectorAll('.timeline-unit__point');
+    for (let i = 1; i < points.length; i++) points[i].remove();
+    const p0 = firstUnit.querySelector('.timeline-unit__point');
+    if (p0) {
+      p0.textContent = '新知识点';
+      p0.className = 'timeline-unit__point timeline-unit__point--tl';
+    }
+    relayoutUnits(template.querySelector('.job-card__timeline'));
+  }
+  panel.appendChild(template);
+  relayoutJobCards(panel);
+  renumberInnerFields(page.element);
+  rebuildInnerFields(page);
+  saveToCache();
+  renderPreviewInner();
+  renderStructurePanel();
+  showToast('已新增岗位');
+}
+
+function deleteJob(jobIndex) {
+  const page = getInnerPage();
+  if (!page) return;
+  const jobs = parseInnerStructure(page.element);
+  if (jobs.length <= 1) { showToast('至少保留一个岗位'); return; }
+  const job = jobs[jobIndex];
+  if (!job) return;
+  if (!confirm('确定删除岗位「' + (job.title || '未命名') + '」？')) return;
+  job.el.remove();
+  const panel = page.element.querySelector('.cards-panel');
+  if (panel) relayoutJobCards(panel);
+  renumberInnerFields(page.element);
+  rebuildInnerFields(page);
+  saveToCache();
+  renderPreviewInner();
+  renderStructurePanel();
+  showToast('岗位已删除');
+}
+
+function addUnit(jobIndex) {
+  const page = getInnerPage();
+  if (!page) return;
+  const jobs = parseInnerStructure(page.element);
+  const job = jobs[jobIndex];
+  if (!job) return;
+  if (job.units.length >= 7) { showToast('每岗位最多 7 个单元'); return; }
+  const lastUnit = job.units[job.units.length - 1].el;
+  const clone = lastUnit.cloneNode(true);
+  const nodeSpan = clone.querySelector('.timeline-unit__node span');
+  if (nodeSpan) nodeSpan.innerHTML = '新单元';
+  const capsule = clone.querySelector('.timeline-unit__capsule');
+  if (capsule) capsule.textContent = '100课时';
+  const points = clone.querySelectorAll('.timeline-unit__point');
+  for (let i = 1; i < points.length; i++) points[i].remove();
+  const p0 = clone.querySelector('.timeline-unit__point');
+  if (p0) {
+    p0.textContent = '新知识点';
+    p0.className = 'timeline-unit__point timeline-unit__point--tl';
+  }
+  const timeline = job.el.querySelector('.job-card__timeline');
+  if (timeline) {
+    timeline.appendChild(clone);
+    relayoutUnits(timeline);
+  }
+  renumberInnerFields(page.element);
+  rebuildInnerFields(page);
+  saveToCache();
+  renderPreviewInner();
+  renderStructurePanel();
+  showToast('已新增单元');
+}
+
+function deleteUnit(jobIndex, unitIndex) {
+  const page = getInnerPage();
+  if (!page) return;
+  const jobs = parseInnerStructure(page.element);
+  const job = jobs[jobIndex];
+  if (!job) return;
+  if (job.units.length <= 1) { showToast('至少保留一个单元'); return; }
+  const unit = job.units[unitIndex];
+  if (!unit) return;
+  if (!confirm('确定删除该单元？')) return;
+  unit.el.remove();
+  const timeline = job.el.querySelector('.job-card__timeline');
+  if (timeline) relayoutUnits(timeline);
+  renumberInnerFields(page.element);
+  rebuildInnerFields(page);
+  saveToCache();
+  renderPreviewInner();
+  renderStructurePanel();
+  showToast('单元已删除');
+}
+
+function addPoint(jobIndex, unitIndex) {
+  const page = getInnerPage();
+  if (!page) return;
+  const jobs = parseInnerStructure(page.element);
+  const job = jobs[jobIndex];
+  if (!job) return;
+  const unit = job.units[unitIndex];
+  if (!unit) return;
+  if (unit.points.length >= 4) { showToast('每单元最多 4 个知识点'); return; }
+  const lastPoint = unit.points[unit.points.length - 1].el;
+  const clone = lastPoint.cloneNode(true);
+  const posCycle = ['tl', 'tr', 'bl', 'br'];
+  const newPos = posCycle[unit.points.length % 4];
+  clone.className = 'timeline-unit__point timeline-unit__point--' + newPos;
+  clone.textContent = '新知识点';
+  unit.el.appendChild(clone);
+  renumberInnerFields(page.element);
+  rebuildInnerFields(page);
+  saveToCache();
+  renderPreviewInner();
+  renderStructurePanel();
+  showToast('已新增知识点');
+}
+
+function deletePoint(jobIndex, unitIndex, pointIndex) {
+  const page = getInnerPage();
+  if (!page) return;
+  const jobs = parseInnerStructure(page.element);
+  const job = jobs[jobIndex];
+  if (!job) return;
+  const unit = job.units[unitIndex];
+  if (!unit) return;
+  if (unit.points.length <= 1) { showToast('至少保留一个知识点'); return; }
+  const point = unit.points[pointIndex];
+  if (!point) return;
+  if (!confirm('确定删除该知识点？')) return;
+  point.el.remove();
+  renumberInnerFields(page.element);
+  rebuildInnerFields(page);
+  saveToCache();
+  renderPreviewInner();
+  renderStructurePanel();
+  showToast('知识点已删除');
+}
+
+function renderStructurePanel() {
+  const panel = document.getElementById('structurePanel');
+  const tree = document.getElementById('structureTree');
+  const addBtn = document.getElementById('addJobBtn');
+  const page = getInnerPage();
+  if (!panel || !tree) return;
+  if (State.mode !== 'inner' || !page) {
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = 'flex';
+  const jobs = parseInnerStructure(page.element);
+  if (addBtn) addBtn.disabled = jobs.length >= 8;
+  let html = '';
+  jobs.forEach((job, j) => {
+    html += '<div class="structure-item job">' +
+      '<span class="structure-label">' + escapeHtml(job.title || '岗位') + '</span>' +
+      '<div class="structure-actions">' +
+        (jobs.length > 1 ? '<button class="structure-btn danger" onclick="deleteJob(' + j + ')" title="删除岗位">×</button>' : '') +
+        (job.units.length < 7 ? '<button class="structure-btn" onclick="addUnit(' + j + ')" title="新增单元">+</button>' : '') +
+      '</div></div>';
+    job.units.forEach((unit, u) => {
+      const unitName = (unit.title || '单元').replace(/<br\s*\/?>/gi, ' ');
+      html += '<div class="structure-item unit">' +
+        '<span class="structure-label">' + escapeHtml(unitName) + '</span>' +
+        '<div class="structure-actions">' +
+          (job.units.length > 1 ? '<button class="structure-btn danger" onclick="deleteUnit(' + j + ',' + u + ')" title="删除单元">×</button>' : '') +
+          (unit.points.length < 4 ? '<button class="structure-btn" onclick="addPoint(' + j + ',' + u + ')" title="新增知识点">+</button>' : '') +
+        '</div></div>';
+      unit.points.forEach((point, p) => {
+        html += '<div class="structure-item point">' +
+          '<span class="structure-label">' + escapeHtml(point.text || '知识点') + '</span>' +
+          '<div class="structure-actions">' +
+            (unit.points.length > 1 ? '<button class="structure-btn danger" onclick="deletePoint(' + j + ',' + u + ',' + p + ')" title="删除知识点">×</button>' : '') +
+          '</div></div>';
+      });
+    });
+  });
+  tree.innerHTML = html;
 }
 
 function renderPageList() {
