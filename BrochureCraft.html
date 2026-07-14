@@ -738,6 +738,31 @@ function exportInnerPDF() {
   document.getElementById('exportHeight').value = State.innerHeight;
   document.getElementById('configModal').classList.add('show');
 }
+async function waitForIframeResources(iframe) {
+  const doc = iframe.contentDocument;
+  const win = iframe.contentWindow;
+  if (!doc || !win) return;
+  // Trigger responsive font-size recalculation (e.g. flexible.js)
+  try { win.dispatchEvent(new Event('resize')); } catch (e) {}
+  // Wait for web fonts
+  if (doc.fonts && doc.fonts.ready) {
+    try { await Promise.race([doc.fonts.ready, new Promise(r => setTimeout(r, 2000))]); } catch (e) {}
+  }
+  // Wait for images
+  const images = Array.from(doc.images || []);
+  if (images.length) {
+    await Promise.all(images.map(img => {
+      if (img.complete) return Promise.resolve();
+      return Promise.race([
+        new Promise(resolve => { img.onload = resolve; img.onerror = resolve; }),
+        new Promise(resolve => setTimeout(resolve, 3000))
+      ]);
+    }));
+  }
+  // Allow final layout pass
+  await new Promise(r => setTimeout(r, 300));
+}
+
 async function doExportInner() {
   document.getElementById('configModal').classList.remove('show');
   const w = parseInt(document.getElementById('exportWidth').value) || State.innerWidth;
@@ -758,18 +783,18 @@ async function doExportInner() {
     const origHead = origDoc.head ? origDoc.head.innerHTML : '';
     const cleanHead = origHead.replace(/<meta[^>]*viewport[^>]*>/gi, '');
     const innerHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8">' + cleanHead +
-      '<style>html,body{margin:0;padding:0;width:' + w + 'px;height:' + h + 'px;}</style></head><body>' + (page.element ? page.element.outerHTML : '') + '</body></html>';
-    
+      '<style>html,body{margin:0;padding:0;width:' + w + 'px;height:' + h + 'px;overflow:hidden;background:white;}</style></head><body>' + (page.element ? page.element.outerHTML : '') + '</body></html>';
+
     const iframe = document.getElementById('exportInnerThumbFrame');
     iframe.srcdoc = innerHTML;
     await new Promise(r => { iframe.onload = r; });
-    await new Promise(r => setTimeout(r, 1500));
-    
-    const body = iframe.contentDocument.body;
-    body.querySelectorAll('[data-type="image"]').forEach(el => {
+    await waitForIframeResources(iframe);
+
+    const target = iframe.contentDocument.querySelector('.page') || iframe.contentDocument.body;
+    target.querySelectorAll('[data-type="image"]').forEach(el => {
       if (!el.offsetWidth || !el.offsetHeight) el.remove();
     });
-    const canvas = await html2canvas(body, { scale: 2, useCORS: true, logging: false, allowTaint: true, width: w, height: h });
+    const canvas = await html2canvas(target, { scale: 1, useCORS: true, logging: false, allowTaint: true, width: w, height: h });
     
     const exportCanvas = document.createElement('canvas');
     exportCanvas.width = w;
@@ -808,18 +833,18 @@ async function doExportInnerPDF() {
     const origHead = origDoc.head ? origDoc.head.innerHTML : '';
     const cleanHead = origHead.replace(/<meta[^>]*viewport[^>]*>/gi, '');
     const innerHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8">' + cleanHead +
-      '<style>html,body{margin:0;padding:0;width:' + w + 'px;height:' + h + 'px;}</style></head><body>' + (page.element ? page.element.outerHTML : '') + '</body></html>';
-    
+      '<style>html,body{margin:0;padding:0;width:' + w + 'px;height:' + h + 'px;overflow:hidden;background:white;}</style></head><body>' + (page.element ? page.element.outerHTML : '') + '</body></html>';
+
     const iframe = document.getElementById('exportInnerPdfThumbFrame');
     iframe.srcdoc = innerHTML;
     await new Promise(r => { iframe.onload = r; });
-    await new Promise(r => setTimeout(r, 1500));
-    
-    const body = iframe.contentDocument.body;
-    body.querySelectorAll('[data-type="image"]').forEach(el => {
+    await waitForIframeResources(iframe);
+
+    const target = iframe.contentDocument.querySelector('.page') || iframe.contentDocument.body;
+    target.querySelectorAll('[data-type="image"]').forEach(el => {
       if (!el.offsetWidth || !el.offsetHeight) el.remove();
     });
-    const canvas = await html2canvas(body, { scale: 1, useCORS: true, logging: false, allowTaint: true, width: w, height: h });
+    const canvas = await html2canvas(target, { scale: 1, useCORS: true, logging: false, allowTaint: true, width: w, height: h });
     removeExportOverlay();
     
     const mmW = w * 0.264583;
