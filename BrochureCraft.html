@@ -190,13 +190,7 @@
       <div class="dropdown-item" onclick="exportPDFGrid('standard')">📄 标准版（压缩）</div>
       <div class="dropdown-item" onclick="exportPDFGrid('hd')">✨ 印刷版（无压缩）</div>
     </div>
-    <button class="btn btn-primary" id="exportHtmlBtn" onclick="toggleHtmlMenu()" disabled style="display:none;">🌐 导出 HTML ▾</button>
-    <div class="dropdown-menu" id="htmlMenu">
-      <div class="dropdown-item" onclick="exportCoverEditedHTML()">封面（编辑后）</div>
-      <div class="dropdown-item" onclick="exportInnerEditedHTML()">内页（编辑后）</div>
-      <div class="dropdown-item" onclick="exportCoverOriginalHTML()">封面（原始）</div>
-      <div class="dropdown-item" onclick="exportInnerOriginalHTML()">内页（原始）</div>
-    </div>
+
   </div>
 </div>
 
@@ -817,7 +811,6 @@ function setActiveCombinedMode(mode, shouldSave) {
     renderStructurePanel();
   }
   updateModeSwitch();
-  updateHtmlExportButton();
   if (shouldSave) saveToCache();
 }
 
@@ -837,64 +830,6 @@ function updateModeSwitch() {
   } else {
     el.classList.remove('show');
   }
-  updateHtmlExportButton();
-}
-
-function updateHtmlExportButton() {
-  const btn = document.getElementById('exportHtmlBtn');
-  if (!btn) return;
-  if (State.combined) {
-    btn.style.display = '';
-    btn.disabled = !(State.coverPages && State.coverPages.length && State.innerPage);
-  } else {
-    btn.style.display = 'none';
-  }
-}
-
-function toggleHtmlMenu() {
-  document.getElementById('htmlMenu').classList.toggle('show');
-}
-
-function downloadHTML(filename, html) {
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function wrapBodyHTML(bodyContent, templateHTML) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(templateHTML, 'text/html');
-  const head = doc.head ? doc.head.innerHTML : '';
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8">' + head + '</head><body>' + bodyContent + '</body></html>';
-}
-
-function exportCoverEditedHTML() {
-  document.getElementById('htmlMenu').classList.remove('show');
-  if (!State.combined || !State.coverPages.length) return;
-  const body = State.coverPages.map(p => p.element.outerHTML).join('');
-  downloadHTML('cover_edited.html', wrapBodyHTML(body, State.coverTemplateHTML));
-}
-
-function exportInnerEditedHTML() {
-  document.getElementById('htmlMenu').classList.remove('show');
-  if (!State.combined || !State.innerPage) return;
-  downloadHTML('inner_edited.html', wrapBodyHTML(State.innerPage.element.outerHTML, State.innerTemplateHTML));
-}
-
-function exportCoverOriginalHTML() {
-  document.getElementById('htmlMenu').classList.remove('show');
-  if (!State.combined) return;
-  downloadHTML('cover_original.html', State.coverTemplateHTML);
-}
-
-function exportInnerOriginalHTML() {
-  document.getElementById('htmlMenu').classList.remove('show');
-  if (!State.combined) return;
-  downloadHTML('inner_original.html', State.innerTemplateHTML);
 }
 
 async function handleImport(event) {
