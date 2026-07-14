@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>智慧物流工程师</title>
+<title>智慧物流人才培养课程体系</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -11,8 +11,21 @@ body {
   font-family: "Microsoft YaHei UI", "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #f0f2f5;
   min-height: 100vh;
-  display: flex; justify-content: center; align-items: center;
   padding: 30px;
+  overflow-x: auto;
+}
+
+.page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 700;
+  color: #004a88;
+  margin-bottom: 50px;
 }
 
 .module-card {
@@ -20,13 +33,57 @@ body {
   border: 1px solid #004a88;
   border-radius: 40px;
   padding: 40px 30px;
+  margin-bottom: 40px;
 }
 
-/*
-  集群: 1100×440。圆心=(550,220)
-  中心圆=160px, 5节点R=160
-  间距=160-80(中心半径)-24(节点半径)=56px
-*/
+.module-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.module-badge {
+  background: #f96217;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 10px 40px;
+  border-radius: 50px;
+  text-align: center;
+}
+
+.module-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #004a88;
+  margin-bottom: 20px;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.clusters-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.cluster-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cluster-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #004a88;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
 .cluster {
   position: relative;
   width: 1100px; height: 440px;
@@ -53,7 +110,6 @@ body {
   background: #fff; border-radius: 50px; padding: 3px 16px;
 }
 
-/* 节点 */
 .node {
   position: absolute;
   display: flex; align-items: center;
@@ -82,15 +138,6 @@ body {
   white-space: nowrap;
   position: absolute; top: 50%; transform: translateY(-50%);
 }
-
-/*
-  五边形 R=160, 圆心(550,220):
-  P1=0°:   (550+0,    220-160)    = (550, 60)    → node:(526, 36)
-  P2=72°:  (550+152.2, 220-49.4)  = (702.2, 170.6) → node:(678, 147)
-  P3=144°: (550+94.0,  220+129.4) = (644, 349.4)   → node:(620, 325)
-  P4=216°: (550-94.0,  220+129.4) = (456, 349.4)   → node:(432, 325)
-  P5=288°: (550-152.2, 220-49.4)  = (397.8, 170.6) → node:(374, 147)
-*/
 
 .node-1 { left: 526px; top: 36px; flex-direction: column; }
 .node-1 .node-label {
@@ -121,45 +168,1331 @@ body {
   left: 100%; margin-left: 6px;
 }
 
-
 </style>
 </head>
 <body>
 
+<div class="page-wrapper">
+<div class="page-title">智慧物流人才培养课程体系</div>
+
+<!-- ==================== MODULE 1 ==================== -->
 <div class="module-card">
-  <div class="cluster">
-
-
-    <div class="center-circle">
-      <span class="circle-title">物流行业<br/>全认知</span>
-      <span class="circle-hours">200课时</span>
-    </div>
-
-    <div class="node node-1">
-      <div class="node-circle"></div>
-      <div class="node-label">模拟操作TMS/WMS系统，理解数据流转逻辑</div>
-    </div>
-
-    <div class="node node-2">
-      <div class="node-circle"></div>
-      <div class="node-label">梳理典型物流企业的组织架构与部门协作流程</div>
-    </div>
-
-    <div class="node node-3">
-      <div class="node-circle"></div>
-      <div class="node-label">从流程与系统角度，提出业务优化建议</div>
-    </div>
-
-    <div class="node node-4">
-      <div class="node-circle"></div>
-      <div class="node-label">图解快递、快运等主流模式的核心流程与痛点</div>
-    </div>
-
-    <div class="node node-5">
-      <div class="node-circle"></div>
-      <div class="node-label">学习物联网、AI等智慧物流技术应用案例</div>
-    </div>
+  <div class="module-header">
+    <div class="module-badge">智慧物流工程师（1000课时）</div>
   </div>
+
+  <div class="clusters-grid">
+
+    <div class="cluster-group">
+      <div class="cluster-label">物流行业全认知 · 150课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">物流行业<br/>全认知</span>
+          <span class="circle-hours">150课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">学习物流行业发展历程与宏观趋势</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">掌握物流核心概念与基本术语体系</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">理解物流在中国经济中的地位与作用</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">图解快递快运等主流模式核心流程</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">学习物联网AI等智慧物流技术应用</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">智慧仓储服务 · 200课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">智慧仓储<br/>服务</span>
+          <span class="circle-hours">200课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">WMS仓库管理系统实操与配置</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">仓储布局规划与动线设计方法</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">自动化仓储设备选型与集成</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">智能分拣系统作业流程实操</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">AGV自动引导车调度与运维</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">智慧配送服务 · 150课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">智慧配送<br/>服务</span>
+          <span class="circle-hours">150课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">配送网络规划与路径优化算法</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">最后一公里配送方案设计与实施</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">同城配送时效管理与SLA保障</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">新能源车辆调度与充电桩管理</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">配送场景话术与客户服务技巧</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">智慧运输服务 · 200课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">智慧运输<br/>服务</span>
+          <span class="circle-hours">200课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">TMS运输管理系统全流程实操</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">多式联运方案设计与成本测算</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">运力资源池建设与供应商管理</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">在途可视化监控与异常预警</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">干线运输班线规划与时效优化</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">物流行业全认知 · 200课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">物流全认知<br/>进阶</span>
+          <span class="circle-hours">200课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">供应链管理基础理论与模型</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">物流标准法规与行业政策解读</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">物流企业组织架构与绩效管理</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">绿色物流与碳减排政策分析</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">跨境电商物流模式与通关实务</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">物流行业全认知 · 100课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">物流综合<br/>实训</span>
+          <span class="circle-hours">100课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">模拟操作TMS/WMS系统理解数据流转</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">梳理典型物流企业组织架构与协作流程</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">从流程与系统角度提出业务优化建议</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">物流场景沙盘推演与团队协作训练</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">企业真实案例分析与解决方案撰写</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== MODULE 2 ==================== -->
+<div class="module-card">
+  <div class="module-header">
+    <div class="module-badge">智能仓综合运营工程师（1000课时）</div>
+  </div>
+
+  <div class="clusters-grid">
+
+    <div class="cluster-group">
+      <div class="cluster-label">软硬件集成能力 · 100课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">软硬件<br/>集成能力</span>
+          <span class="circle-hours">100课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">WMS与自动化设备接口协议对接</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">PLC控制系统基础与故障诊断</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">RFID条码扫描设备部署与调试</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">分拣输送线控制逻辑配置</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">智能仓硬件设备综合联调测试</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">安全管理体系建设 · 110课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">安全管理<br/>体系建设</span>
+          <span class="circle-hours">110课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">仓库消防安全管理制度编写</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">危险品仓储管理规范实操</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">人员安全培训与应急预案演练</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">视频监控系统部署与数据管理</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">安全生产标准化评审准备</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">智能设备运维操作处理能力 · 190课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">智能设备<br/>运维</span>
+          <span class="circle-hours">190课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">AGV日常巡检与预防性维护</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">自动化立体仓库堆垛机保养</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">设备故障分级响应与报修流程</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">备品备件库存管理与采购</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">设备运行数据分析与效能评估</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">系统操作与状态监控能力 · 180课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">系统操作<br/>与监控</span>
+          <span class="circle-hours">180课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">WMS系统日常操作与数据录入</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">仓库看板系统实时数据监控</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">异常工单创建与处理闭环</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">仓内作业效率指标跟踪</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">系统权限管理与用户操作审计</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">智慧仓储管理能力 · 200课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">智慧仓储<br/>管理</span>
+          <span class="circle-hours">200课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">仓储运营KPI体系建立与考核</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">库存策略制定与周转率优化</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">拣选策略设计与效率提升</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">仓储成本核算与降本方案</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">仓配一体化运营流程设计</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== MODULE 3 ==================== -->
+<div class="module-card">
+  <div class="module-header">
+    <div class="module-badge">物流解决方案工程师（1000课时）</div>
+  </div>
+
+  <div class="clusters-grid">
+
+    <div class="cluster-group">
+      <div class="cluster-label">客户需求分析诊断 · 100课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">需求分析<br/>诊断</span>
+          <span class="circle-hours">100课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">客户拜访流程与需求挖掘方法论</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">供应链痛点识别与根因分析</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">数据采集与现状调研报告撰写</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">行业对标分析与标杆案例研究</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">客户需求优先级评估与范围界定</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">方案设计与输出 · 200课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">方案设计<br/>与输出</span>
+          <span class="circle-hours">200课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">物流解决方案架构设计方法论</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">仓储配送方案设计与成本模型</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">技术方案选型与系统集成规划</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">方案书撰写规范与评审流程</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">可视化方案呈现与客户汇报技巧</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">资源匹配与调度 · 200课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">资源匹配<br/>与调度</span>
+          <span class="circle-hours">200课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">运力资源市场调研与供应商寻源</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">仓储资源选址与容量规划评估</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">人力配置测算与组织架构设计</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">信息系统资源需求分析与评估</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">设备清单编制与投资回报测算</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">方案落地与执行 · 200课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">方案落地<br/>与执行</span>
+          <span class="circle-hours">200课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">项目启动与干系人沟通管理</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">实施计划编制与里程碑管理</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">仓储搬迁与系统切换方案执行</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">运营团队培训与交接管理</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">上线后运营监控与持续优化</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">复盘总结与产品化 · 100课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">复盘总结<br/>产品化</span>
+          <span class="circle-hours">100课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">项目复盘方法论与经验沉淀</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">标准化解决方案模板库建设</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">案例库编写与知识分享机制</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">解决方案产品化包装与定价</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">行业白皮书与对外宣传材料输出</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== MODULE 4 ==================== -->
+<div class="module-card">
+  <div class="module-header">
+    <div class="module-badge">网络货运平台大数据分析岗（850课时）</div>
+  </div>
+
+  <div class="clusters-grid">
+
+    <div class="cluster-group">
+      <div class="cluster-label">行业与数据基础 · 100课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">行业与<br/>数据基础</span>
+          <span class="circle-hours">100课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">网络货运行业政策与法规解读</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">货运平台业务模式与核心指标</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">数据结构设计与数据库基础</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">平台数据仓库架构与ETL流程</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">数据质量管理与清洗方法</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">数据分析工具应用 · 180课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">数据分析<br/>工具应用</span>
+          <span class="circle-hours">180课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">SQL高级查询与数据建模</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">Python数据分析库实战应用</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">Excel高级函数与数据透视表</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">BI工具看板搭建与数据可视化</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">大数据平台Hive/Spark基础</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">运单全链路与时效分析 · 180课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">运单全链路<br/>时效分析</span>
+          <span class="circle-hours">180课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">运单生命周期数据跟踪模型</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">配送时效SLA达标率分析</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">异常运单识别与归因分析</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">路线时效评估与动态优化</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">客户签收行为数据分析</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">车货调度分析 · 90课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">车货调度<br/>分析</span>
+          <span class="circle-hours">90课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">车辆运力利用率指标分析</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">货源匹配效率与撮合算法</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">司机活跃度与留存分析</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">空驶率优化与返程车管理</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">调度策略数据驱动迭代</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">综合可视化与报告 · 90课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">综合可视化<br/>与报告</span>
+          <span class="circle-hours">90课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">数据大屏设计与指标选取</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">运营日报周报月报自动化</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">专题分析报告框架与撰写</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">数据故事讲述与汇报表达</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">跨部门数据需求沟通管理</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== MODULE 5 ==================== -->
+<div class="module-card">
+  <div class="module-header">
+    <div class="module-badge">物流财务管理师（900课时）</div>
+  </div>
+
+  <div class="clusters-grid">
+
+    <div class="cluster-group">
+      <div class="cluster-label">物流财务基础实战 · 150课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">物流财务<br/>基础实战</span>
+          <span class="circle-hours">150课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">物流企业会计科目设置与核算</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">运费结算流程与账务处理</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">仓储费装卸费计费模型</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">物流行业财务报表编制</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">固定资产折旧与摊销核算</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">资金管理与供应链金融 · 100课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">资金管理<br/>供应链金融</span>
+          <span class="circle-hours">100课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">运费保理与应收账款融资</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">油卡ETC资金池管理</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">资金归集与银企直连配置</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">供应链金融产品风控模型</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">司机运费垫资与账期管理</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">物流成本与精益管控 · 150课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">物流成本<br/>精益管控</span>
+          <span class="circle-hours">150课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">运输成本结构拆解与分析</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">仓储作业成本归集与分摊</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">标准成本与实际成本差异分析</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">物流降本增效方案设计</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">本量利分析与盈利模型</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">战略财务与风险管理 · 100课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">战略财务<br/>风险管理</span>
+          <span class="circle-hours">100课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">物流项目投资可行性分析</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">合同条款财务风险审查</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">物流保险方案设计与理赔</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">油价波动对运价影响分析</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">外汇风险与国际结算管理</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">税务筹划与风控 · 150课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">税务筹划<br/>与风控</span>
+          <span class="circle-hours">150课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">网络货运平台增值税政策</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">个体司机个税代征与合规</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">物流企业税收优惠政策运用</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">发票全生命周期管理流程</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">税务稽查应对与自查技巧</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== MODULE 6 ==================== -->
+<div class="module-card">
+  <div class="module-header">
+    <div class="module-badge">平台系统前端开发岗（820课时）</div>
+  </div>
+
+  <div class="clusters-grid">
+
+    <div class="cluster-group">
+      <div class="cluster-label">前端工程环境搭建与基础页面开发 · 90课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">前端工程<br/>环境搭建</span>
+          <span class="circle-hours">90课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">Vue/React项目脚手架搭建与配置</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">Webpack/Vite构建工具链实操</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">ESLint/Prettier代码规范配置</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">Git版本控制与分支协作流程</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">基础页面布局与组件化开发</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">运单管理前端开发与接口对接 · 155课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">运单管理<br/>前端开发</span>
+          <span class="circle-hours">155课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">运单列表查询与高级筛选功能</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">运单详情页状态流转展示</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">批量导入导出Excel功能开发</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">RESTful接口对接与Axios封装</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">表单校验与异常提示优化</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">人车线路业务页面开发 · 140课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">人车线路<br/>页面开发</span>
+          <span class="circle-hours">140课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">司机信息管理与认证审核页面</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">车辆档案管理与GPS轨迹展示</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">线路规划可视化地图组件集成</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">合同模板管理与电子签章对接</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">移动端适配与响应式开发</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">数据统计报表与导出开发 · 110课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">数据统计<br/>报表导出</span>
+          <span class="circle-hours">110课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">ECharts图表组件集成与配置</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">运营数据大屏组件开发</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">报表导出PDF/Excel功能实现</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">时间维度筛选与对比分析图表</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">打印模板样式开发与适配</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">认证权限与通用基座开发 · 135课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">认证权限<br/>基座开发</span>
+          <span class="circle-hours">135课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">登录注册流程与Token管理</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">RBAC权限模型前端实现</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">路由守卫与菜单动态渲染</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">通用组件库搭建与文档维护</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">前端性能监控与错误上报</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== MODULE 7 ==================== -->
+<div class="module-card">
+  <div class="module-header">
+    <div class="module-badge">Java后端研发岗（860课时）</div>
+  </div>
+
+  <div class="clusters-grid">
+
+    <div class="cluster-group">
+      <div class="cluster-label">项目工程搭建与环境管控 · 95课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">工程搭建<br/>环境管控</span>
+          <span class="circle-hours">95课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">SpringBoot微服务项目初始化</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">Maven/Gradle依赖管理与多模块</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">Nacos注册中心与配置中心搭建</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">Docker容器化部署与环境隔离</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">CI/CD流水线配置与自动化构建</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">运单业务后端开发 · 160课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">运单业务<br/>后端开发</span>
+          <span class="circle-hours">160课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">运单创建与状态机流转设计</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">运单分页查询与多条件检索</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">运单费用计算引擎开发</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">消息队列异步处理与削峰</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">分布式事务与数据一致性保障</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">认证权限与通用基座开发 · 125课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">认证权限<br/>基座开发</span>
+          <span class="circle-hours">125课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">SpringSecurity权限框架集成</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">JWT令牌生成与刷新机制</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">RBAC角色权限数据模型设计</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">操作日志记录与审计追踪</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">接口限流防刷与安全配置</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">人车线资源业务开发 · 150课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">人车线<br/>资源开发</span>
+          <span class="circle-hours">150课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">司机信息CRUD与审核工作流</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">车辆GPS轨迹存储与查询</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">线路模板管理与智能匹配</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">合同管理服务与模板引擎</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">电子围栏与位置服务集成</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">数据统计与报表导出开发 · 110课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">数据统计<br/>报表导出</span>
+          <span class="circle-hours">110课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">定时任务与数据聚合统计</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">多维度报表数据查询接口</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">POI/EasyExcel报表文件生成</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">缓存策略与热点数据优化</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">数据同步与异构系统对接</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== MODULE 8 ==================== -->
+<div class="module-card">
+  <div class="module-header">
+    <div class="module-badge">系统测试岗（720课时）</div>
+  </div>
+
+  <div class="clusters-grid">
+
+    <div class="cluster-group">
+      <div class="cluster-label">TMS业务认知与测试用例设计 · 190课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">TMS业务<br/>用例设计</span>
+          <span class="circle-hours">190课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">TMS运输管理系统全流程认知</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">测试用例设计方法与等价类划分</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">边界值分析与场景组合测试</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">测试用例评审流程与管理工具</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">需求分析与测试点提取方法</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">功能与业务流程测试能力 · 200课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">功能与<br/>流程测试</span>
+          <span class="circle-hours">200课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">功能测试执行与缺陷记录规范</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">运单全流程端到端测试</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">结算计费流程准确性验证</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">接口测试工具Postman/JMeter</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">回归测试策略与自动化脚本</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">缺陷全生命周期管控能力 · 100课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">缺陷全<br/>生命周期</span>
+          <span class="circle-hours">100课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">缺陷提报规范与严重等级判定</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">缺陷复现步骤编写与截图标注</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">缺陷跟踪与JIRA/TAPD工具使用</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">缺陷趋势分析与质量度量</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">缺陷复盘与研发流程改进建议</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">兼容性性能异常测试 · 150课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">兼容性<br/>性能测试</span>
+          <span class="circle-hours">150课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">浏览器兼容性测试与适配</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">移动端多机型分辨率测试</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">接口压力测试与性能基线</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">弱网环境与异常场景模拟</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">安全渗透测试基础与扫描</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cluster-group">
+      <div class="cluster-label">上线验收与测试报告编制 · 50课时</div>
+      <div class="cluster">
+        <div class="center-circle">
+          <span class="circle-title">上线验收<br/>报告编制</span>
+          <span class="circle-hours">50课时</span>
+        </div>
+        <div class="node node-1">
+          <div class="node-circle"></div>
+          <div class="node-label">上线checklist编制与验收流程</div>
+        </div>
+        <div class="node node-2">
+          <div class="node-circle"></div>
+          <div class="node-label">测试报告框架与数据汇总</div>
+        </div>
+        <div class="node node-3">
+          <div class="node-circle"></div>
+          <div class="node-label">用户验收测试UAT组织与执行</div>
+        </div>
+        <div class="node node-4">
+          <div class="node-circle"></div>
+          <div class="node-label">发布风险评估与回滚预案</div>
+        </div>
+        <div class="node node-5">
+          <div class="node-circle"></div>
+          <div class="node-label">生产环境冒烟测试与监控</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 </div>
 
 </body>
