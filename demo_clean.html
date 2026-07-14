@@ -477,21 +477,42 @@ button:active {
   border-bottom: 22px solid transparent;
   border-left: 14px solid #F5F7FA;
 }
+/* 左侧标签：箭头在右侧，指向节点 */
 .timeline-unit__point--tl {
-  right: calc(50% - 110px);
-  bottom: calc(50% - 110px);
-}
-.timeline-unit__point--tr {
-  left: calc(50% + 110px);
-  bottom: calc(50% - 110px);
+  right: calc(50% + 110px);
+  bottom: calc(50% + 110px);
 }
 .timeline-unit__point--bl {
-  right: calc(50% - 110px);
-  top: calc(50% + 40px);
+  right: calc(50% + 110px);
+  top: calc(50% + 130px);
+}
+
+/* 右侧标签：箭头在左侧，指向节点；整体做镜像 */
+.timeline-unit__point--tr {
+  left: calc(50% + 110px);
+  bottom: calc(50% + 110px);
+  padding: 8px 30px 8px 20px;
+  border-radius: 0 6px 6px 0;
+  text-align: right;
 }
 .timeline-unit__point--br {
   left: calc(50% + 110px);
-  top: calc(50% + 40px);
+  top: calc(50% + 130px);
+  padding: 8px 30px 8px 20px;
+  border-radius: 0 6px 6px 0;
+  text-align: right;
+}
+.timeline-unit__point--tr::before,
+.timeline-unit__point--br::before {
+  left: auto;
+  right: 9px;
+}
+.timeline-unit__point--tr::after,
+.timeline-unit__point--br::after {
+  right: auto;
+  left: -14px;
+  border-left: none;
+  border-right: 14px solid #F5F7FA;
 }
 
 /* ========== 页脚 ========== */
