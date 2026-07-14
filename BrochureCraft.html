@@ -19,6 +19,11 @@
   .toolbar-left { display:flex; align-items:center; gap:12px; position:relative; }
   .toolbar-title { font-size:17px; font-weight:700; letter-spacing:-0.3px; display:flex; align-items:center; }
   .toolbar-divider { width:1px; height:24px; background:var(--border); margin:0 4px; }
+  .mode-switch { display:none; align-items:center; background:#f3f4f6; border-radius:8px; padding:3px; margin-left:12px; }
+  .mode-switch.show { display:flex; }
+  .mode-switch-btn { border:none; background:transparent; color:var(--text-secondary); font-size:13px; font-weight:500; padding:5px 14px; border-radius:6px; cursor:pointer; transition:all 0.15s; }
+  .mode-switch-btn:hover { color:var(--text); }
+  .mode-switch-btn.active { background:white; color:var(--primary); box-shadow:0 1px 2px rgba(0,0,0,0.08); }
 
   /* ===== 按钮 ===== */
   .btn { padding:8px 18px; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.18s; font-family:inherit; line-height:1.4; display:inline-flex; align-items:center; gap:6px; }
@@ -167,18 +172,30 @@
 <div class="toolbar">
   <div class="toolbar-left">
     <div class="toolbar-title"><img src="https://www.zhiyu.com.cn/img/logo.png" style="height:28px;margin-right:8px;">企业画册在线制作系统 <span style="font-size:11px;font-weight:400;color:var(--text-muted);background:#f3f4f6;padding:2px 8px;border-radius:10px;vertical-align:middle;margin-left:4px;">v2.16</span></div>
+    <div class="mode-switch" id="modeSwitch">
+      <button class="mode-switch-btn" data-mode="cover" onclick="switchCombinedMode('cover')">封面</button>
+      <button class="mode-switch-btn" data-mode="inner" onclick="switchCombinedMode('inner')">内页</button>
+    </div>
   </div>
   <div class="toolbar-left">
     <button class="btn btn-secondary" onclick="showConfig()">⚙️ AI 配置</button>
     <button class="btn btn-secondary" onclick="showImportMode()">📂 导入模板</button>
     <input type="file" id="templateInput" class="file-input" accept=".html,.zip" onchange="handleImport(event)">
     <input type="file" id="templateInputInner" class="file-input" accept=".html,.zip" onchange="handleImportInner(event)">
+    <input type="file" id="templateInputCombined" class="file-input" accept=".zip" onchange="handleImportCombined(event)">
     <button class="btn btn-danger" onclick="clearAllCache()">🗑 清空缓存</button>
     <button class="btn btn-primary" id="exportBtn" onclick="exportImages()" disabled>📥 导出图片</button>
     <button class="btn btn-primary" id="exportPdfBtn" onclick="togglePdfMenu()" disabled>📄 导出 PDF ▾</button>
     <div class="dropdown-menu" id="pdfMenu">
       <div class="dropdown-item" onclick="exportPDFGrid('standard')">📄 标准版（压缩）</div>
       <div class="dropdown-item" onclick="exportPDFGrid('hd')">✨ 印刷版（无压缩）</div>
+    </div>
+    <button class="btn btn-primary" id="exportHtmlBtn" onclick="toggleHtmlMenu()" disabled style="display:none;">🌐 导出 HTML ▾</button>
+    <div class="dropdown-menu" id="htmlMenu">
+      <div class="dropdown-item" onclick="exportCoverEditedHTML()">封面（编辑后）</div>
+      <div class="dropdown-item" onclick="exportInnerEditedHTML()">内页（编辑后）</div>
+      <div class="dropdown-item" onclick="exportCoverOriginalHTML()">封面（原始）</div>
+      <div class="dropdown-item" onclick="exportInnerOriginalHTML()">内页（原始）</div>
     </div>
   </div>
 </div>
@@ -263,16 +280,21 @@
         <div class="form-hint">设置导出图片的渲染尺寸</div>
       </div>
       <div id="configModalImport" style="display:none;">
-        <div style="display:flex;gap:16px;">
-          <div class="import-card" onclick="selectImportMode('cover')" style="flex:1;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          <div class="import-card" onclick="selectImportMode('cover')" style="flex:1;min-width:140px;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
             <div style="font-size:40px;margin-bottom:12px;">📘</div>
             <div style="font-size:15px;font-weight:600;margin-bottom:6px;">导入画册封面</div>
             <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">企业画册完整版<br/>支持多页 A4 编辑<br/>分页导出 PDF</div>
           </div>
-          <div class="import-card" onclick="selectImportMode('inner')" style="flex:1;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+          <div class="import-card" onclick="selectImportMode('inner')" style="flex:1;min-width:140px;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
             <div style="font-size:40px;margin-bottom:12px;">📋</div>
             <div style="font-size:15px;font-weight:600;margin-bottom:6px;">导入画册内页<br/>(岗位路径)</div>
             <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">支持 .html / .zip<br/>单页长图编辑<br/>自定义导出尺寸</div>
+          </div>
+          <div class="import-card" onclick="selectImportMode('combined')" style="flex:1;min-width:140px;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+            <div style="font-size:40px;margin-bottom:12px;">📦</div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:6px;">导入完整画册<br/>(封面+内页)</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">zip 需含 cover.html<br/>与 inner.html<br/>可切换编辑</div>
           </div>
         </div>
       </div>
@@ -306,6 +328,12 @@ const State = {
   mode: 'cover', // 'cover' | 'inner'
   innerWidth: 9920, innerHeight: 6732,
   previewScale: null, // null = 自适应, number = 用户手动缩放比例
+  // 组合模式（同时包含封面+内页）
+  combined: false,
+  coverTemplateHTML: '',
+  innerTemplateHTML: '',
+  coverPages: [],
+  innerPage: null,
 };
 
 function loadConfig() {
@@ -352,6 +380,13 @@ function saveToCache() {
     pending: State.pending || null,
     innerWidth: State.innerWidth,
     innerHeight: State.innerHeight,
+    // 组合模式数据
+    combined: State.combined || false,
+    activeMode: State.mode,
+    coverTemplateHTML: State.coverTemplateHTML || '',
+    innerTemplateHTML: State.innerTemplateHTML || '',
+    coverPages: State.coverPages ? State.coverPages.map(p => ({ id: p.id, name: p.name, elementHTML: p.element.outerHTML, fields: p.fields })) : [],
+    innerPage: State.innerPage ? { id: State.innerPage.id, name: State.innerPage.name, elementHTML: State.innerPage.element.outerHTML, fields: State.innerPage.fields } : null,
   };
   try { localStorage.setItem('bc_template', JSON.stringify(data)); } catch (e) {}
 }
@@ -361,15 +396,101 @@ function restoreFromCache() {
   if (!saved) return false;
   try {
     const data = JSON.parse(saved);
-    if (!data.templateHTML) return false;
+    if (!data.templateHTML && !data.combined) return false;
+    State.innerWidth = data.innerWidth || 9920;
+    State.innerHeight = data.innerHeight || 6732;
+    State.pending = data.pending || null;
+    if (data.chats && Array.isArray(data.chats)) {
+      State.chats = new Map(data.chats);
+      data.chats.forEach(([pageId]) => {
+        if (!State.chats.has(pageId)) State.chats.set(pageId, []);
+      });
+    }
+
+    if (data.combined) {
+      State.combined = true;
+      // 恢复封面
+      State.coverTemplateHTML = data.coverTemplateHTML || '';
+      State.coverPages = [];
+      if (State.coverTemplateHTML) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(State.coverTemplateHTML, 'text/html');
+        doc.querySelectorAll('.a4-page').forEach((el, idx) => {
+          const pageId = el.getAttribute('data-page-id') || 'page_' + idx;
+          const pageName = el.getAttribute('data-page-name') || '页面 ' + (idx + 1);
+          const fields = [];
+          el.querySelectorAll('[data-field]').forEach(f => {
+            fields.push({ name: f.getAttribute('data-field'), type: f.getAttribute('data-type') || 'text', currentValue: getFieldValue(f) });
+          });
+          State.coverPages.push({ id: pageId, name: pageName, fields, element: el.cloneNode(true) });
+          if (!State.chats.has(pageId)) State.chats.set(pageId, []);
+        });
+        if (data.coverPages && data.coverPages.length) {
+          data.coverPages.forEach(savedPage => {
+            const page = State.coverPages.find(p => p.id === savedPage.id);
+            if (page && savedPage.elementHTML) {
+              const pdoc = new DOMParser();
+              const doc2 = pdoc.parseFromString(savedPage.elementHTML, 'text/html');
+              const restoredEl = doc2.querySelector('.a4-page') || doc2.body.firstElementChild;
+              if (restoredEl) {
+                page.element = restoredEl;
+                page.fields = savedPage.fields || [];
+                if (!page.fields.length) {
+                  page.element.querySelectorAll('[data-field]').forEach(f => {
+                    page.fields.push({ name: f.getAttribute('data-field'), type: f.getAttribute('data-type') || 'text', currentValue: getFieldValue(f) });
+                  });
+                }
+              }
+            }
+          });
+        }
+      }
+      // 恢复内页
+      State.innerTemplateHTML = data.innerTemplateHTML || '';
+      State.innerPage = null;
+      if (State.innerTemplateHTML) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(State.innerTemplateHTML, 'text/html');
+        const pageEl = doc.querySelector('.page') || doc.body;
+        if (data.innerPage && data.innerPage.elementHTML) {
+          const pdoc = new DOMParser();
+          const doc2 = pdoc.parseFromString(data.innerPage.elementHTML, 'text/html');
+          const el = doc2.querySelector('.page') || doc2.body.firstElementChild;
+          if (el) {
+            State.innerPage = { id: 'inner_page', name: '内页编辑', fields: data.innerPage.fields || [], element: el };
+          }
+        }
+        if (!State.innerPage) {
+          const fields = [];
+          pageEl.querySelectorAll('[data-field]').forEach(f => {
+            fields.push({ name: f.getAttribute('data-field'), type: f.getAttribute('data-type') || 'text', currentValue: getFieldValue(f) });
+          });
+          State.innerPage = { id: 'inner_page', name: '内页编辑', fields, element: pageEl.cloneNode(true) };
+        }
+        normalizeInnerLayout(State.innerPage.element);
+        rebuildInnerFields(State.innerPage);
+        if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
+      }
+      // 激活上次保存的模式
+      const activeMode = data.activeMode || 'cover';
+      setActiveCombinedMode(activeMode, false);
+      updateModeSwitch();
+      document.getElementById('exportBtn').disabled = false;
+      document.getElementById('exportPdfBtn').disabled = false;
+      showToast('已恢复上次的进度');
+      return true;
+    }
+
+    // 单模式兼容逻辑
+    State.combined = false;
+    State.coverTemplateHTML = '';
+    State.innerTemplateHTML = '';
+    State.coverPages = [];
+    State.innerPage = null;
     State.templateHTML = data.templateHTML;
     const savedMode = data.mode || 'cover';
     State.mode = savedMode;
-    if (data.innerWidth) State.innerWidth = data.innerWidth;
-    if (data.innerHeight) State.innerHeight = data.innerHeight;
-    
     if (savedMode === 'inner') {
-      // Parse single page for inner mode
       const parser = new DOMParser();
       const doc = parser.parseFromString(data.templateHTML, 'text/html');
       const pageEl = doc.querySelector('.page') || doc.body;
@@ -384,7 +505,6 @@ function restoreFromCache() {
           State.currentPageId = 'inner_page';
         }
       } else {
-        // Fresh parse
         const fields = [];
         pageEl.querySelectorAll('[data-field]').forEach(f => {
           fields.push({ name: f.getAttribute('data-field'), type: f.getAttribute('data-type') || 'text', currentValue: getFieldValue(f) });
@@ -412,21 +532,11 @@ function restoreFromCache() {
             page.fields = savedPage.fields || [];
             if (!page.fields.length) {
               page.element.querySelectorAll('[data-field]').forEach(f => {
-                page.fields.push({
-                  name: f.getAttribute('data-field'),
-                  type: f.getAttribute('data-type') || 'text',
-                  currentValue: getFieldValue(f)
-                });
+                page.fields.push({ name: f.getAttribute('data-field'), type: f.getAttribute('data-type') || 'text', currentValue: getFieldValue(f) });
               });
             }
           }
         }
-      });
-    }
-    if (data.chats && Array.isArray(data.chats)) {
-      State.chats = new Map(data.chats);
-      data.chats.forEach(([pageId]) => {
-        if (!State.chats.has(pageId)) State.chats.set(pageId, []);
       });
     }
     if (State.mode === 'inner') {
@@ -450,12 +560,6 @@ function restoreFromCache() {
       }
       document.getElementById('exportBtn').disabled = false; document.getElementById('exportPdfBtn').disabled = false;
     }
-    State.pending = data.pending || null;
-    for (const [, msgs] of State.chats) {
-      for (const m of msgs) {
-        if (m.pending) { break; }
-      }
-    }
     if (State.pending && State.mode === 'cover') previewDiff();
     if (State.mode === 'cover') {
       renderPageList();
@@ -463,6 +567,7 @@ function restoreFromCache() {
     }
     document.getElementById('exportBtn').disabled = false;
     renderStructurePanel();
+    updateModeSwitch();
     showToast('已恢复上次的进度');
     return true;
   } catch (e) { return false; }
@@ -480,6 +585,12 @@ function clearAllCache() {
   State.previewActive = false;
   State.mode = 'cover';
   State.previewScale = null;
+  State.combined = false;
+  State.coverTemplateHTML = '';
+  State.innerTemplateHTML = '';
+  State.coverPages = [];
+  State.innerPage = null;
+  updateModeSwitch();
   document.querySelector('.sidebar-left').style.display = '';
   renderPageList();
   document.getElementById('previewArea').innerHTML =
@@ -503,17 +614,25 @@ function showImportMode() {
 }
 function selectImportMode(mode) {
   document.getElementById('configModal').classList.remove('show');
-  State.mode = mode;
   if (mode === 'cover') {
     document.getElementById('templateInput').click();
-  } else {
+  } else if (mode === 'inner') {
     document.getElementById('templateInputInner').click();
+  } else if (mode === 'combined') {
+    document.getElementById('templateInputCombined').click();
   }
 }
 
 async function handleImportInner(event) {
   const file = event.target.files[0];
   if (!file) return;
+  State.mode = 'inner';
+  State.combined = false;
+  State.coverTemplateHTML = '';
+  State.innerTemplateHTML = '';
+  State.coverPages = [];
+  State.innerPage = null;
+  updateModeSwitch();
   try {
     let htmlContent = '';
     if (file.name.endsWith('.zip')) {
@@ -567,10 +686,198 @@ async function handleImportInner(event) {
   event.target.value = '';
 }
 
+async function handleImportCombined(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const zip = await JSZip.loadAsync(file);
+    let coverFile = zip.file('cover.html');
+    if (!coverFile) coverFile = zip.file('index.html');
+    const innerFile = zip.file('inner.html');
+    if (!coverFile) throw new Error('ZIP 中未找到 cover.html（或 index.html）');
+    if (!innerFile) throw new Error('ZIP 中未找到 inner.html');
+    const coverHtml = await coverFile.async('text');
+    const innerHtml = await innerFile.async('text');
+
+    // 解析封面
+    const coverParser = new DOMParser();
+    const coverDoc = coverParser.parseFromString(coverHtml, 'text/html');
+    const coverPages = [];
+    coverDoc.querySelectorAll('.a4-page').forEach((el, idx) => {
+      const pageId = el.getAttribute('data-page-id') || 'page_' + idx;
+      const pageName = el.getAttribute('data-page-name') || '页面 ' + (idx + 1);
+      const fields = [];
+      el.querySelectorAll('[data-field]').forEach(f => {
+        fields.push({ name: f.getAttribute('data-field'), type: f.getAttribute('data-type') || 'text', currentValue: getFieldValue(f) });
+      });
+      coverPages.push({ id: pageId, name: pageName, fields, element: el.cloneNode(true) });
+    });
+    if (coverPages.length === 0) throw new Error('封面 HTML 中未找到 .a4-page 页面');
+
+    // 解析内页
+    const innerParser = new DOMParser();
+    const innerDoc = innerParser.parseFromString(innerHtml, 'text/html');
+    const innerPageEl = innerDoc.querySelector('.page') || innerDoc.body;
+    const w = parseInt(innerPageEl.style.width) || innerPageEl.getAttribute('width') || innerPageEl.clientWidth;
+    const h = parseInt(innerPageEl.style.height) || innerPageEl.getAttribute('height') || innerPageEl.clientHeight;
+    State.innerWidth = w || 9920;
+    State.innerHeight = h || 6732;
+    const innerFields = [];
+    innerPageEl.querySelectorAll('[data-field]').forEach(f => {
+      innerFields.push({ name: f.getAttribute('data-field'), type: f.getAttribute('data-type') || 'text', currentValue: getFieldValue(f) });
+    });
+    const innerPage = { id: 'inner_page', name: '内页编辑', fields: innerFields, element: innerPageEl.cloneNode(true) };
+    normalizeInnerLayout(innerPage.element);
+    rebuildInnerFields(innerPage);
+
+    // 存入组合状态，默认先显示封面
+    State.combined = true;
+    State.coverTemplateHTML = coverHtml;
+    State.innerTemplateHTML = innerHtml;
+    State.coverPages = coverPages;
+    State.innerPage = innerPage;
+    localStorage.removeItem('bc_template');
+    State.chats = new Map();
+    coverPages.forEach(p => { if (!State.chats.has(p.id)) State.chats.set(p.id, []); });
+    if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
+
+    setActiveCombinedMode('cover', false);
+    updateModeSwitch();
+    document.getElementById('exportBtn').disabled = false;
+    document.getElementById('exportPdfBtn').disabled = false;
+    closeConfig();
+    saveToCache();
+    showToast('完整画册导入成功');
+  } catch (err) { alert('导入失败: ' + err.message); }
+  event.target.value = '';
+}
+
+function setActiveCombinedMode(mode, shouldSave) {
+  if (!State.combined) return;
+  // 把当前激活视图存回对应变量
+  if (State.mode === 'cover') {
+    State.coverTemplateHTML = State.templateHTML;
+    State.coverPages = State.pages;
+  } else if (State.mode === 'inner') {
+    State.innerTemplateHTML = State.templateHTML;
+    State.innerPage = State.pages[0] || null;
+  }
+  State.mode = mode;
+  State.templateHTML = mode === 'cover' ? State.coverTemplateHTML : State.innerTemplateHTML;
+  State.pages = mode === 'cover' ? State.coverPages : (State.innerPage ? [State.innerPage] : []);
+  State.currentPageId = mode === 'cover' ? (State.coverPages[0] ? State.coverPages[0].id : null) : 'inner_page';
+
+  if (mode === 'cover') {
+    document.querySelector('.sidebar-left').style.display = '';
+    document.getElementById('structurePanel').style.display = 'none';
+    document.getElementById('chatSuggestions').style.display = 'none';
+    document.getElementById('chatInputArea').style.display = 'none';
+    renderPageList();
+    if (State.currentPageId && State.pages.some(p => p.id === State.currentPageId)) {
+      selectPage(State.currentPageId);
+    } else if (State.pages.length > 0) {
+      selectPage(State.pages[0].id);
+    }
+  } else {
+    document.querySelector('.sidebar-left').style.display = 'none';
+    document.getElementById('chatSuggestions').style.display = 'block';
+    document.getElementById('chatInputArea').style.display = 'flex';
+    document.getElementById('chatTitle').textContent = 'AI 内容助手';
+    renderPreviewInner();
+    renderChat('inner_page');
+    renderStructurePanel();
+  }
+  updateModeSwitch();
+  updateHtmlExportButton();
+  if (shouldSave) saveToCache();
+}
+
+function switchCombinedMode(mode) {
+  if (!State.combined || State.mode === mode) return;
+  setActiveCombinedMode(mode, true);
+}
+
+function updateModeSwitch() {
+  const el = document.getElementById('modeSwitch');
+  if (!el) return;
+  if (State.combined) {
+    el.classList.add('show');
+    el.querySelectorAll('.mode-switch-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-mode') === State.mode);
+    });
+  } else {
+    el.classList.remove('show');
+  }
+  updateHtmlExportButton();
+}
+
+function updateHtmlExportButton() {
+  const btn = document.getElementById('exportHtmlBtn');
+  if (!btn) return;
+  if (State.combined) {
+    btn.style.display = '';
+    btn.disabled = !(State.coverPages && State.coverPages.length && State.innerPage);
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function toggleHtmlMenu() {
+  document.getElementById('htmlMenu').classList.toggle('show');
+}
+
+function downloadHTML(filename, html) {
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function wrapBodyHTML(bodyContent, templateHTML) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(templateHTML, 'text/html');
+  const head = doc.head ? doc.head.innerHTML : '';
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8">' + head + '</head><body>' + bodyContent + '</body></html>';
+}
+
+function exportCoverEditedHTML() {
+  document.getElementById('htmlMenu').classList.remove('show');
+  if (!State.combined || !State.coverPages.length) return;
+  const body = State.coverPages.map(p => p.element.outerHTML).join('');
+  downloadHTML('cover_edited.html', wrapBodyHTML(body, State.coverTemplateHTML));
+}
+
+function exportInnerEditedHTML() {
+  document.getElementById('htmlMenu').classList.remove('show');
+  if (!State.combined || !State.innerPage) return;
+  downloadHTML('inner_edited.html', wrapBodyHTML(State.innerPage.element.outerHTML, State.innerTemplateHTML));
+}
+
+function exportCoverOriginalHTML() {
+  document.getElementById('htmlMenu').classList.remove('show');
+  if (!State.combined) return;
+  downloadHTML('cover_original.html', State.coverTemplateHTML);
+}
+
+function exportInnerOriginalHTML() {
+  document.getElementById('htmlMenu').classList.remove('show');
+  if (!State.combined) return;
+  downloadHTML('inner_original.html', State.innerTemplateHTML);
+}
+
 async function handleImport(event) {
   const file = event.target.files[0];
   if (!file) return;
   State.mode = 'cover';
+  State.combined = false;
+  State.coverTemplateHTML = '';
+  State.innerTemplateHTML = '';
+  State.coverPages = [];
+  State.innerPage = null;
+  updateModeSwitch();
   try {
     let htmlContent = '';
     if (file.name.endsWith('.zip')) {
