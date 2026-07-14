@@ -1493,11 +1493,9 @@ button:active {
         delJob.className = 'edit-btn edit-btn--danger edit-btn--small';
         delJob.textContent = '删除岗位';
         delJob.onclick = function () {
-          if (confirm('确定删除岗位「' + job.title + '」？')) {
-            data.jobs.splice(jobIndex, 1);
-            saveData(data);
-            render();
-          }
+          data.jobs.splice(jobIndex, 1);
+          saveData(data);
+          render();
         };
         actions.appendChild(delJob);
       }
@@ -1567,11 +1565,9 @@ button:active {
               delPoint.contentEditable = 'false';
               delPoint.onclick = function (e) {
                 e.stopPropagation();
-                if (confirm('确定删除该知识点？')) {
-                  unit.points.splice(pi, 1);
-                  saveData(data);
-                  render();
-                }
+                unit.points.splice(pi, 1);
+                saveData(data);
+                render();
               };
               point.appendChild(delPoint);
             }
@@ -1586,11 +1582,9 @@ button:active {
             delUnit.className = 'edit-btn edit-btn--danger edit-btn--tiny';
             delUnit.textContent = '删除单元';
             delUnit.onclick = function () {
-              if (confirm('确定删除该单元？')) {
-                job.units.splice(unitIndex, 1);
-                saveData(data);
-                render();
-              }
+              job.units.splice(unitIndex, 1);
+              saveData(data);
+              render();
             };
             unitActions.appendChild(delUnit);
           }
