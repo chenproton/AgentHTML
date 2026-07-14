@@ -294,7 +294,7 @@
           <div class="import-card" onclick="selectImportMode('combined')" style="flex:1;min-width:140px;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
             <div style="font-size:40px;margin-bottom:12px;">📦</div>
             <div style="font-size:15px;font-weight:600;margin-bottom:6px;">导入完整画册<br/>(封面+内页)</div>
-            <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">zip 需含 cover.html<br/>与 inner.html<br/>可切换编辑</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">zip 中含两个 HTML<br/>推荐 cover.html + inner.html<br/>也可自动识别</div>
           </div>
         </div>
       </div>
@@ -691,13 +691,43 @@ async function handleImportCombined(event) {
   if (!file) return;
   try {
     const zip = await JSZip.loadAsync(file);
-    let coverFile = zip.file('cover.html');
-    if (!coverFile) coverFile = zip.file('index.html');
-    const innerFile = zip.file('inner.html');
-    if (!coverFile) throw new Error('ZIP 中未找到 cover.html（或 index.html）');
-    if (!innerFile) throw new Error('ZIP 中未找到 inner.html');
-    const coverHtml = await coverFile.async('text');
-    const innerHtml = await innerFile.async('text');
+    const htmlFiles = zip.file(/\.html$/i);
+    if (htmlFiles.length < 2) throw new Error('ZIP 中至少需要 2 个 HTML 文件（封面+内页）');
+
+    let coverHtml = '';
+    let innerHtml = '';
+    let coverFileName = '';
+    let innerFileName = '';
+
+    // 先按推荐命名规则查找
+    const namedCover = htmlFiles.find(f => f.name.toLowerCase() === 'cover.html' || f.name.toLowerCase().endsWith('/cover.html'));
+    const namedInner = htmlFiles.find(f => f.name.toLowerCase() === 'inner.html' || f.name.toLowerCase().endsWith('/inner.html'));
+    if (namedCover && namedInner) {
+      coverHtml = await namedCover.async('text');
+      innerHtml = await namedInner.async('text');
+      coverFileName = namedCover.name;
+      innerFileName = namedInner.name;
+    } else {
+      // 自动识别：含 .a4-page 的是封面，含大尺寸 .page 的是内页
+      const candidates = [];
+      for (const f of htmlFiles) {
+        const text = await f.async('text');
+        const hasA4 = /class=["'][^"']*a4-page[^"']*["']/.test(text);
+        const hasPage = /class=["'][^"']*\bpage\b[^"']*["']/.test(text);
+        const widthMatch = text.match(/<div[^>]+class=["'][^"']*\bpage\b[^"']*["'][^>]*style=["'][^"']*width:\s*(\d+)px/);
+        const pageWidth = widthMatch ? parseInt(widthMatch[1], 10) : 0;
+        candidates.push({ file: f, text, hasA4, hasPage, pageWidth });
+      }
+      const coverCandidate = candidates.find(c => c.hasA4) || candidates[0];
+      const innerCandidate = candidates.find(c => c !== coverCandidate && (c.pageWidth > 1000 || c.hasPage)) || candidates[1] || candidates[0];
+      coverHtml = coverCandidate.text;
+      innerHtml = innerCandidate.text;
+      coverFileName = coverCandidate.file.name;
+      innerFileName = innerCandidate.file.name;
+    }
+
+    if (!coverHtml) throw new Error('未能识别出封面 HTML');
+    if (!innerHtml) throw new Error('未能识别出内页 HTML');
 
     // 解析封面
     const coverParser = new DOMParser();
