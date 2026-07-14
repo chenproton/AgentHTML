@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>宝奇智慧物流人才培养体系</title>
-<!-- 设计稿自适应脚本：按 9920px 设计宽度缩放根字号（原设计稿转换工具生成，保留以维持原行为） -->
 <script>
 (function flexible(window, document) {
   function resetFontSize() {
@@ -16,14 +15,24 @@
 })(window, document);
 </script>
 <style>
+/* ========== CSS 变量 ========== */
+:root {
+  --blue: 0, 74, 136;
+  --orange: 249, 98, 23;
+  --navy: 10, 30, 61;
+}
+
 /* ========== 基础重置 ========== */
 body * {
   box-sizing: border-box;
   flex-shrink: 0;
 }
 body {
-  font-family: PingFangSC-Regular, Roboto, Helvetica Neue, Helvetica, Tahoma,
-    Arial, PingFang SC-Light, Microsoft YaHei;
+  margin: 0;
+  padding: 0;
+  font-family: PingFangSC-Regular, Roboto, "Helvetica Neue", Helvetica, Tahoma,
+    Arial, "PingFang SC-Light", "Microsoft YaHei";
+  background: #F0F2F5;
 }
 input {
   background-color: transparent;
@@ -48,7 +57,7 @@ button:active {
   width: 9920px;
   height: 6732px;
   overflow: hidden;
-  background-color: rgba(255, 255, 255, 1);
+  background: linear-gradient(180deg, #F0F2F5 138px, #FFFFFF 138px);
 }
 
 /* ========== 页头 ========== */
@@ -59,49 +68,93 @@ button:active {
   width: 9920px;
   height: 571px;
   margin-top: -153px;
-  background-color: rgba(249, 98, 23, 1);
+  background: linear-gradient(135deg, rgb(var(--navy)) 0%, #153357 40%, #1A3A5C 100%);
+}
+.page-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 85% 80%, rgba(var(--orange), 0.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 20% 30%, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
+  pointer-events: none;
 }
 .page-header__title {
-  width: 3216px;
+  position: relative;
+  z-index: 1;
+  width: 3600px;
   height: 180px;
   margin: 280px 0 0 150px;
   overflow-wrap: break-word;
-  color: rgba(255, 255, 255, 1);
-  font: 700 150px/180px "Microsoft YaHei UI-Bold";
+  color: #FFFFFF;
+  font: 700 150px/180px "Microsoft YaHei UI", "PingFang SC", sans-serif;
   text-align: left;
   white-space: nowrap;
+  letter-spacing: 4px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 .page-header__subtitle {
+  position: relative;
+  z-index: 1;
   width: 1900px;
   height: 120px;
   margin: 451px 79px 0 4575px;
   overflow-wrap: break-word;
-  color: rgba(51, 51, 51, 1);
+  color: rgba(255, 255, 255, 0.78);
   font-size: 100px;
   line-height: 120px;
-  font-family: "Microsoft YaHei UI-Regular";
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
   text-align: left;
   white-space: nowrap;
+  letter-spacing: 6px;
 }
 .page-header__badge {
   position: absolute;
   left: 150px;
   top: 110px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 375px;
   height: 130px;
   border-radius: 200px;
-  background-color: rgba(255, 255, 255, 1);
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF5F0 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 .page-header__badge-text {
   display: block;
   width: 236px;
   height: 88px;
-  margin: 21px 0 0 73px;
   overflow-wrap: break-word;
-  color: rgba(249, 99, 23, 1);
-  font: 700 68px/88px "Microsoft YaHei UI-Bold";
-  text-align: left;
+  color: rgb(var(--orange));
+  font: 700 68px/88px "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  text-align: center;
   white-space: nowrap;
+  letter-spacing: 2px;
+}
+
+/* ========== 装饰分隔线 ========== */
+.page-divider {
+  position: absolute;
+  left: 119px;
+  width: 9682px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(var(--orange), 0.12) 5%,
+    rgba(var(--orange), 0.25) 30%,
+    rgba(var(--orange), 0.35) 50%,
+    rgba(var(--blue), 0.25) 70%,
+    rgba(var(--blue), 0.08) 95%,
+    transparent 100%
+  );
+}
+.page-divider--top {
+  top: 440px;
+}
+.page-divider--bottom {
+  top: 5530px;
 }
 
 /* ========== 卡片面板 ========== */
@@ -114,7 +167,8 @@ button:active {
   width: 9760px;
   height: 5908px;
   border-radius: 100px;
-  background-color: rgba(255, 255, 255, 1);
+  background-color: #FFFFFF;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 .cards-panel__logo {
   position: absolute;
@@ -141,60 +195,65 @@ button:active {
 }
 
 /* ========== 岗位卡片 ========== */
-/* 主题变量：蓝卡 = 蓝边框/蓝标题/橙工具；橙卡反之 */
 .job-card {
-  --card-color: rgba(0, 74, 136, 1);
-  --tool-color: rgba(249, 98, 23, 1);
+  --card-color-rgb: var(--blue);
+  --tool-color-rgb: var(--orange);
   position: relative;
   display: flex;
   flex-direction: row;
   width: 4760px;
   height: 1377px;
-  border: 1px solid var(--card-color);
+  border: 2px solid rgb(var(--card-color-rgb));
   border-radius: 50px;
-  background-color: rgba(255, 255, 255, 1);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFBFD 100%);
+  box-shadow: 0 8px 32px rgba(var(--card-color-rgb), 0.06), 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+.job-card:hover {
+  box-shadow: 0 16px 48px rgba(var(--card-color-rgb), 0.12), 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 .job-card--orange {
-  --card-color: rgba(249, 98, 23, 1);
-  --tool-color: rgba(0, 74, 136, 1);
+  --card-color-rgb: var(--orange);
+  --tool-color-rgb: var(--blue);
 }
 
-/* 左侧：岗位实景特色 */
 .job-card__feature {
   display: flex;
   flex-direction: column;
   width: 476px;
   height: var(--feature-h, 766px);
   margin: 40px 0 0 40px;
-  border-radius: 20px;
-  background-color: rgba(255, 255, 255, 1);
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  background: #FFFFFF;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  border-left: 4px solid rgb(var(--card-color-rgb));
 }
 .feature-label {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  width: 218px;
+  align-items: center;
+  gap: 16px;
+  width: auto;
   height: 38px;
   margin: 40px 0 0 40px;
 }
 .feature-label__dot {
-  width: 22px;
-  height: 22px;
-  margin-top: 8px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 1);
+  background: linear-gradient(135deg, rgb(var(--card-color-rgb)), rgba(var(--card-color-rgb), 0.6));
+  box-shadow: 0 0 8px rgba(var(--card-color-rgb), 0.3);
 }
 .feature-label__text {
-  width: 180px;
+  width: auto;
   height: 38px;
   margin: 0;
   overflow-wrap: break-word;
-  color: rgba(0, 0, 0, 1);
+  color: rgb(var(--card-color-rgb));
   font-size: 30px;
-  line-height: 30px;
-  font-family: "Microsoft YaHei UI-Regular";
-  font-weight: 400;
+  line-height: 38px;
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  font-weight: 700;
   text-align: left;
   white-space: nowrap;
 }
@@ -202,29 +261,29 @@ button:active {
   width: 396px;
   margin: 24px 0 40px 40px;
   overflow-wrap: break-word;
-  color: rgba(0, 0, 0, 1);
+  color: #4A4A5A;
   font-size: 24px;
   line-height: 48px;
-  font-family: "Microsoft YaHei UI-Regular";
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
   text-align: left;
 }
 
-/* 中部：岗位标题 */
 .job-card__title {
   width: 1268px;
   height: 138px;
   margin: 0 0 0 1230px;
   padding: 29px 0 0 var(--title-indent, 0px);
   overflow-wrap: break-word;
-  border-radius: 10px;
-  background-color: var(--card-color);
-  color: rgba(255, 255, 255, 1);
-  font: 700 58px/80px "Microsoft YaHei UI-Bold";
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgb(var(--card-color-rgb)), rgba(var(--card-color-rgb), 0.85));
+  color: #FFFFFF;
+  font: 700 58px/80px "Microsoft YaHei UI", "PingFang SC", sans-serif;
   text-align: left;
   white-space: nowrap;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 16px rgba(var(--card-color-rgb), 0.3);
 }
 
-/* 右侧：训练工具 */
 .job-card__tools {
   display: flex;
   flex-direction: column;
@@ -242,8 +301,9 @@ button:active {
 .tools-dots__dot {
   width: 30px;
   height: 30px;
-  border: 4px solid var(--tool-color);
+  border: 4px solid rgb(var(--tool-color-rgb));
   border-radius: 50%;
+  background: #FFFFFF;
 }
 .tools-dots__line {
   position: absolute;
@@ -251,7 +311,8 @@ button:active {
   top: 13px;
   width: 468px;
   height: 4px;
-  background-color: var(--tool-color);
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgb(var(--tool-color-rgb)), rgba(var(--tool-color-rgb), 0.4));
 }
 .tools-list {
   display: flex;
@@ -266,15 +327,20 @@ button:active {
   margin: 20px 0 0 14px;
   padding: 8px 0 0 24px;
   overflow-wrap: break-word;
-  border-radius: 10px;
-  background-color: var(--tool-color);
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
-  color: rgba(255, 255, 255, 1);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgb(var(--tool-color-rgb)), rgba(var(--tool-color-rgb), 0.88));
+  box-shadow: 0 3px 12px rgba(var(--tool-color-rgb), 0.25);
+  color: #FFFFFF;
   font-size: 30px;
-  line-height: 30px;
-  font-family: "Microsoft YaHei UI-Regular";
+  line-height: 38px;
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
   text-align: left;
   white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.tools-list__item:hover {
+  transform: translateX(8px);
+  box-shadow: 0 6px 20px rgba(var(--tool-color-rgb), 0.4);
 }
 .tools-list__item:first-child {
   margin-top: 33px;
@@ -283,19 +349,24 @@ button:active {
   position: absolute;
   left: 4294px;
   top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 220px;
   height: 60px;
-  padding: 7px 0 0 38px;
+  padding-left: 38px;
   overflow-wrap: break-word;
-  border: 4px solid var(--tool-color);
+  border: 4px solid rgb(var(--tool-color-rgb));
   border-radius: 500px;
-  background-color: rgba(255, 255, 255, 1);
-  color: var(--tool-color);
+  background-color: #FFFFFF;
+  color: rgb(var(--tool-color-rgb));
   font-size: 36px;
   line-height: 36px;
-  font-family: "Microsoft YaHei UI-Regular";
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  font-weight: 700;
   text-align: left;
   white-space: nowrap;
+  letter-spacing: 2px;
 }
 
 /* ========== 页脚 ========== */
@@ -307,12 +378,13 @@ button:active {
   height: 68px;
   margin: 0;
   overflow-wrap: break-word;
-  color: rgba(51, 51, 51, 1);
+  color: #8E8E9A;
   font-size: 68px;
   line-height: 68px;
-  font-family: "Microsoft YaHei UI-Regular";
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
   text-align: left;
   white-space: nowrap;
+  letter-spacing: 2px;
 }
 </style>
 </head>
@@ -325,6 +397,9 @@ button:active {
         <span class="page-header__badge-text">2026版</span>
       </div>
     </header>
+
+    <div class="page-divider page-divider--top" aria-hidden="true"></div>
+    <div class="page-divider page-divider--bottom" aria-hidden="true"></div>
 
     <section class="cards-panel" aria-label="岗位培养路径">
       <img
