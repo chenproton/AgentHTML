@@ -221,7 +221,7 @@
     </div>
     <div class="chat-header">
       <div>
-        <div class="chat-header-title" id="chatTitle">AI 内容助手</div>
+        <div class="chat-header-title" id="chatTitle">AI 编辑助手</div>
         <div class="chat-header-sub" id="chatSub"></div>
       </div>
       <button class="btn btn-sm btn-secondary" onclick="clearChat()" style="flex-shrink:0;">🗑 清理上下文</button>
@@ -538,7 +538,7 @@ function restoreFromCache() {
       State.currentPageId = 'inner_page';
       document.getElementById('chatSuggestions').style.display = 'block';
       document.getElementById('chatInputArea').style.display = 'flex';
-      document.getElementById('chatTitle').textContent = 'AI 内容助手';
+      document.getElementById('chatTitle').textContent = 'AI 编辑助手';
       document.getElementById('exportBtn').disabled = false;
       document.getElementById('exportPdfBtn').disabled = false;
       renderPreviewInner();
@@ -669,7 +669,7 @@ async function handleImportInner(event) {
     document.querySelector('.sidebar-left').style.display = 'none';
     document.getElementById('chatSuggestions').style.display = 'block';
     document.getElementById('chatInputArea').style.display = 'flex';
-    document.getElementById('chatTitle').textContent = 'AI 内容助手';
+    document.getElementById('chatTitle').textContent = 'AI 编辑助手';
       document.getElementById('exportBtn').disabled = false; document.getElementById('exportPdfBtn').disabled = false;
       renderPreviewInner();
     renderChat('inner_page');
@@ -805,7 +805,7 @@ function setActiveCombinedMode(mode, shouldSave) {
     document.querySelector('.sidebar-left').style.display = 'none';
     document.getElementById('chatSuggestions').style.display = 'block';
     document.getElementById('chatInputArea').style.display = 'flex';
-    document.getElementById('chatTitle').textContent = 'AI 内容助手';
+    document.getElementById('chatTitle').textContent = 'AI 编辑助手';
     renderPreviewInner();
     renderChat('inner_page');
     renderStructurePanel();
@@ -1270,7 +1270,7 @@ function selectPage(pageId) {
   renderPreview(pageId);
   renderChat(pageId);
   const page = State.pages.find(p => p.id === pageId);
-  document.getElementById('chatTitle').textContent = page ? '当前编辑页面：' + page.name : 'AI 内容助手';
+  document.getElementById('chatTitle').textContent = page ? '当前编辑页面：' + page.name : 'AI 编辑助手';
   document.getElementById('chatSub').textContent = '';
   document.getElementById('chatInputArea').style.display = page ? 'flex' : 'none';
   document.getElementById('chatSuggestions').style.display = page ? 'block' : 'none';
