@@ -71,7 +71,11 @@
 
   /* ===== 内页结构编辑面板 ===== */
   .structure-panel { display:none; flex-direction:column; border-bottom:1px solid var(--border); background:#fafbfc; flex-shrink:0; max-height:35%; min-height:180px; }
-  .structure-header { padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); background:white; }
+  .structure-panel.collapsed { min-height:0; max-height:none; }
+  .structure-panel.collapsed .structure-tree { display:none; }
+  .structure-panel.collapsed .structure-header { border-bottom:none; }
+  .structure-panel.collapsed .structure-header .btn-primary { display:none; }
+  .structure-header { padding:10px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); background:white; }
   .structure-header span { font-size:13px; font-weight:600; }
   .structure-tree { flex:1; overflow-y:auto; padding:8px 0; font-size:12px; }
   .structure-item { display:flex; align-items:center; justify-content:space-between; padding:6px 16px; cursor:default; gap:8px; }
@@ -81,9 +85,10 @@
   .structure-item.point { padding-left:48px; color:var(--text-muted); }
   .structure-label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
   .structure-actions { display:flex; gap:4px; flex-shrink:0; }
-  .structure-btn { width:20px; height:20px; border:1px solid var(--border); border-radius:4px; background:white; color:var(--text-secondary); font-size:13px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .structure-btn { min-width:44px; height:22px; border:1px solid var(--border); border-radius:4px; background:white; color:var(--text-secondary); font-size:11px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0 6px; }
   .structure-btn:hover { border-color:var(--primary); color:var(--primary); }
-  .structure-btn.danger:hover { border-color:var(--danger); color:var(--danger); }
+  .structure-btn.danger { color:var(--danger); border-color:#fecaca; }
+  .structure-btn.danger:hover { border-color:var(--danger); color:white; background:var(--danger); }
 
   /* ===== 右侧面板 ===== */
   .sidebar-right { width:420px; background:var(--sidebar-bg); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; }
@@ -193,10 +198,13 @@
   </div>
 
   <div class="sidebar-right">
-    <div class="structure-panel" id="structurePanel">
+    <div class="structure-panel collapsed" id="structurePanel">
       <div class="structure-header">
         <span>页面结构</span>
-        <button class="btn btn-sm btn-primary" id="addJobBtn" onclick="addJob()">+ 岗位</button>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="btn btn-sm btn-primary" id="addJobBtn" onclick="addJob()">新增岗位</button>
+          <button class="btn btn-sm btn-secondary" id="structureToggleBtn" onclick="toggleStructurePanel()">展开</button>
+        </div>
       </div>
       <div class="structure-tree" id="structureTree"></div>
     </div>
@@ -904,10 +912,19 @@ function deletePoint(jobIndex, unitIndex, pointIndex) {
   showToast('知识点已删除');
 }
 
+function toggleStructurePanel() {
+  const panel = document.getElementById('structurePanel');
+  const btn = document.getElementById('structureToggleBtn');
+  if (!panel || !btn) return;
+  const collapsed = panel.classList.toggle('collapsed');
+  btn.textContent = collapsed ? '展开' : '收起';
+}
+
 function renderStructurePanel() {
   const panel = document.getElementById('structurePanel');
   const tree = document.getElementById('structureTree');
   const addBtn = document.getElementById('addJobBtn');
+  const toggleBtn = document.getElementById('structureToggleBtn');
   const page = getInnerPage();
   if (!panel || !tree) return;
   if (State.mode !== 'inner' || !page) {
@@ -915,6 +932,9 @@ function renderStructurePanel() {
     return;
   }
   panel.style.display = 'flex';
+  const collapsed = panel.classList.contains('collapsed');
+  if (toggleBtn) toggleBtn.textContent = collapsed ? '展开' : '收起';
+  if (collapsed) return;
   const jobs = parseInnerStructure(page.element);
   if (addBtn) addBtn.disabled = jobs.length >= 8;
   let html = '';
@@ -922,22 +942,22 @@ function renderStructurePanel() {
     html += '<div class="structure-item job">' +
       '<span class="structure-label">' + escapeHtml(job.title || '岗位') + '</span>' +
       '<div class="structure-actions">' +
-        (jobs.length > 1 ? '<button class="structure-btn danger" onclick="deleteJob(' + j + ')" title="删除岗位">×</button>' : '') +
-        (job.units.length < 7 ? '<button class="structure-btn" onclick="addUnit(' + j + ')" title="新增单元">+</button>' : '') +
+        (jobs.length > 1 ? '<button class="structure-btn danger" onclick="deleteJob(' + j + ')" title="删除岗位">删除</button>' : '') +
+        (job.units.length < 7 ? '<button class="structure-btn" onclick="addUnit(' + j + ')" title="新增单元">新增</button>' : '') +
       '</div></div>';
     job.units.forEach((unit, u) => {
       const unitName = (unit.title || '单元').replace(/<br\s*\/?>/gi, ' ');
       html += '<div class="structure-item unit">' +
         '<span class="structure-label">' + escapeHtml(unitName) + '</span>' +
         '<div class="structure-actions">' +
-          (job.units.length > 1 ? '<button class="structure-btn danger" onclick="deleteUnit(' + j + ',' + u + ')" title="删除单元">×</button>' : '') +
-          (unit.points.length < 4 ? '<button class="structure-btn" onclick="addPoint(' + j + ',' + u + ')" title="新增知识点">+</button>' : '') +
+          (job.units.length > 1 ? '<button class="structure-btn danger" onclick="deleteUnit(' + j + ',' + u + ')" title="删除单元">删除</button>' : '') +
+          (unit.points.length < 4 ? '<button class="structure-btn" onclick="addPoint(' + j + ',' + u + ')" title="新增知识点">新增</button>' : '') +
         '</div></div>';
       unit.points.forEach((point, p) => {
         html += '<div class="structure-item point">' +
           '<span class="structure-label">' + escapeHtml(point.text || '知识点') + '</span>' +
           '<div class="structure-actions">' +
-            (unit.points.length > 1 ? '<button class="structure-btn danger" onclick="deletePoint(' + j + ',' + u + ',' + p + ')" title="删除知识点">×</button>' : '') +
+            (unit.points.length > 1 ? '<button class="structure-btn danger" onclick="deletePoint(' + j + ',' + u + ',' + p + ')" title="删除知识点">删除</button>' : '') +
           '</div></div>';
       });
     });
