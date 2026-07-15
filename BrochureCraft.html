@@ -197,11 +197,10 @@
   .form-input.single-line { resize:none; min-height:44px; }
   .form-hint { font-size:12px; color:var(--text-muted); margin-top:5px; line-height:1.4; }
   .modal-footer { padding:16px 24px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; background:var(--surface); border-radius:0 0 var(--radius-xl) var(--radius-xl); }
-  .modal--manual { width:90vw; max-width:1200px; height:86vh; max-height:800px; display:flex; flex-direction:column; overflow:hidden; }
+  .modal--manual { width:auto; height:auto; max-width:90vw; max-height:86vh; display:flex; flex-direction:column; overflow:hidden; }
   .modal--manual .modal-header { flex-shrink:0; justify-content:space-between; }
-  .modal--manual .modal-body { flex:1; overflow:hidden; position:relative; }
-  .manual-iframe-wrapper { position:absolute; inset:0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-  .manual-iframe { width:1280px; height:720px; border:none; display:block; transform-origin:center center; }
+  .modal--manual .modal-body { flex:1; overflow:hidden; position:relative; padding:0; }
+  .manual-iframe { width:100%; height:100%; border:none; display:block; }
   .field-item-type { font-size:10px; color:var(--text-secondary); background:var(--surface); padding:2px 8px; border-radius:4px; font-weight:500; display:inline-block; border:1px solid var(--border); }
   .typing-indicator { display:flex; gap:4px; padding:14px 16px; align-self:flex-start; background:var(--surface-elevated); border-radius:var(--radius-lg); border-bottom-left-radius:5px; border:1px solid var(--border); box-shadow:var(--shadow-sm); }
   .typing-indicator span { width:7px; height:7px; background:var(--text-muted); border-radius:50%; animation:bounce 1.4s infinite ease-in-out both; }
@@ -369,9 +368,7 @@
       <button class="btn btn-sm btn-secondary" onclick="closeManual()">关闭</button>
     </div>
     <div class="modal-body" style="padding:0;">
-      <div class="manual-iframe-wrapper" id="manualIframeWrapper">
-        <iframe class="manual-iframe" id="manualIframe" src="http://111.170.170.202:8082/BrochureCraft_Manual.html" frameborder="0"></iframe>
-      </div>
+      <iframe class="manual-iframe" id="manualIframe" src="http://111.170.170.202:8082/BrochureCraft_Manual.html" frameborder="0"></iframe>
     </div>
   </div>
 </div>
@@ -419,17 +416,21 @@ function showConfig() {
 function closeConfig() { document.getElementById('configModal').classList.remove('show'); }
 function showManual() {
   document.getElementById('manualModal').classList.add('show');
-  setTimeout(fitManualIframe, 0);
+  setTimeout(fitManualModal, 0);
 }
 function closeManual() { document.getElementById('manualModal').classList.remove('show'); }
-function fitManualIframe() {
-  const wrapper = document.getElementById('manualIframeWrapper');
+function fitManualModal() {
+  const modal = document.querySelector('#manualModal .modal--manual');
   const iframe = document.getElementById('manualIframe');
-  if (!wrapper || !iframe) return;
-  const refW = 1280;
-  const refH = 720;
-  const scale = Math.min(wrapper.clientWidth / refW, wrapper.clientHeight / refH, 1);
-  iframe.style.transform = 'scale(' + scale + ')';
+  if (!modal || !iframe) return;
+  const header = modal.querySelector('.modal-header');
+  const headerH = header ? header.offsetHeight : 65;
+  const maxW = window.innerWidth * 0.9;
+  const maxH = window.innerHeight * 0.86;
+  const contentMaxH = Math.max(maxH - headerH, 200);
+  const scale = Math.min(maxW / 1280, contentMaxH / 720, 1);
+  modal.style.width = (1280 * scale) + 'px';
+  modal.style.height = (headerH + 720 * scale) + 'px';
 }
 function saveConfig() {
   State.config = {
@@ -1272,7 +1273,7 @@ function renderPreview(pageId) {
 
 // 窗口缩放时重新计算
 window.addEventListener('resize', () => {
-  fitManualIframe();
+  fitManualModal();
   if (!State.currentPageId) return;
   if (State.mode === 'inner') {
     applyInnerPreviewScale();
