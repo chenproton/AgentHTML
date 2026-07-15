@@ -331,7 +331,7 @@
           <div class="import-card" onclick="selectImportMode('combined')" style="flex:1;min-width:220px;max-width:320px;border:2px solid var(--border);border-radius:12px;padding:32px 24px;text-align:center;cursor:pointer;transition:all 0.2s;">
             <div style="font-size:48px;margin-bottom:16px;">📦</div>
             <div style="font-size:16px;font-weight:600;margin-bottom:10px;">导入官方模板压缩包</div>
-            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">请选择官方生成的模板压缩包<br/>推荐同时包含 cover + inner<br/>系统会自动识别封面与内页</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">请选择官方生成的模板压缩包<br/>需同时包含 cover + inner<br/>系统会自动识别封面与内页</div>
           </div>
         </div>
       </div>
@@ -663,54 +663,40 @@ async function handleImportCombined(event) {
   try {
     const zip = await JSZip.loadAsync(file);
     const htmlFiles = zip.file(/\.html$/i);
-    if (htmlFiles.length === 0) throw new Error('压缩包中未找到模板文件');
+    if (htmlFiles.length < 2) throw new Error('压缩包中至少需要 2 个模板文件（封面+内页）');
 
     let coverHtml = '';
     let innerHtml = '';
-    let singleMode = null;
 
-    if (htmlFiles.length === 1) {
-      // 单模板压缩包：自动识别是封面还是内页
-      const text = await htmlFiles[0].async('text');
-      const hasA4 = /class=["'][^"']*a4-page[^"']*["']/.test(text);
-      const hasPage = /class=["'][^"']*\bpage\b[^"']*["']/.test(text);
-      if (hasA4) {
-        singleMode = 'cover';
-        coverHtml = text;
-      } else if (hasPage) {
-        singleMode = 'inner';
-        innerHtml = text;
-      } else {
-        throw new Error('无法识别该模板类型，请使用官方生成的模板压缩包');
-      }
+    // 先按推荐命名规则查找（兼容各种路径分隔符和大小写）
+    const namedCover = htmlFiles.find(f => zipBaseName(f.name) === 'cover.html');
+    const namedInner = htmlFiles.find(f => zipBaseName(f.name) === 'inner.html');
+    if (namedCover && namedInner) {
+      coverHtml = await namedCover.async('text');
+      innerHtml = await namedInner.async('text');
     } else {
-      // 多模板压缩包：优先按命名规则匹配
-      const namedCover = htmlFiles.find(f => zipBaseName(f.name) === 'cover.html');
-      const namedInner = htmlFiles.find(f => zipBaseName(f.name) === 'inner.html');
-      if (namedCover && namedInner) {
-        coverHtml = await namedCover.async('text');
-        innerHtml = await namedInner.async('text');
-      } else {
-        // 自动识别：含 .a4-page 的是封面，含大尺寸 .page 的是内页
-        const candidates = [];
-        for (const f of htmlFiles) {
-          const text = await f.async('text');
-          const hasA4 = /class=["'][^"']*a4-page[^"']*["']/.test(text);
-          const hasPage = /class=["'][^"']*\bpage\b[^"']*["']/.test(text);
-          const widthMatch = text.match(/<div[^>]+class=["'][^"']*\bpage\b[^"']*["'][^>]*style=["'][^"']*width:\s*(\d+)px/);
-          const pageWidth = widthMatch ? parseInt(widthMatch[1], 10) : 0;
-          candidates.push({ file: f, text, hasA4, hasPage, pageWidth });
-        }
-        const coverCandidate = candidates.find(c => c.hasA4) || candidates[0];
-        const innerCandidate = candidates.find(c => c !== coverCandidate && (c.pageWidth > 1000 || c.hasPage)) || candidates[1] || candidates[0];
-        coverHtml = coverCandidate.text;
-        innerHtml = innerCandidate.text;
+      // 自动识别：含 .a4-page 的是封面，含大尺寸 .page 的是内页
+      const candidates = [];
+      for (const f of htmlFiles) {
+        const text = await f.async('text');
+        const hasA4 = /class=["'][^"']*a4-page[^"']*["']/.test(text);
+        const hasPage = /class=["'][^"']*\bpage\b[^"']*["']/.test(text);
+        const widthMatch = text.match(/<div[^>]+class=["'][^"']*\bpage\b[^"']*["'][^>]*style=["'][^"']*width:\s*(\d+)px/);
+        const pageWidth = widthMatch ? parseInt(widthMatch[1], 10) : 0;
+        candidates.push({ file: f, text, hasA4, hasPage, pageWidth });
       }
+      const coverCandidate = candidates.find(c => c.hasA4) || candidates[0];
+      const innerCandidate = candidates.find(c => c !== coverCandidate && (c.pageWidth > 1000 || c.hasPage)) || candidates[1] || candidates[0];
+      coverHtml = coverCandidate.text;
+      innerHtml = innerCandidate.text;
     }
+
+    if (!coverHtml) throw new Error('未能识别出封面模板');
+    if (!innerHtml) throw new Error('未能识别出内页模板');
 
     // 解析封面
     const coverParser = new DOMParser();
-    const coverDoc = coverParser.parseFromString(coverHtml || '<html></html>', 'text/html');
+    const coverDoc = coverParser.parseFromString(coverHtml, 'text/html');
     const coverPages = [];
     coverDoc.querySelectorAll('.a4-page').forEach((el, idx) => {
       const pageId = el.getAttribute('data-page-id') || 'page_' + idx;
@@ -721,10 +707,11 @@ async function handleImportCombined(event) {
       });
       coverPages.push({ id: pageId, name: pageName, fields, element: el.cloneNode(true) });
     });
+    if (coverPages.length === 0) throw new Error('封面模板中未找到页面');
 
     // 解析内页
     const innerParser = new DOMParser();
-    const innerDoc = innerParser.parseFromString(innerHtml || '<html></html>', 'text/html');
+    const innerDoc = innerParser.parseFromString(innerHtml, 'text/html');
     const innerPageEl = innerDoc.querySelector('.page') || innerDoc.body;
     const w = parseInt(innerPageEl.style.width) || innerPageEl.getAttribute('width') || innerPageEl.clientWidth;
     const h = parseInt(innerPageEl.style.height) || innerPageEl.getAttribute('height') || innerPageEl.clientHeight;
@@ -738,75 +725,24 @@ async function handleImportCombined(event) {
     normalizeInnerLayout(innerPage.element);
     rebuildInnerFields(innerPage);
 
+    // 存入组合状态，默认先显示封面
+    State.combined = true;
+    State.coverTemplateHTML = coverHtml;
+    State.innerTemplateHTML = innerHtml;
+    State.coverPages = coverPages;
+    State.innerPage = innerPage;
     localStorage.removeItem('bc_template');
     State.chats = new Map();
+    coverPages.forEach(p => { if (!State.chats.has(p.id)) State.chats.set(p.id, []); });
+    if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
+
+    setActiveCombinedMode('cover', false);
+    updateModeSwitch();
     document.getElementById('exportBtn').disabled = false;
     document.getElementById('exportPdfBtn').disabled = false;
     closeConfig();
-
-    if (singleMode === 'cover') {
-      // 仅封面模式
-      State.combined = false;
-      State.mode = 'cover';
-      State.coverTemplateHTML = coverHtml;
-      State.innerTemplateHTML = '';
-      State.coverPages = coverPages;
-      State.innerPage = null;
-      State.templateHTML = coverHtml;
-      State.pages = coverPages;
-      State.previewScale = null;
-      coverPages.forEach(p => { if (!State.chats.has(p.id)) State.chats.set(p.id, []); });
-      updateModeSwitch();
-      document.querySelector('.sidebar-left').style.display = '';
-      document.getElementById('structurePanel').style.display = 'none';
-      document.getElementById('chatSuggestions').style.display = 'none';
-      document.getElementById('chatInputArea').style.display = 'none';
-      renderPageList();
-      if (State.pages.length > 0) selectPage(State.pages[0].id);
-      saveToCache();
-      showToast('封面模板导入成功');
-    } else if (singleMode === 'inner') {
-      // 仅内页模式
-      State.combined = false;
-      State.mode = 'inner';
-      State.coverTemplateHTML = '';
-      State.innerTemplateHTML = innerHtml;
-      State.coverPages = [];
-      State.innerPage = innerPage;
-      State.templateHTML = innerHtml;
-      State.pages = [innerPage];
-      State.currentPageId = 'inner_page';
-      State.previewScale = null;
-      if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
-      updateModeSwitch();
-      document.querySelector('.sidebar-left').style.display = 'none';
-      document.getElementById('structurePanel').style.display = 'flex';
-      document.getElementById('chatSuggestions').style.display = 'block';
-      document.getElementById('chatInputArea').style.display = 'flex';
-      document.getElementById('chatTitle').textContent = 'AI 编辑助手';
-      renderPreviewInner();
-      renderChat('inner_page');
-      renderStructurePanel();
-      saveToCache();
-      showToast('内页模板导入成功');
-    } else {
-      // 组合模式（同时包含封面+内页）
-      if (coverPages.length === 0) throw new Error('封面模板中未找到页面');
-      State.combined = true;
-      State.mode = 'cover';
-      State.coverTemplateHTML = coverHtml;
-      State.innerTemplateHTML = innerHtml;
-      State.coverPages = coverPages;
-      State.innerPage = innerPage;
-      State.templateHTML = coverHtml;
-      State.pages = coverPages;
-      coverPages.forEach(p => { if (!State.chats.has(p.id)) State.chats.set(p.id, []); });
-      if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
-      setActiveCombinedMode('cover', false);
-      updateModeSwitch();
-      saveToCache();
-      showToast('完整画册导入成功');
-    }
+    saveToCache();
+    showToast('完整画册导入成功');
   } catch (err) { alert('导入失败: ' + err.message); }
   event.target.value = '';
 }
