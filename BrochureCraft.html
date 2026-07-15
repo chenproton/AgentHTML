@@ -199,8 +199,9 @@
   .modal-footer { padding:16px 24px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; background:var(--surface); border-radius:0 0 var(--radius-xl) var(--radius-xl); }
   .modal--manual { width:90vw; max-width:1200px; height:86vh; max-height:800px; display:flex; flex-direction:column; overflow:hidden; }
   .modal--manual .modal-header { flex-shrink:0; justify-content:space-between; }
-  .modal--manual .modal-body { flex:1; overflow:hidden; }
-  .manual-iframe { width:100%; height:100%; border:none; display:block; }
+  .modal--manual .modal-body { flex:1; overflow:hidden; position:relative; }
+  .manual-iframe-wrapper { position:absolute; inset:0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .manual-iframe { width:1280px; height:800px; border:none; display:block; transform-origin:center center; }
   .field-item-type { font-size:10px; color:var(--text-secondary); background:var(--surface); padding:2px 8px; border-radius:4px; font-weight:500; display:inline-block; border:1px solid var(--border); }
   .typing-indicator { display:flex; gap:4px; padding:14px 16px; align-self:flex-start; background:var(--surface-elevated); border-radius:var(--radius-lg); border-bottom-left-radius:5px; border:1px solid var(--border); box-shadow:var(--shadow-sm); }
   .typing-indicator span { width:7px; height:7px; background:var(--text-muted); border-radius:50%; animation:bounce 1.4s infinite ease-in-out both; }
@@ -368,7 +369,9 @@
       <button class="btn btn-sm btn-secondary" onclick="closeManual()">关闭</button>
     </div>
     <div class="modal-body" style="padding:0;">
-      <iframe class="manual-iframe" src="http://111.170.170.202:8082/BrochureCraft_Manual.html" frameborder="0"></iframe>
+      <div class="manual-iframe-wrapper" id="manualIframeWrapper">
+        <iframe class="manual-iframe" id="manualIframe" src="http://111.170.170.202:8082/BrochureCraft_Manual.html" frameborder="0"></iframe>
+      </div>
     </div>
   </div>
 </div>
@@ -414,8 +417,20 @@ function showConfig() {
   document.getElementById('configModal').classList.add('show');
 }
 function closeConfig() { document.getElementById('configModal').classList.remove('show'); }
-function showManual() { document.getElementById('manualModal').classList.add('show'); }
+function showManual() {
+  document.getElementById('manualModal').classList.add('show');
+  setTimeout(fitManualIframe, 0);
+}
 function closeManual() { document.getElementById('manualModal').classList.remove('show'); }
+function fitManualIframe() {
+  const wrapper = document.getElementById('manualIframeWrapper');
+  const iframe = document.getElementById('manualIframe');
+  if (!wrapper || !iframe) return;
+  const refW = 1280;
+  const refH = 800;
+  const scale = Math.min(wrapper.clientWidth / refW, wrapper.clientHeight / refH, 1);
+  iframe.style.transform = 'scale(' + scale + ')';
+}
 function saveConfig() {
   State.config = {
     baseUrl: document.getElementById('cfgBaseUrl').value.trim(),
@@ -1257,6 +1272,7 @@ function renderPreview(pageId) {
 
 // 窗口缩放时重新计算
 window.addEventListener('resize', () => {
+  fitManualIframe();
   if (!State.currentPageId) return;
   if (State.mode === 'inner') {
     applyInnerPreviewScale();
