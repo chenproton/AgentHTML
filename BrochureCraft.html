@@ -231,8 +231,6 @@
   <div class="toolbar-actions">
     <button class="btn btn-secondary" onclick="showConfig()">⚙️ AI 配置</button>
     <button class="btn btn-secondary" onclick="showImportMode()">📂 导入模板</button>
-    <input type="file" id="templateInput" class="file-input" accept=".html,.zip" onchange="handleImport(event)">
-    <input type="file" id="templateInputInner" class="file-input" accept=".html,.zip" onchange="handleImportInner(event)">
     <input type="file" id="templateInputCombined" class="file-input" accept=".zip" onchange="handleImportCombined(event)">
     <button class="btn btn-danger" onclick="clearAllCache()">🗑 清空缓存</button>
     <button class="btn btn-primary" id="exportBtn" onclick="exportImages()" disabled>📥 导出图片</button>
@@ -328,21 +326,11 @@
         <div class="form-hint">设置导出图片的渲染尺寸</div>
       </div>
       <div id="configModalImport" style="display:none;">
-        <div style="display:flex;gap:16px;flex-wrap:wrap;">
-          <div class="import-card" onclick="selectImportMode('cover')" style="flex:1;min-width:140px;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
-            <div style="font-size:40px;margin-bottom:12px;">📘</div>
-            <div style="font-size:15px;font-weight:600;margin-bottom:6px;">导入画册封面</div>
-            <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">企业画册完整版<br/>支持多页 A4 编辑<br/>分页导出 PDF</div>
-          </div>
-          <div class="import-card" onclick="selectImportMode('inner')" style="flex:1;min-width:140px;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
-            <div style="font-size:40px;margin-bottom:12px;">📋</div>
-            <div style="font-size:15px;font-weight:600;margin-bottom:6px;">导入画册内页<br/>(岗位路径)</div>
-            <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">支持 .html / .zip<br/>单页长图编辑<br/>自定义导出尺寸</div>
-          </div>
-          <div class="import-card" onclick="selectImportMode('combined')" style="flex:1;min-width:140px;border:2px solid var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.2s;">
-            <div style="font-size:40px;margin-bottom:12px;">📦</div>
-            <div style="font-size:15px;font-weight:600;margin-bottom:6px;">导入完整画册<br/>(封面+内页)</div>
-            <div style="font-size:12px;color:var(--text-secondary);line-height:1.5;">zip 中含两个 HTML<br/>推荐 cover.html + inner.html<br/>也可自动识别</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+          <div class="import-card" onclick="selectImportMode('combined')" style="flex:1;min-width:220px;max-width:320px;border:2px solid var(--border);border-radius:12px;padding:32px 24px;text-align:center;cursor:pointer;transition:all 0.2s;">
+            <div style="font-size:48px;margin-bottom:16px;">📦</div>
+            <div style="font-size:16px;font-weight:600;margin-bottom:10px;">导入官方模板压缩包</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">请选择官方生成的模板压缩包<br/>推荐同时包含 cover + inner<br/>系统会自动识别封面与内页</div>
           </div>
         </div>
       </div>
@@ -655,83 +643,16 @@ function showImportMode() {
   document.getElementById('configModalConfig').style.display = 'none';
   document.getElementById('configModalImport').style.display = 'block';
   document.getElementById('configModalExport').style.display = 'none';
-  document.getElementById('configModalHeader').textContent = '📂 选择导入类型';
+  document.getElementById('configModalHeader').textContent = '📂 导入官方模板压缩包';
   document.getElementById('configModalSaveBtn').style.display = 'none';
   document.getElementById('configModalExportBtn').style.display = 'none';
   document.getElementById('configModal').classList.add('show');
 }
 function selectImportMode(mode) {
   document.getElementById('configModal').classList.remove('show');
-  if (mode === 'cover') {
-    document.getElementById('templateInput').click();
-  } else if (mode === 'inner') {
-    document.getElementById('templateInputInner').click();
-  } else if (mode === 'combined') {
+  if (mode === 'combined') {
     document.getElementById('templateInputCombined').click();
   }
-}
-
-async function handleImportInner(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  State.mode = 'inner';
-  State.combined = false;
-  State.coverTemplateHTML = '';
-  State.innerTemplateHTML = '';
-  State.coverPages = [];
-  State.innerPage = null;
-  updateModeSwitch();
-  try {
-    let htmlContent = '';
-    if (file.name.endsWith('.zip')) {
-      const zip = await JSZip.loadAsync(file);
-      const htmlFile = zip.file('index.html') || zip.file(/\.html$/i)[0];
-      if (!htmlFile) throw new Error('ZIP 中未找到 HTML 文件');
-      htmlContent = await htmlFile.async('text');
-    } else {
-      htmlContent = await file.text();
-    }
-    State.templateHTML = htmlContent;
-    localStorage.removeItem('bc_template');
-    State.chats = new Map();
-    State.pages = [];
-    // 解析单页模板
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, 'text/html');
-    const pageEl = doc.querySelector('.page') || doc.body;
-    // 获取内页原始尺寸
-    const w = parseInt(pageEl.style.width) || pageEl.getAttribute('width') || pageEl.clientWidth;
-    const h = parseInt(pageEl.style.height) || pageEl.getAttribute('height') || pageEl.clientHeight;
-    State.innerWidth = w || 9920;
-    State.innerHeight = h || 6732;
-    const fields = [];
-    pageEl.querySelectorAll('[data-field]').forEach(f => {
-      fields.push({
-        name: f.getAttribute('data-field'),
-        type: f.getAttribute('data-type') || 'text',
-        currentValue: getFieldValue(f)
-      });
-    });
-    State.pages.push({ id: 'inner_page', name: '内页编辑', fields, element: pageEl.cloneNode(true) });
-    const page = State.pages[0];
-    normalizeInnerLayout(page.element);
-    rebuildInnerFields(page);
-    State.currentPageId = 'inner_page';
-    State.previewScale = null;
-    if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
-    // 隐藏左侧栏
-    document.querySelector('.sidebar-left').style.display = 'none';
-    document.getElementById('chatSuggestions').style.display = 'block';
-    document.getElementById('chatInputArea').style.display = 'flex';
-    document.getElementById('chatTitle').textContent = 'AI 编辑助手';
-      document.getElementById('exportBtn').disabled = false; document.getElementById('exportPdfBtn').disabled = false;
-      renderPreviewInner();
-    renderChat('inner_page');
-    saveToCache();
-    renderStructurePanel();
-    showToast('内页模板导入成功');
-  } catch (err) { alert('导入失败: ' + err.message); }
-  event.target.value = '';
 }
 
 async function handleImportCombined(event) {
@@ -741,42 +662,54 @@ async function handleImportCombined(event) {
   try {
     const zip = await JSZip.loadAsync(file);
     const htmlFiles = zip.file(/\.html$/i);
-    if (htmlFiles.length < 2) throw new Error('ZIP 中至少需要 2 个 HTML 文件（封面+内页）');
+    if (htmlFiles.length === 0) throw new Error('压缩包中未找到模板文件');
 
     let coverHtml = '';
     let innerHtml = '';
+    let singleMode = null;
 
-    // 先按推荐命名规则查找（兼容各种路径分隔符和大小写）
-    const namedCover = htmlFiles.find(f => zipBaseName(f.name) === 'cover.html');
-    const namedInner = htmlFiles.find(f => zipBaseName(f.name) === 'inner.html');
-    if (namedCover && namedInner) {
-      coverHtml = await namedCover.async('text');
-      innerHtml = await namedInner.async('text');
-    } else {
-      // 自动识别：含 .a4-page 的是封面，含大尺寸 .page 的是内页
-      const candidates = [];
-      for (const f of htmlFiles) {
-        const text = await f.async('text');
-        const hasA4 = /class=["'][^"']*a4-page[^"']*["']/.test(text);
-        const hasPage = /class=["'][^"']*\bpage\b[^"']*["']/.test(text);
-        const widthMatch = text.match(/<div[^>]+class=["'][^"']*\bpage\b[^"']*["'][^>]*style=["'][^"']*width:\s*(\d+)px/);
-        const pageWidth = widthMatch ? parseInt(widthMatch[1], 10) : 0;
-        candidates.push({ file: f, text, hasA4, hasPage, pageWidth });
+    if (htmlFiles.length === 1) {
+      // 单模板压缩包：自动识别是封面还是内页
+      const text = await htmlFiles[0].async('text');
+      const hasA4 = /class=["'][^"']*a4-page[^"']*["']/.test(text);
+      const hasPage = /class=["'][^"']*\bpage\b[^"']*["']/.test(text);
+      if (hasA4) {
+        singleMode = 'cover';
+        coverHtml = text;
+      } else if (hasPage) {
+        singleMode = 'inner';
+        innerHtml = text;
+      } else {
+        throw new Error('无法识别该模板类型，请使用官方生成的模板压缩包');
       }
-      const coverCandidate = candidates.find(c => c.hasA4) || candidates[0];
-      const innerCandidate = candidates.find(c => c !== coverCandidate && (c.pageWidth > 1000 || c.hasPage)) || candidates[1] || candidates[0];
-      coverHtml = coverCandidate.text;
-      innerHtml = innerCandidate.text;
-      coverFileName = coverCandidate.file.name;
-      innerFileName = innerCandidate.file.name;
+    } else {
+      // 多模板压缩包：优先按命名规则匹配
+      const namedCover = htmlFiles.find(f => zipBaseName(f.name) === 'cover.html');
+      const namedInner = htmlFiles.find(f => zipBaseName(f.name) === 'inner.html');
+      if (namedCover && namedInner) {
+        coverHtml = await namedCover.async('text');
+        innerHtml = await namedInner.async('text');
+      } else {
+        // 自动识别：含 .a4-page 的是封面，含大尺寸 .page 的是内页
+        const candidates = [];
+        for (const f of htmlFiles) {
+          const text = await f.async('text');
+          const hasA4 = /class=["'][^"']*a4-page[^"']*["']/.test(text);
+          const hasPage = /class=["'][^"']*\bpage\b[^"']*["']/.test(text);
+          const widthMatch = text.match(/<div[^>]+class=["'][^"']*\bpage\b[^"']*["'][^>]*style=["'][^"']*width:\s*(\d+)px/);
+          const pageWidth = widthMatch ? parseInt(widthMatch[1], 10) : 0;
+          candidates.push({ file: f, text, hasA4, hasPage, pageWidth });
+        }
+        const coverCandidate = candidates.find(c => c.hasA4) || candidates[0];
+        const innerCandidate = candidates.find(c => c !== coverCandidate && (c.pageWidth > 1000 || c.hasPage)) || candidates[1] || candidates[0];
+        coverHtml = coverCandidate.text;
+        innerHtml = innerCandidate.text;
+      }
     }
-
-    if (!coverHtml) throw new Error('未能识别出封面 HTML');
-    if (!innerHtml) throw new Error('未能识别出内页 HTML');
 
     // 解析封面
     const coverParser = new DOMParser();
-    const coverDoc = coverParser.parseFromString(coverHtml, 'text/html');
+    const coverDoc = coverParser.parseFromString(coverHtml || '<html></html>', 'text/html');
     const coverPages = [];
     coverDoc.querySelectorAll('.a4-page').forEach((el, idx) => {
       const pageId = el.getAttribute('data-page-id') || 'page_' + idx;
@@ -787,11 +720,10 @@ async function handleImportCombined(event) {
       });
       coverPages.push({ id: pageId, name: pageName, fields, element: el.cloneNode(true) });
     });
-    if (coverPages.length === 0) throw new Error('封面 HTML 中未找到 .a4-page 页面');
 
     // 解析内页
     const innerParser = new DOMParser();
-    const innerDoc = innerParser.parseFromString(innerHtml, 'text/html');
+    const innerDoc = innerParser.parseFromString(innerHtml || '<html></html>', 'text/html');
     const innerPageEl = innerDoc.querySelector('.page') || innerDoc.body;
     const w = parseInt(innerPageEl.style.width) || innerPageEl.getAttribute('width') || innerPageEl.clientWidth;
     const h = parseInt(innerPageEl.style.height) || innerPageEl.getAttribute('height') || innerPageEl.clientHeight;
@@ -805,24 +737,75 @@ async function handleImportCombined(event) {
     normalizeInnerLayout(innerPage.element);
     rebuildInnerFields(innerPage);
 
-    // 存入组合状态，默认先显示封面
-    State.combined = true;
-    State.coverTemplateHTML = coverHtml;
-    State.innerTemplateHTML = innerHtml;
-    State.coverPages = coverPages;
-    State.innerPage = innerPage;
     localStorage.removeItem('bc_template');
     State.chats = new Map();
-    coverPages.forEach(p => { if (!State.chats.has(p.id)) State.chats.set(p.id, []); });
-    if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
-
-    setActiveCombinedMode('cover', false);
-    updateModeSwitch();
     document.getElementById('exportBtn').disabled = false;
     document.getElementById('exportPdfBtn').disabled = false;
     closeConfig();
-    saveToCache();
-    showToast('完整画册导入成功');
+
+    if (singleMode === 'cover') {
+      // 仅封面模式
+      State.combined = false;
+      State.mode = 'cover';
+      State.coverTemplateHTML = coverHtml;
+      State.innerTemplateHTML = '';
+      State.coverPages = coverPages;
+      State.innerPage = null;
+      State.templateHTML = coverHtml;
+      State.pages = coverPages;
+      State.previewScale = null;
+      coverPages.forEach(p => { if (!State.chats.has(p.id)) State.chats.set(p.id, []); });
+      updateModeSwitch();
+      document.querySelector('.sidebar-left').style.display = '';
+      document.getElementById('structurePanel').style.display = 'none';
+      document.getElementById('chatSuggestions').style.display = 'none';
+      document.getElementById('chatInputArea').style.display = 'none';
+      renderPageList();
+      if (State.pages.length > 0) selectPage(State.pages[0].id);
+      saveToCache();
+      showToast('封面模板导入成功');
+    } else if (singleMode === 'inner') {
+      // 仅内页模式
+      State.combined = false;
+      State.mode = 'inner';
+      State.coverTemplateHTML = '';
+      State.innerTemplateHTML = innerHtml;
+      State.coverPages = [];
+      State.innerPage = innerPage;
+      State.templateHTML = innerHtml;
+      State.pages = [innerPage];
+      State.currentPageId = 'inner_page';
+      State.previewScale = null;
+      if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
+      updateModeSwitch();
+      document.querySelector('.sidebar-left').style.display = 'none';
+      document.getElementById('structurePanel').style.display = 'flex';
+      document.getElementById('chatSuggestions').style.display = 'block';
+      document.getElementById('chatInputArea').style.display = 'flex';
+      document.getElementById('chatTitle').textContent = 'AI 编辑助手';
+      renderPreviewInner();
+      renderChat('inner_page');
+      renderStructurePanel();
+      saveToCache();
+      showToast('内页模板导入成功');
+    } else {
+      // 组合模式（同时包含封面+内页）
+      if (coverPages.length === 0) throw new Error('封面模板中未找到页面');
+      State.combined = true;
+      State.mode = 'cover';
+      State.coverTemplateHTML = coverHtml;
+      State.innerTemplateHTML = innerHtml;
+      State.coverPages = coverPages;
+      State.innerPage = innerPage;
+      State.templateHTML = coverHtml;
+      State.pages = coverPages;
+      coverPages.forEach(p => { if (!State.chats.has(p.id)) State.chats.set(p.id, []); });
+      if (!State.chats.has('inner_page')) State.chats.set('inner_page', []);
+      setActiveCombinedMode('cover', false);
+      updateModeSwitch();
+      saveToCache();
+      showToast('完整画册导入成功');
+    }
   } catch (err) { alert('导入失败: ' + err.message); }
   event.target.value = '';
 }
@@ -884,40 +867,6 @@ function updateModeSwitch() {
   } else {
     el.classList.remove('show');
   }
-}
-
-async function handleImport(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  State.mode = 'cover';
-  State.combined = false;
-  State.coverTemplateHTML = '';
-  State.innerTemplateHTML = '';
-  State.coverPages = [];
-  State.innerPage = null;
-  updateModeSwitch();
-  try {
-    let htmlContent = '';
-    if (file.name.endsWith('.zip')) {
-      const zip = await JSZip.loadAsync(file);
-      const htmlFile = zip.file('index.html') || zip.file(/\.html$/i)[0];
-      if (!htmlFile) throw new Error('ZIP 中未找到 HTML 文件');
-      htmlContent = await htmlFile.async('text');
-    } else {
-      htmlContent = await file.text();
-    }
-    State.templateHTML = htmlContent;
-    localStorage.removeItem('bc_template');
-    State.chats = new Map();
-    State.previewScale = null;
-    parseTemplate(htmlContent);
-    saveToCache();
-    showToast('模板导入成功');
-    document.getElementById('exportBtn').disabled = false; document.getElementById('exportPdfBtn').disabled = false;
-    document.querySelector('.sidebar-left').style.display = '';
-    renderStructurePanel();
-  } catch (err) { alert('导入失败: ' + err.message); }
-  event.target.value = '';
 }
 
 function parseTemplate(html) {
