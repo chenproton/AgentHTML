@@ -724,6 +724,7 @@ async function handleImportCombined(event) {
     const innerPage = { id: 'inner_page', name: '内页编辑', fields: innerFields, element: innerPageEl.cloneNode(true) };
     normalizeInnerLayout(innerPage.element);
     rebuildInnerFields(innerPage);
+    console.log('[handleImportCombined] innerPage created, element children:', innerPage.element.children.length);
 
     // 存入组合状态，默认先显示封面
     State.combined = true;
@@ -731,6 +732,7 @@ async function handleImportCombined(event) {
     State.innerTemplateHTML = innerHtml;
     State.coverPages = coverPages;
     State.innerPage = innerPage;
+    console.log('[handleImportCombined] State.innerPage set:', State.innerPage ? State.innerPage.id : null);
     localStorage.removeItem('bc_template');
     State.chats = new Map();
     coverPages.forEach(p => { if (!State.chats.has(p.id)) State.chats.set(p.id, []); });
@@ -748,6 +750,7 @@ async function handleImportCombined(event) {
 }
 
 function setActiveCombinedMode(mode, shouldSave) {
+  console.log('[setActiveCombinedMode] mode:', mode, 'shouldSave:', shouldSave, 'combined:', State.combined, 'current innerPage:', State.innerPage ? State.innerPage.id : null);
   if (!State.combined) return;
   // 把当前激活视图存回对应变量（仅在正常切换时保存，初始化/恢复时不反向覆盖）
   if (shouldSave) {
@@ -845,7 +848,9 @@ function getInnerPage() {
 
 function parseInnerStructure(pageEl) {
   const jobs = [];
-  const cards = Array.from(pageEl.querySelectorAll('.cards-panel > .cards-row > .job-card, .cards-panel > .cards-grid > .job-card'));
+  // 兼容直接子元素或嵌套结构
+  const cards = Array.from(pageEl.querySelectorAll('.cards-panel .job-card'));
+  console.log('[parseInnerStructure] cards found:', cards.length);
   cards.forEach((jobEl, jobIndex) => {
     const titleEl = jobEl.querySelector('.job-card__title');
     const units = [];
@@ -859,6 +864,7 @@ function parseInnerStructure(pageEl) {
     });
     jobs.push({ el: jobEl, title: titleEl ? titleEl.textContent.trim() : '', units });
   });
+  console.log('[parseInnerStructure] jobs parsed:', jobs.length);
   return jobs;
 }
 
@@ -1140,20 +1146,26 @@ function toggleStructurePanel() {
 }
 
 function renderStructurePanel() {
+  console.log('[renderStructurePanel] called, mode:', State.mode, 'currentPageId:', State.currentPageId, 'pages:', State.pages.length);
   const panel = document.getElementById('structurePanel');
   const tree = document.getElementById('structureTree');
   const addBtn = document.getElementById('addJobBtn');
   const toggleBtn = document.getElementById('structureToggleBtn');
   const page = getInnerPage();
+  console.log('[renderStructurePanel] page:', page ? page.id : null);
   if (!panel || !tree) return;
   if (State.mode !== 'inner' || !page) {
+    console.log('[renderStructurePanel] hidden: mode or page invalid');
     panel.style.display = 'none';
     return;
   }
   panel.style.display = 'flex';
   const collapsed = panel.classList.contains('collapsed');
   if (toggleBtn) toggleBtn.textContent = collapsed ? '展开' : '收起';
-  if (collapsed) return;
+  if (collapsed) {
+    console.log('[renderStructurePanel] collapsed, skip tree render');
+    return;
+  }
   const jobs = parseInnerStructure(page.element);
   if (addBtn) addBtn.disabled = jobs.length >= 8;
   let html = '';
