@@ -201,7 +201,7 @@
   .modal--manual .modal-header { flex-shrink:0; justify-content:space-between; }
   .modal--manual .modal-body { flex:1; overflow:hidden; position:relative; }
   .manual-iframe-wrapper { position:absolute; inset:0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-  .manual-iframe { width:1280px; height:800px; border:none; display:block; transform-origin:center center; }
+  .manual-iframe { width:1280px; height:720px; border:none; display:block; transform-origin:center center; }
   .field-item-type { font-size:10px; color:var(--text-secondary); background:var(--surface); padding:2px 8px; border-radius:4px; font-weight:500; display:inline-block; border:1px solid var(--border); }
   .typing-indicator { display:flex; gap:4px; padding:14px 16px; align-self:flex-start; background:var(--surface-elevated); border-radius:var(--radius-lg); border-bottom-left-radius:5px; border:1px solid var(--border); box-shadow:var(--shadow-sm); }
   .typing-indicator span { width:7px; height:7px; background:var(--text-muted); border-radius:50%; animation:bounce 1.4s infinite ease-in-out both; }
@@ -427,7 +427,7 @@ function fitManualIframe() {
   const iframe = document.getElementById('manualIframe');
   if (!wrapper || !iframe) return;
   const refW = 1280;
-  const refH = 800;
+  const refH = 720;
   const scale = Math.min(wrapper.clientWidth / refW, wrapper.clientHeight / refH, 1);
   iframe.style.transform = 'scale(' + scale + ')';
 }
